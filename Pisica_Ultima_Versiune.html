@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pisica Final</title>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:Arial;
+color:white;
+text-align:center;
+}
+
+#game{
+width:100%;
+height:400px;
+position:relative;
+overflow:hidden;
+background:
+radial-gradient(white 1px, transparent 1px),
+black;
+background-size:20px 20px;
+}
+
+#ui{
+margin-top:10px;
+font-size:20px;
+}
+
+#player{
+position:absolute;
+bottom:20px;
+left:50px;
+}
+
+.cat{
+position:relative;
+width:60px;
+height:60px;
+}
+
+.head{
+width:30px;
+height:30px;
+background:orange;
+border-radius:50%;
+position:absolute;
+top:0;
+left:15px;
+}
+
+.body{
+width:50px;
+height:30px;
+background:orange;
+border-radius:20px;
+position:absolute;
+top:25px;
+left:5px;
+}
+
+.leg{
+width:10px;
+height:15px;
+background:orange;
+border-radius:5px;
+position:absolute;
+top:50px;
+transition:0.2s;
+}
+
+.leg1{ left:8px; }
+.leg2{ left:20px; }
+.leg3{ left:32px; }
+.leg4{ left:44px; }
+
+.obstacle{
+position:absolute;
+font-size:35px;
+}
+
+#finish{
+position:absolute;
+right:0;
+width:8px;
+height:100%;
+background:yellow;
+}
+
+#invText{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:30px;
+color:cyan;
+display:none;
+}
+</style>
+</head>
+<body>
+
+<h2>🐱 Ajungi la Finish!</h2>
+
+<div id="ui">
+Nivel: <span id="level">1</span> |
+Vieți: <span id="lives">❤️❤️❤️</span>
+</div>
+
+<div id="game">
+
+<div id="invText">INVINCIBLE!</div>
+<div id="finish"></div>
+
+<div id="player">
+<div class="cat">
+<div class="head"></div>
+<div class="body"></div>
+<div class="leg leg1"></div>
+<div class="leg leg2"></div>
+<div class="leg leg3"></div>
+<div class="leg leg4"></div>
+</div>
+</div>
+
+</div>
+
+<script>
+
+let player=document.getElementById("player");
+let legs=document.querySelectorAll(".leg");
+let levelText=document.getElementById("level");
+let livesText=document.getElementById("lives");
+let invText=document.getElementById("invText");
+
+let x=50;
+let y=0;
+let jumping=false;
+let lives=3;
+let level=1;
+let speed=5;
+let gameOver=false;
+let invincible=false;
+
+/* CONTROL */
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space" && !jumping && !gameOver){
+jump();
+}
+
+if(e.key==="1") x-=30;
+if(e.key==="2") x+=30;
+
+if(x<0)x=0;
+if(x>window.innerWidth-60)x=window.innerWidth-60;
+
+player.style.left=x+"px";
+
+checkWin();
+
+});
+
+/* JUMP */
+function jump(){
+jumping=true;
+
+legs.forEach(l=>l.style.transform="rotate(30deg)");
+
+let up=setInterval(function(){
+if(y>=120){
+clearInterval(up);
+
+let down=setInterval(function(){
+if(y<=0){
+clearInterval(down);
+jumping=false;
+legs.forEach(l=>l.style.transform="rotate(0deg)");
+}else{
+y-=6;
+player.style.bottom=20+y+"px";
+}
+},20);
+
+}else{
+y+=6;
+player.style.bottom=20+y+"px";
+}
+},20);
+}
+
+/* WIN */
+function checkWin(){
+if(x>window.innerWidth-80 && !gameOver){
+
+if(level===1){
+
+level=2;
+speed=9;
+levelText.innerText="2";
+
+clearObstacles();
+
+x=50;
+player.style.left=x+"px";
+
+startInvincible();
+
+alert("🚀 LEVEL 2!");
+
+}else{
+
+alert("🏆 AI CÂȘTIGAT!");
+gameOver=true;
+
+}
+}
+}
+
+/* INVINCIBLE */
+function startInvincible(){
+invincible=true;
+player.style.opacity="0.5";
+invText.style.display="block";
+
+setTimeout(function(){
+invincible=false;
+player.style.opacity="1";
+invText.style.display="none";
+},5000);
+}
+
+/* OBSTACOL JOS */
+function groundObstacle(){
+if(gameOver)return;
+
+let o=document.createElement("div");
+o.className="obstacle";
+o.innerHTML="🟥";
+o.style.bottom="20px";
+o.style.left=window.innerWidth+"px";
+document.getElementById("game").appendChild(o);
+
+let pos=window.innerWidth;
+
+let move=setInterval(function(){
+
+if(gameOver){
+clearInterval(move);
+o.remove();
+}
+
+pos-=speed;
+o.style.left=pos+"px";
+
+if(pos<x+60 && pos+40>x && y<40){
+o.remove();
+clearInterval(move);
+loseLife();
+}
+
+if(pos<-50){
+clearInterval(move);
+o.remove();
+}
+
+},20);
+}
+
+/* OBSTACOL SUS */
+function skyObstacle(){
+if(gameOver)return;
+
+let o=document.createElement("div");
+o.className="obstacle";
+o.innerHTML="🔥";
+o.style.top="0px";
+o.style.left=Math.random()*window.innerWidth+"px";
+document.getElementById("game").appendChild(o);
+
+let pos=0;
+
+let fall=setInterval(function(){
+
+if(gameOver){
+clearInterval(fall);
+o.remove();
+}
+
+pos+=speed;
+o.style.top=pos+"px";
+
+if(pos>300 && o.offsetLeft<x+60 && o.offsetLeft+40>x){
+o.remove();
+clearInterval(fall);
+loseLife();
+}
+
+if(pos>400){
+clearInterval(fall);
+o.remove();
+}
+
+},20);
+}
+
+function loseLife(){
+if(invincible)return;
+
+lives--;
+updateLives();
+
+if(lives<=0){
+alert("💀 GAME OVER");
+gameOver=true;
+}
+}
+
+function updateLives(){
+let hearts="";
+for(let i=0;i<lives;i++)hearts+="❤️";
+livesText.innerText=hearts;
+}
+
+function clearObstacles(){
+let obs=document.querySelectorAll(".obstacle");
+obs.forEach(o=>o.remove());
+}
+
+/* SPAWN */
+setInterval(function(){
+if(!gameOver)groundObstacle();
+},2000);
+
+setInterval(function(){
+if(!gameOver)skyObstacle();
+},2500);
+
+updateLives();
+
+</script>
+</body>
+</html>
