@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghicitorile</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="board">
+    <h1 class="title">Ghicitorile</h1>
+
+    <!-- NIVEL 1: Hangman -->
+    <div id="hangman-game">
+      <div class="game-area">
+        <div class="canvas-wrap">
+          <canvas id="hangman" width="220" height="260"></canvas>
+        </div>
+        <div class="right-panel">
+          <div id="hint-box" class="hint-box"></div>
+          <div id="word-display" class="word-display"></div>
+          <div id="wrong-letters" class="wrong-letters"></div>
+          <div id="keyboard" class="keyboard"></div>
+          <div id="message" class="message"></div>
+          <div class="btn-row">
+            <button id="new-game-btn" class="btn-new">Cuvant nou</button>
+            <button id="restart-btn" class="btn-restart">Restart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NIVEL 2: Tabel Antonime -->
+    <div id="grid-game" style="display:none">
+      <p class="grid-subtitle">Scrie antonimul (opusul) fiecarui cuvant:</p>
+      <div id="antonym-grid" class="antonym-grid"></div>
+      <div id="grid-message" class="message"></div>
+      <div class="btn-row">
+        <button id="next-set-btn" class="btn-new" style="display:none">Urmatorul set</button>
+        <button id="grid-restart-btn" class="btn-restart">Restart</button>
+      </div>
+    </div>
+
+    <div id="level-display" class="level-display"></div>
+    <div class="lives-bar" id="lives-bar"></div>
+
+    <div class="score-bar">
+      <span>Castigate: <strong id="wins">0</strong></span>
+      <span>Pierdute: <strong id="losses">0</strong></span>
+      <span>Ramase: <strong id="remaining">60</strong></span>
+    </div>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
