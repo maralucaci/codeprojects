@@ -8,6 +8,19 @@
 </head>
 <body>
   <div class="board">
+
+    <!-- COPERTĂ -->
+    <div id="cover">
+      <h1 class="cover-title">Ghicitorile</h1>
+      <p class="cover-sub">Joc de ghicit cuvinte in 2 nivele</p>
+      <ul class="cover-rules">
+        <li>Prima si ultima litera sunt date</li>
+        <li>5 vieti globale — nu pierde timpul!</li>
+        <li>10 cuvinte corecte = treci la Antonime</li>
+      </ul>
+      <button id="start-btn" class="btn-start">START</button>
+    </div>
+
     <h1 class="title">Ghicitorile</h1>
 
     <!-- NIVEL 1: Hangman -->
@@ -50,6 +63,18 @@
       <span>Ramase: <strong id="remaining">60</strong></span>
     </div>
   </div>
+
+  <!-- BUTOANE TEST — sterge aceste 2 linii cand nu mai ai nevoie -->
+  <button onclick="startLevel2()" style="position:fixed;bottom:10px;right:80px;opacity:0.35;font-size:0.75rem;padding:4px 10px;background:#333;color:#fff;border:none;border-radius:4px;cursor:pointer;z-index:999" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.35">→ Nivel 2</button>
+  <button id="btn-back" onclick="testBack(this)" style="position:fixed;bottom:10px;right:10px;opacity:0.35;font-size:0.75rem;padding:4px 10px;background:#555;color:#fff;border:none;border-radius:4px;cursor:pointer;z-index:999" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.35">← Înapoi</button>
+  <script>
+    var _backClicks = 0;
+    function testBack(btn) {
+      _backClicks++;
+      if (_backClicks === 1) { restartAll(); btn.textContent = "← Copertă"; }
+      else { _backClicks = 0; btn.textContent = "← Înapoi"; var c = document.getElementById("cover"); c.style.transition="none"; c.style.opacity="1"; c.classList.remove("fade-out"); c.style.display="flex"; requestAnimationFrame(function(){ c.style.transition=""; }); }
+    }
+  </script>
 
   <script src="words.js"></script>
   <script src="game.js"></script>

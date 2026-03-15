@@ -16,7 +16,13 @@ const mime = {
 
 http.createServer((req, res) => {
   let url = req.url === '/' ? '/Pisica_FINAL.html' : req.url;
-  const file = path.join(ROOT, url);
+  // strip query string
+  url = url.split('?')[0];
+  let file = path.join(ROOT, url);
+  // daca URL-ul e un director, serveste index.html din el
+  if (fs.existsSync(file) && fs.statSync(file).isDirectory()) {
+    file = path.join(file, 'index.html');
+  }
   fs.readFile(file, (err, data) => {
     if (err) {
       res.writeHead(404);

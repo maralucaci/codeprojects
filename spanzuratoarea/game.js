@@ -3,7 +3,7 @@ let currentLevel = 1;
 let levelWins    = 0;
 const WINS_TO_ADVANCE = 10;
 
-let pool         = buildPool(1);
+let pool         = buildPool();
 let currentWord  = "";
 let currentHint  = "";
 let guessed      = new Set();
@@ -47,7 +47,13 @@ const gridRestartBtn = document.getElementById("grid-restart-btn");
 buildKeyboard();
 renderLives();
 renderLevel();
-startNewGame();
+
+document.getElementById("start-btn").addEventListener("click", () => {
+  const cover = document.getElementById("cover");
+  cover.classList.add("fade-out");
+  setTimeout(() => { cover.style.display = "none"; }, 500);
+  startNewGame();
+});
 
 newGameBtn.addEventListener("click", startNewGame);
 restartBtn.addEventListener("click", restartAll);
@@ -62,13 +68,13 @@ document.addEventListener("keydown", (e) => {
 });
 
 // ─── Level 1: Hangman ─────────────────────────────────────────────────────────
-function buildPool(level) {
-  return shuffle(WORDS.filter(w => w.level === level));
+function buildPool() {
+  return shuffle([...WORDS]);
 }
 
 function startNewGame() {
   if (globalOver) return;
-  if (pool.length === 0) pool = buildPool(currentLevel);
+  if (pool.length === 0) pool = buildPool();
 
   const entry   = pool.pop();
   currentWord   = normalizeWord(entry.word);
@@ -146,17 +152,20 @@ function endGame(won) {
 function restartAll() {
   currentLevel = 1;
   levelWins    = 0;
-  pool         = buildPool(1);
+  pool         = buildPool();
   wins         = 0;
   losses       = 0;
   lives        = 5;
   globalOver   = false;
+  gameOver     = false;
   winsEl.textContent   = 0;
   lossesEl.textContent = 0;
 
   hangmanGame.style.display  = "block";
   gridGame.style.display     = "none";
   nextSetBtn.style.display   = "none";
+  messageEl.textContent      = "";
+  messageEl.className        = "message";
 
   renderLives();
   renderLevel();
@@ -278,7 +287,8 @@ function checkRow(rowIdx) {
 
   if (entered.length < pair.answer.length) return;
 
-  if (entered === pair.answer) {
+  const allAnswers = [pair.answer, ...(pair.alt || [])];
+  if (allAnswers.some(a => stripDiacritics(entered) === stripDiacritics(a))) {
     rowStates[rowIdx] = "correct";
     cells.forEach(c => { c.classList.add("cell-correct"); c.disabled = true; });
     wins++;
@@ -423,6 +433,46 @@ function drawLeftArm()  { chalkLine(150, 105, 120, 145); }
 function drawRightArm() { chalkLine(150, 105, 180, 145); }
 function drawLegs()     { chalkLine(150, 170, 120, 215); chalkLine(150, 170, 180, 215); }
 
+// ─── Cover hangman (decorativ) ────────────────────────────────────────────────
+function drawCoverHangman() {
+  const c  = document.getElementById("cover-canvas");
+  const cx = c.getContext("2d");
+  cx.clearRect(0, 0, c.width, c.height);
+  cx.strokeStyle = "rgba(245,245,232,0.75)";
+  cx.lineWidth   = 2.5;
+  cx.lineCap     = "round";
+  cx.shadowColor = "rgba(245,245,232,0.35)";
+  cx.shadowBlur  = 5;
+
+  function cl(x1, y1, x2, y2) {
+    cx.beginPath();
+    cx.moveTo(x1 + cj(), y1 + cj());
+    cx.lineTo(x2 + cj(), y2 + cj());
+    cx.stroke();
+  }
+  function cj() { return (Math.random() - 0.5) * 1.8; }
+
+  // Structura
+  cl(12, 188, 148, 188);
+  cl(44, 188, 44, 12);
+  cl(44, 12, 112, 12);
+  cl(112, 12, 112, 42);
+
+  // Cap
+  cx.beginPath();
+  cx.arc(112 + cj(), 57, 15, 0, Math.PI * 2);
+  cx.stroke();
+
+  // Corp
+  cl(112, 72, 112, 132);
+  // Brate
+  cl(112, 88, 86, 118);
+  cl(112, 88, 138, 118);
+  // Picioare
+  cl(112, 132, 86, 168);
+  cl(112, 132, 138, 168);
+}
+
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function shuffle(arr) {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -434,4 +484,11 @@ function shuffle(arr) {
 
 function normalizeWord(str) {
   return str.toUpperCase().trim();
+}
+
+function stripDiacritics(str) {
+  return str.toUpperCase()
+    .replace(/[Ă]/g, "A").replace(/[Â]/g, "A")
+    .replace(/[Î]/g, "I")
+    .replace(/[Ș]/g, "S").replace(/[Ț]/g, "T");
 }

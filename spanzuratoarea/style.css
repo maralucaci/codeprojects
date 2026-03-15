@@ -44,6 +44,86 @@ body {
   pointer-events: none;
 }
 
+/* ── Copertă ── */
+#cover {
+  position: absolute;
+  inset: 0;
+  background: #1f3320;
+  border-radius: 6px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 30px;
+  transition: opacity 0.5s;
+}
+
+#cover.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cover-title {
+  font-size: 3.2rem;
+  letter-spacing: 5px;
+  color: #f5f5e8;
+  text-shadow:
+    0 0 12px rgba(245,245,232,0.5),
+    0 0 30px rgba(245,245,232,0.15);
+  text-align: center;
+}
+
+#cover-canvas {
+  filter: drop-shadow(0 0 8px rgba(245,245,232,0.3));
+}
+
+.cover-sub {
+  font-size: 1.35rem;
+  color: #c8e6c9;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.cover-rules {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+  color: #a5d6a7;
+  font-size: 1.1rem;
+}
+
+.cover-rules li::before {
+  content: "· ";
+  color: #ffe082;
+}
+
+.btn-start {
+  margin-top: 10px;
+  padding: 13px 60px;
+  font-family: 'Caveat', cursive;
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 4px;
+  border: 2.5px solid rgba(245,245,232,0.7);
+  border-radius: 10px;
+  background: rgba(245,245,232,0.09);
+  color: #f5f5e8;
+  cursor: pointer;
+  text-shadow: 0 0 8px rgba(245,245,232,0.4);
+  box-shadow: 0 0 18px rgba(245,245,232,0.1);
+  transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.btn-start:hover {
+  background: rgba(245,245,232,0.18);
+  transform: scale(1.06);
+  box-shadow: 0 0 32px rgba(245,245,232,0.25);
+}
+
 /* ── Titlu ── */
 .title {
   text-align: center;
