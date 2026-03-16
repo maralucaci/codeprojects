@@ -120,6 +120,34 @@ function drawCharacter(ctx, charId, x, y, scale, frame) {
   const bodyBob = 0;
   const isGirl = charId.startsWith('girl');
 
+  const acc = (shopState.equipped[charId] || []);
+
+  // ── ARIPI (desenate primele, pe spate) ────────────────────
+  if (acc.includes('top_wings')) {
+    ctx.save(); ctx.translate(0, -34 + bodyBob);
+    ctx.fillStyle = 'rgba(220,220,255,0.85)';
+    ctx.beginPath(); ctx.moveTo(-2, 0); ctx.bezierCurveTo(-30, -20, -36, 10, -22, 20); ctx.bezierCurveTo(-14, 26, -4, 10, -2, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(180,180,230,0.9)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(-2, 0); ctx.bezierCurveTo(-30, -20, -36, 10, -22, 20); ctx.bezierCurveTo(-14, 26, -4, 10, -2, 0); ctx.stroke();
+    ctx.strokeStyle = 'rgba(150,150,210,0.5)'; ctx.lineWidth = 0.8;
+    for (let i = 0; i < 4; i++) {
+      const wt = 0.2 + i * 0.2;
+      const wx = -2 + (-30 - -2) * wt; const wy = (-20) * wt;
+      ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx - 4, wy + 8); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(220,220,255,0.85)';
+    ctx.beginPath(); ctx.moveTo(2, 0); ctx.bezierCurveTo(30, -20, 36, 10, 22, 20); ctx.bezierCurveTo(14, 26, 4, 10, 2, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(180,180,230,0.9)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(2, 0); ctx.bezierCurveTo(30, -20, 36, 10, 22, 20); ctx.bezierCurveTo(14, 26, 4, 10, 2, 0); ctx.stroke();
+    ctx.strokeStyle = 'rgba(150,150,210,0.5)'; ctx.lineWidth = 0.8;
+    for (let i = 0; i < 4; i++) {
+      const wt = 0.2 + i * 0.2;
+      const wx = 2 + (30 - 2) * wt; const wy = (-20) * wt;
+      ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 4, wy + 8); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   // ── LEGS ──────────────────────────────────────────────────
   const lSwing = walk * 14; // left leg angle degrees
   const rSwing = -walk * 14;
@@ -515,7 +543,6 @@ function drawCharacter(ctx, charId, x, y, scale, frame) {
   }
 
   // ── ACCESSORIES ───────────────────────────────────────────
-  const acc = shopState.equipped[charId] || [];
 
   if (acc.includes('sunglasses')) {
     ctx.fillStyle = 'rgba(0,0,0,0.75)';
@@ -887,34 +914,7 @@ function drawCharacter(ctx, charId, x, y, scale, frame) {
     }
   }
 
-  // ── TOPURI (ACC SPATE/FAȚĂ) ──────────────────────────────
-  if (acc.includes('top_wings')) {
-    // Aripi mari pe spate
-    ctx.save(); ctx.translate(0, -34 + bodyBob);
-    // aripa stanga
-    ctx.fillStyle = 'rgba(220,220,255,0.85)';
-    ctx.beginPath(); ctx.moveTo(-2, 0); ctx.bezierCurveTo(-30, -20, -36, 10, -22, 20); ctx.bezierCurveTo(-14, 26, -4, 10, -2, 0); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = 'rgba(180,180,230,0.9)'; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.moveTo(-2, 0); ctx.bezierCurveTo(-30, -20, -36, 10, -22, 20); ctx.bezierCurveTo(-14, 26, -4, 10, -2, 0); ctx.stroke();
-    // pene stanga
-    ctx.strokeStyle = 'rgba(150,150,210,0.5)'; ctx.lineWidth = 0.8;
-    for (let i = 0; i < 4; i++) {
-      const t = 0.2 + i * 0.2;
-      const wx = -2 + (-30 - -2) * t; const wy = (-20) * t;
-      ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx - 4, wy + 8); ctx.stroke();
-    }
-    // aripa dreapta
-    ctx.fillStyle = 'rgba(220,220,255,0.85)';
-    ctx.beginPath(); ctx.moveTo(2, 0); ctx.bezierCurveTo(30, -20, 36, 10, 22, 20); ctx.bezierCurveTo(14, 26, 4, 10, 2, 0); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = 'rgba(180,180,230,0.9)'; ctx.lineWidth = 1.2;
-    ctx.beginPath(); ctx.moveTo(2, 0); ctx.bezierCurveTo(30, -20, 36, 10, 22, 20); ctx.bezierCurveTo(14, 26, 4, 10, 2, 0); ctx.stroke();
-    for (let i = 0; i < 4; i++) {
-      const t = 0.2 + i * 0.2;
-      const wx = 2 + (30 - 2) * t; const wy = (-20) * t;
-      ctx.beginPath(); ctx.moveTo(wx, wy); ctx.lineTo(wx + 4, wy + 8); ctx.stroke();
-    }
-    ctx.restore();
-  }
+  // ── TOPURI (ACC FAȚĂ) ───────────────────────────────────
   if (acc.includes('top_bow')) {
     ctx.save(); ctx.translate(0, -46 + bodyBob);
     ctx.fillStyle = '#ff4488';
