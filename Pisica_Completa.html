@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Pisica Game Complet</title>
+
+<style>
+body{
+margin:0;
+overflow:hidden;
+background:black;
+font-family:Arial;
+color:white;
+text-align:center;
+}
+
+#game{
+width:100%;
+height:400px;
+position:relative;
+overflow:hidden;
+background:
+radial-gradient(white 1px, transparent 1px),
+black;
+background-size:20px 20px;
+}
+
+#ui{
+margin-top:10px;
+font-size:20px;
+}
+
+#player{
+position:absolute;
+bottom:20px;
+left:50px;
+}
+
+.cat{
+position:relative;
+width:70px;
+height:70px;
+}
+
+/* cap */
+.head{
+width:40px;
+height:40px;
+background:orange;
+border-radius:50%;
+position:absolute;
+top:0;
+left:15px;
+}
+
+/* urechi */
+.ear{
+width:15px;
+height:15px;
+background:orange;
+position:absolute;
+top:-5px;
+border-radius:3px;
+}
+
+.ear1{ left:15px; transform:rotate(20deg); }
+.ear2{ right:15px; transform:rotate(-20deg); }
+
+/* ochi */
+.eye{
+width:6px;
+height:6px;
+background:black;
+border-radius:50%;
+position:absolute;
+top:15px;
+}
+
+.eye1{ left:10px; }
+.eye2{ right:10px; }
+
+/* nas */
+.nose{
+width:6px;
+height:4px;
+background:pink;
+position:absolute;
+top:23px;
+left:17px;
+border-radius:3px;
+}
+
+/* mustati */
+.whisker{
+width:12px;
+height:2px;
+background:black;
+position:absolute;
+top:23px;
+}
+
+.w1{ left:-5px; }
+.w2{ left:-5px; top:27px; }
+.w3{ right:-5px; }
+.w4{ right:-5px; top:27px; }
+
+/* corp */
+.body{
+width:60px;
+height:30px;
+background:orange;
+border-radius:20px;
+position:absolute;
+top:35px;
+left:5px;
+}
+
+/* picioare */
+.leg{
+width:10px;
+height:15px;
+background:orange;
+border-radius:5px;
+position:absolute;
+top:60px;
+transition:0.2s;
+}
+
+.leg1{ left:10px; }
+.leg2{ left:25px; }
+.leg3{ left:40px; }
+.leg4{ left:55px; }
+
+/* obstacole */
+.obstacle{
+position:absolute;
+font-size:35px;
+}
+
+#finish{
+position:absolute;
+right:0;
+width:8px;
+height:100%;
+background:yellow;
+}
+
+#invText{
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+font-size:30px;
+color:cyan;
+display:none;
+}
+
+button{
+padding:8px 15px;
+font-size:16px;
+margin-top:10px;
+}
+
+.powerup{
+position:absolute;
+width:28px;
+height:28px;
+background:gold;
+border-radius:5px;
+bottom:20px;
+box-shadow:0 0 12px 4px gold;
+}
+</style>
+</head>
+<body>
+
+<h2>🐱 Pisica Aventurier</h2>
+
+<div id="ui">
+Nivel: <span id="level">1</span> |
+Vieți: <span id="lives">❤️❤️❤️</span>
+<br>
+<button id="restartBtn" onclick="restartGame()" style="display:none;">🔄 Restart</button>
+</div>
+
+<div id="game">
+
+<div id="invText">INVINCIBLE!</div>
+<div id="finish"></div>
+
+<div id="player">
+<div class="cat">
+
+<div class="head">
+<div class="ear ear1"></div>
+<div class="ear ear2"></div>
+<div class="eye eye1"></div>
+<div class="eye eye2"></div>
+<div class="nose"></div>
+<div class="whisker w1"></div>
+<div class="whisker w2"></div>
+<div class="whisker w3"></div>
+<div class="whisker w4"></div>
+</div>
+
+<div class="body"></div>
+
+<div class="leg leg1"></div>
+<div class="leg leg2"></div>
+<div class="leg leg3"></div>
+<div class="leg leg4"></div>
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+let player=document.getElementById("player");
+let legs=document.querySelectorAll(".leg");
+let levelText=document.getElementById("level");
+let livesText=document.getElementById("lives");
+let invText=document.getElementById("invText");
+let restartBtn=document.getElementById("restartBtn");
+
+let x=50;
+let y=0;
+let jumping=false;
+let lives=3;
+let level=1;
+let speed=5;
+let gameOver=false;
+let invincible=false;
+
+/* CONTROL */
+document.addEventListener("keydown",function(e){
+
+if(e.code==="Space" && !jumping && !gameOver){
+jump();
+}
+
+if(e.key==="1") x-=30;
+if(e.key==="2") x+=30;
+
+if(x<0)x=0;
+if(x>window.innerWidth-70)x=window.innerWidth-70;
+
+player.style.left=x+"px";
+
+checkWin();
+
+});
+
+/* JUMP */
+function jump(){
+jumping=true;
+legs.forEach(l=>l.style.transform="rotate(30deg)");
+
+let up=setInterval(function(){
+if(y>=120){
+clearInterval(up);
+
+let down=setInterval(function(){
+if(y<=0){
+clearInterval(down);
+jumping=false;
+legs.forEach(l=>l.style.transform="rotate(0deg)");
+}else{
+y-=6;
+player.style.bottom=20+y+"px";
+}
+},20);
+
+}else{
+y+=6;
+player.style.bottom=20+y+"px";
+}
+},20);
+}
+
+/* WIN */
+function checkWin(){
+if(x>window.innerWidth-80 && !gameOver){
+
+if(level===1){
+
+level=2;
+lives=3;
+speed=9;
+levelText.innerText="2";
+updateLives();
+clearObstacles();
+x=50;
+player.style.left=x+"px";
+startInvincible();
+alert("🚀 LEVEL 2!");
+
+}else{
+
+alert("🏆 AI CÂȘTIGAT!");
+gameOver=true;
+restartBtn.style.display="inline-block";
+}
+}
+}
+
+/* INVINCIBLE */
+function startInvincible(){
+invincible=true;
+player.style.opacity="0.5";
+invText.style.display="block";
+
+setTimeout(function(){
+invincible=false;
+player.style.opacity="1";
+invText.style.display="none";
+},5000);
+}
+
+/* OBSTACOLE */
+function groundObstacle(){
+if(gameOver)return;
+
+let o=document.createElement("div");
+o.className="obstacle";
+o.innerHTML="🟥";
+o.style.bottom="20px";
+o.style.left=window.innerWidth+"px";
+document.getElementById("game").appendChild(o);
+
+let pos=window.innerWidth;
+
+let move=setInterval(function(){
+
+if(gameOver){
+clearInterval(move);
+o.remove();
+}
+
+pos-=speed;
+o.style.left=pos+"px";
+
+if(pos<x+70 && pos+40>x && y<40){
+o.remove();
+clearInterval(move);
+loseLife();
+}
+
+if(pos<-50){
+clearInterval(move);
+o.remove();
+}
+
+},20);
+}
+
+function skyObstacle(){
+if(gameOver)return;
+
+let o=document.createElement("div");
+o.className="obstacle";
+o.innerHTML="🔥";
+o.style.top="0px";
+o.style.left=Math.random()*window.innerWidth+"px";
+document.getElementById("game").appendChild(o);
+
+let pos=0;
+
+let fall=setInterval(function(){
+
+if(gameOver){
+clearInterval(fall);
+o.remove();
+}
+
+pos+=speed;
+o.style.top=pos+"px";
+
+if(pos>300 && o.offsetLeft<x+70 && o.offsetLeft+40>x){
+o.remove();
+clearInterval(fall);
+loseLife();
+}
+
+if(pos>400){
+clearInterval(fall);
+o.remove();
+}
+
+},20);
+}
+
+function loseLife(){
+if(invincible)return;
+
+lives--;
+updateLives();
+
+if(lives<=0){
+alert("💀 GAME OVER");
+gameOver=true;
+restartBtn.style.display="inline-block";
+}
+}
+
+function updateLives(){
+let hearts="";
+for(let i=0;i<lives;i++)hearts+="❤️";
+livesText.innerText=hearts;
+}
+
+function clearObstacles(){
+let obs=document.querySelectorAll(".obstacle");
+obs.forEach(o=>o.remove());
+}
+
+function restartGame(){
+lives=3;
+level=1;
+speed=5;
+x=50;
+y=0;
+gameOver=false;
+invincible=false;
+powerupOnScreen=false;
+
+levelText.innerText="1";
+player.style.left=x+"px";
+player.style.bottom="20px";
+player.style.opacity="1";
+
+updateLives();
+clearObstacles();
+
+invText.style.display="none";
+restartBtn.style.display="none";
+}
+
+/* POWERUP */
+let powerupOnScreen=false;
+
+function spawnPowerup(){
+if(gameOver||powerupOnScreen)return;
+
+powerupOnScreen=true;
+
+let o=document.createElement("div");
+o.className="powerup";
+o.style.left=window.innerWidth+"px";
+document.getElementById("game").appendChild(o);
+
+let pos=window.innerWidth;
+
+let move=setInterval(function(){
+
+if(gameOver){
+clearInterval(move);
+o.remove();
+powerupOnScreen=false;
+return;
+}
+
+pos-=speed;
+o.style.left=pos+"px";
+
+if(pos<x+70 && pos+28>x && y<40){
+clearInterval(move);
+o.remove();
+powerupOnScreen=false;
+lives++;
+updateLives();
+}
+
+if(pos<-50){
+clearInterval(move);
+o.remove();
+powerupOnScreen=false;
+}
+
+},20);
+}
+
+/* SPAWN */
+setInterval(function(){
+if(!gameOver)groundObstacle();
+},2000);
+
+setInterval(function(){
+if(!gameOver)skyObstacle();
+},2500);
+
+setInterval(function(){
+if(!gameOver)spawnPowerup();
+},18000);
+
+updateLives();
+levelText.innerText=level;
+
+</script>
+</body>
+</html>
+

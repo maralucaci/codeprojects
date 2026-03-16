@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parcuring</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== COPERTA ===== -->
+  <div id="screen-cover" class="screen active">
+    <canvas id="cover-canvas"></canvas>
+    <div class="cover-content">
+      <h1 class="game-title">PARCURING</h1>
+      <p class="game-sub">Sari pe zgârie-nori, lovește semne, cucerește orașul!</p>
+      <button id="cover-start" class="btn-main pulse">PLAY</button>
+    </div>
+  </div>
+
+  <!-- ===== SELECTIE PERSONAJ ===== -->
+  <div id="screen-chars" class="screen">
+    <h2 class="select-title">Alege-ți personajul</h2>
+    <div class="char-grid">
+      <div class="char-card" data-char="girl1">
+        <canvas class="char-canvas" width="100" height="130"></canvas>
+        <span class="char-name">Mia</span>
+      </div>
+      <div class="char-card" data-char="girl2">
+        <canvas class="char-canvas" width="100" height="130"></canvas>
+        <span class="char-name">Lara</span>
+      </div>
+      <div class="char-card" data-char="boy1">
+        <canvas class="char-canvas" width="100" height="130"></canvas>
+        <span class="char-name">Alex</span>
+      </div>
+      <div class="char-card" data-char="boy2">
+        <canvas class="char-canvas" width="100" height="130"></canvas>
+        <span class="char-name">Cris</span>
+      </div>
+    </div>
+    <p class="select-hint">Click pe personaj pentru a-l selecta</p>
+    <button class="btn-sec" id="btn-open-shop-chars" style="margin-top:12px">🛍️ Shop</button>
+  </div>
+
+  <!-- ===== JOC ===== -->
+  <div id="screen-game" class="screen">
+    <div class="hud">
+      <div class="hud-left">
+        <span id="hud-lives">❤️❤️❤️❤️</span>
+      </div>
+      <div class="hud-center">
+        <span id="hud-level">Nivel 1 / 10</span>
+      </div>
+      <div class="hud-right">
+        <span>🪙 <strong id="hud-coins">0</strong></span>
+        <span style="margin-left:14px">Scor: <strong id="hud-score">0</strong></span>
+        <button class="btn-shop-hud" id="btn-open-shop-game">🛍️</button>
+      </div>
+    </div>
+    <canvas id="game-canvas"></canvas>
+    <div class="controls-hint">
+      <span><kbd>1</kbd> Stânga</span>
+      <span><kbd>2</kbd> Dreapta</span>
+      <span><kbd>Shift</kbd> Alergat</span>
+      <span><kbd>Space</kbd> Săritură (x2)</span>
+      <span><kbd>Enter</kbd> Lovește semnul</span>
+    </div>
+  </div>
+
+  <!-- ===== SHOP ===== -->
+  <div id="screen-shop" class="screen overlay-screen">
+    <div class="shop-box">
+      <h2 class="shop-title">🛍️ Shop</h2>
+      <div class="shop-coins-bar">🪙 <span id="shop-coins-display">0</span> monede</div>
+
+      <div class="shop-char-selector">
+        <span class="shop-label">Echipează pe:</span>
+        <div class="shop-char-btns">
+          <button class="shop-char-btn active" data-char="girl1">Mia</button>
+          <button class="shop-char-btn" data-char="girl2">Lara</button>
+          <button class="shop-char-btn" data-char="boy1">Alex</button>
+          <button class="shop-char-btn" data-char="boy2">Cris</button>
+        </div>
+      </div>
+
+      <div class="shop-preview-wrap">
+        <canvas id="shop-char-preview" width="100" height="140"></canvas>
+      </div>
+
+      <div class="shop-items" id="shop-items-list"></div>
+
+      <button class="btn-sec" id="btn-close-shop">✕ Închide</button>
+    </div>
+  </div>
+
+  <!-- ===== GAME OVER ===== -->
+  <div id="screen-over" class="screen overlay-screen">
+    <div class="overlay-box">
+      <h2 class="over-title">Game Over</h2>
+      <p id="over-score"></p>
+      <button class="btn-main" id="btn-retry">Încearcă din nou</button>
+      <button class="btn-sec" id="btn-over-menu">Meniu principal</button>
+    </div>
+  </div>
+
+  <!-- ===== VICTORIE ===== -->
+  <div id="screen-win" class="screen overlay-screen">
+    <div class="overlay-box win-box">
+      <h2 class="win-title">🏆 Felicitări!</h2>
+      <p>Ai cucerit toate cele 10 nivele!</p>
+      <p id="win-score"></p>
+      <button class="btn-main" id="btn-win-menu">Meniu principal</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

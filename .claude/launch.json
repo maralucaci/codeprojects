@@ -5,7 +5,8 @@
       "name": "Pisica Game",
       "runtimeExecutable": "C:\\Program Files\\nodejs\\node.exe",
       "runtimeArgs": ["server.js"],
-      "port": 3000
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }
