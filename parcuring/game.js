@@ -1170,13 +1170,34 @@ const WORLDS = [
 ];
 let selectedWorld = WORLDS[0];
 
-let shopState = {
-  coins: 0,
-  owned: {},
-  equipped: { girl1: [], girl2: [], boy1: [], boy2: [] },
-  shopChar: 'girl1',
-  shopCat: 'ochelari',
-};
+function loadShopState() {
+  try {
+    const saved = localStorage.getItem('parcuring_shop');
+    if (saved) {
+      const s = JSON.parse(saved);
+      return {
+        coins:    s.coins    ?? 0,
+        owned:    s.owned    ?? {},
+        equipped: Object.assign({ girl1: [], girl2: [], boy1: [], boy2: [] }, s.equipped ?? {}),
+        shopChar: s.shopChar ?? 'girl1',
+        shopCat:  s.shopCat  ?? 'ochelari',
+      };
+    }
+  } catch(e) {}
+  return { coins: 0, owned: {}, equipped: { girl1: [], girl2: [], boy1: [], boy2: [] }, shopChar: 'girl1', shopCat: 'ochelari' };
+}
+
+function saveShopState() {
+  try {
+    localStorage.setItem('parcuring_shop', JSON.stringify({
+      coins:    shopState.coins,
+      owned:    shopState.owned,
+      equipped: shopState.equipped,
+    }));
+  } catch(e) {}
+}
+
+let shopState = loadShopState();
 
 // ─── GAME STATE ─────────────────────────────────────────────
 const TILE = 32;
@@ -2600,61 +2621,39 @@ function drawSign(ctx, x, y, hit) {
 
 function drawExit(ctx, x, y) {
   if (x < -150 || x > 9999) return;
-
   const W = 80, roofH = 20;
 
-  // Building body below the rooftop
-  ctx.fillStyle = '#1a3a5c';
-  ctx.fillRect(x, y + roofH, W, 300);
-
-  // Window grid on building
-  ctx.fillStyle = 'rgba(255,240,100,0.3)';
-  for (let row = 0; row < 8; row++) {
-    for (let col = 0; col < 3; col++) {
-      ctx.fillRect(x + 8 + col * 24, y + roofH + 10 + row * 22, 14, 14);
-    }
-  }
-
-  // Rooftop platform (glowing)
+  // Green finish platform
   ctx.fillStyle = '#27ae60';
   ctx.fillRect(x, y, W, roofH);
   ctx.fillStyle = '#2ecc71';
-  ctx.fillRect(x, y, W, 4); // top highlight
-  // Pulsing glow effect
-  ctx.fillStyle = 'rgba(46,204,113,0.15)';
-  ctx.fillRect(x - 4, y - 4, W + 8, roofH + 8);
+  ctx.fillRect(x, y, W, 4);
+  ctx.fillStyle = 'rgba(46,204,113,0.18)';
+  ctx.fillRect(x - 5, y - 5, W + 10, roofH + 10);
 
-  // Door on rooftop (arch style)
-  ctx.fillStyle = '#f7c948';
-  ctx.beginPath();
-  ctx.roundRect(x + 26, y - 30, 28, 32, [8, 8, 0, 0]);
-  ctx.fill();
-  // Door glow
-  ctx.fillStyle = 'rgba(247,201,72,0.3)';
-  ctx.beginPath();
-  ctx.roundRect(x + 22, y - 34, 36, 38, [10, 10, 0, 0]);
-  ctx.fill();
-  // Door frame
-  ctx.strokeStyle = '#e67e22';
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.roundRect(x + 26, y - 30, 28, 32, [8, 8, 0, 0]);
-  ctx.stroke();
-  // Door knob
-  ctx.fillStyle = '#e67e22';
-  ctx.beginPath(); ctx.arc(x + 47, y - 14, 3, 0, Math.PI * 2); ctx.fill();
-  // Door shine
-  ctx.fillStyle = 'rgba(255,255,255,0.4)';
-  ctx.fillRect(x + 29, y - 28, 6, 14);
+  // Checkered finish line on platform
+  const sq = 10;
+  for (let i = 0; i < 8; i++) {
+    if (i % 2 === 0) { ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(x + i * sq, y, sq, roofH / 2); }
+  }
 
-  // "FINAL" label with arrow
+  // Flag pole
+  ctx.fillStyle = '#bbb';
+  ctx.fillRect(x + W / 2 - 2, y - 70, 4, 70);
+
+  // Waving flag
+  ctx.fillStyle = '#e74c3c';
+  ctx.beginPath();
+  ctx.moveTo(x + W / 2 + 2, y - 70);
+  ctx.quadraticCurveTo(x + W / 2 + 22, y - 62, x + W / 2 + 2, y - 54);
+  ctx.closePath();
+  ctx.fill();
+
+  // "FINISH" text above flag
   ctx.fillStyle = '#f7c948';
   ctx.font = 'bold 13px Nunito';
   ctx.textAlign = 'center';
-  ctx.fillText('FINAL', x + W / 2, y - 36);
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 16px sans-serif';
-  ctx.fillText('⬆', x + W / 2, y - 50);
+  ctx.fillText('FINISH', x + W / 2, y - 78);
   ctx.textAlign = 'left';
 }
 
@@ -2760,6 +2759,7 @@ function renderShop() {
           if (!shopState.equipped[shopState.shopChar].includes(id)) {
             shopState.equipped[shopState.shopChar].push(id);
           }
+          saveShopState();
           renderShop();
           if (document.getElementById('hud-coins'))
             document.getElementById('hud-coins').textContent = shopState.coins;
@@ -2768,10 +2768,12 @@ function renderShop() {
         if (!shopState.equipped[shopState.shopChar].includes(id)) {
           shopState.equipped[shopState.shopChar].push(id);
         }
+        saveShopState();
         renderShop();
       } else if (btn.classList.contains('unequip')) {
         shopState.equipped[shopState.shopChar] =
           shopState.equipped[shopState.shopChar].filter(x => x !== id);
+        saveShopState();
         renderShop();
       }
     });
