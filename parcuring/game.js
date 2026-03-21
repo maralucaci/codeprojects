@@ -1900,29 +1900,84 @@ function drawWorldBg(ctx, W, H, offset) {
 function _bgCity(ctx, W, H, offset) { drawBgBuildings(ctx, W, H, offset); }
 
 function _bgJapan(ctx, W, H, offset) {
+  // Mount Fuji (far parallax)
+  const fujiX = ((W * 0.5 - (offset * 0.06) % 2000 + 2000) % 2000) - 50;
+  ctx.fillStyle = 'rgba(200,210,230,0.55)';
+  ctx.beginPath(); ctx.moveTo(fujiX - 200, H - 60); ctx.lineTo(fujiX, H - 320); ctx.lineTo(fujiX + 200, H - 60); ctx.fill();
+  ctx.fillStyle = 'rgba(240,245,255,0.75)';
+  ctx.beginPath(); ctx.moveTo(fujiX - 55, H - 230); ctx.lineTo(fujiX, H - 320); ctx.lineTo(fujiX + 55, H - 230); ctx.lineTo(fujiX + 30, H - 215); ctx.lineTo(fujiX - 30, H - 215); ctx.fill();
+
+  // Torii gate (mid parallax)
+  const torii = [350, 950];
+  for (const tx of torii) {
+    const bx = ((tx - (offset * 0.18) % 1400 + 1400) % 1400) - 30;
+    ctx.fillStyle = 'rgba(200,40,40,0.62)';
+    // pillars
+    ctx.fillRect(bx - 35, H - 220, 12, 160);
+    ctx.fillRect(bx + 23, H - 220, 12, 160);
+    // top beam
+    ctx.fillRect(bx - 55, H - 222, 110, 14);
+    // curved top piece
+    ctx.beginPath(); ctx.moveTo(bx - 50, H - 222); ctx.quadraticCurveTo(bx, H - 252, bx + 50, H - 222); ctx.lineWidth = 12; ctx.strokeStyle = 'rgba(200,40,40,0.62)'; ctx.stroke();
+    // second beam
+    ctx.fillStyle = 'rgba(200,40,40,0.55)';
+    ctx.fillRect(bx - 44, H - 198, 88, 10);
+  }
+
+  // Cherry blossom trees
   const totalW = 1200;
-  const trees = [80, 260, 440, 620, 800, 990, 1160];
+  const trees = [60, 220, 400, 570, 740, 920, 1090];
   for (const tx of trees) {
-    const bx = ((tx - offset % totalW + totalW) % totalW) - 20;
-    ctx.fillStyle = '#8b5e3c';
-    ctx.fillRect(bx - 5, H - 180, 10, 120);
-    for (const [ox, oy, r] of [[-18,-20,36],[0,-46,40],[18,-18,34]]) {
-      ctx.fillStyle = 'rgba(255,182,193,0.6)';
-      ctx.beginPath(); ctx.arc(bx+ox, H-180+oy, r, 0, Math.PI*2); ctx.fill();
+    const bx = ((tx - (offset * 0.35) % totalW + totalW) % totalW) - 20;
+    // trunk
+    ctx.fillStyle = '#6b4226';
+    ctx.fillRect(bx - 6, H - 195, 12, 130);
+    // branches
+    ctx.strokeStyle = '#6b4226'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(bx, H - 170); ctx.lineTo(bx - 30, H - 210); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(bx, H - 155); ctx.lineTo(bx + 28, H - 200); ctx.stroke();
+    // blossoms
+    for (const [ox, oy, r] of [[-28,-14,38],[0,-42,44],[28,-16,36],[-14,-52,30],[14,-52,28]]) {
+      ctx.fillStyle = 'rgba(255,175,195,0.62)';
+      ctx.beginPath(); ctx.arc(bx + ox, H - 195 + oy, r, 0, Math.PI*2); ctx.fill();
     }
-    for (let p = 0; p < 8; p++) {
-      const px = bx + ((p*37 + offset*0.5) % 80) - 40;
-      const py = H - 180 + ((p*53 + offset*0.4) % 110);
-      ctx.fillStyle = 'rgba(255,182,193,0.55)';
-      ctx.beginPath(); ctx.ellipse(px, py, 3, 2, p*0.5, 0, Math.PI*2); ctx.fill();
+    // inner bright blossoms
+    for (const [ox, oy, r] of [[0,-42,22],[-28,-14,18],[28,-16,16]]) {
+      ctx.fillStyle = 'rgba(255,210,225,0.5)';
+      ctx.beginPath(); ctx.arc(bx + ox, H - 195 + oy, r, 0, Math.PI*2); ctx.fill();
+    }
+    // falling petals
+    for (let p = 0; p < 10; p++) {
+      const px = bx + ((p*41 + offset * 0.6) % 120) - 60;
+      const py = H - 195 + ((p*57 + offset * 0.45) % 160);
+      ctx.fillStyle = 'rgba(255,182,200,0.6)';
+      ctx.beginPath(); ctx.ellipse(px, py, 3.5, 2, p * 0.7, 0, Math.PI*2); ctx.fill();
     }
   }
-  const pagX = ((500 - (offset * 0.2) % 1200 + 1200) % 1200) - 50;
-  for (let t = 0; t < 3; t++) {
-    const tw = 80 - t*18, ty = H - 280 + t*50;
-    ctx.fillStyle = 'rgba(160,70,70,0.35)';
-    ctx.beginPath(); ctx.moveTo(pagX-tw, ty); ctx.lineTo(pagX+tw, ty); ctx.lineTo(pagX+tw-10, ty+18); ctx.lineTo(pagX-tw+10, ty+18); ctx.closePath(); ctx.fill();
-    ctx.fillRect(pagX-9, ty+18, 18, 32);
+
+  // Pagoda (background element)
+  const pagX = ((700 - (offset * 0.12) % 1800 + 1800) % 1800) - 40;
+  ctx.fillStyle = 'rgba(130,50,50,0.42)';
+  for (let t = 0; t < 4; t++) {
+    const tw = 62 - t * 13, ty = H - 310 + t * 52;
+    ctx.beginPath(); ctx.moveTo(pagX - tw - 14, ty + 12); ctx.lineTo(pagX - tw + 2, ty); ctx.lineTo(pagX + tw - 2, ty); ctx.lineTo(pagX + tw + 14, ty + 12); ctx.fill();
+    ctx.fillRect(pagX - tw + 2, ty, (tw - 2) * 2, 10);
+    if (t < 3) ctx.fillRect(pagX - tw * 0.55, ty + 10, tw * 1.1, 42);
+  }
+  // pagoda finial
+  ctx.fillRect(pagX - 3, H - 310 - 30, 6, 30);
+
+  // Water / river at base
+  ctx.fillStyle = 'rgba(180,220,255,0.28)';
+  ctx.fillRect(0, H - 55, W, 55);
+  ctx.strokeStyle = 'rgba(120,190,255,0.4)'; ctx.lineWidth = 2;
+  for (let w = 0; w < 5; w++) {
+    const wy = H - 48 + w * 10;
+    ctx.beginPath();
+    for (let wx = ((-offset * 0.15) % 100) - 100; wx < W + 100; wx += 100) {
+      ctx.moveTo(wx, wy + 5); ctx.quadraticCurveTo(wx + 25, wy - 5, wx + 50, wy + 2); ctx.quadraticCurveTo(wx + 75, wy + 9, wx + 100, wy + 5);
+    }
+    ctx.stroke();
   }
 }
 
