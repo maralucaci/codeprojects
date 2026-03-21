@@ -1649,6 +1649,23 @@ function bindKeys() {
     }
   });
   window.addEventListener('keyup', e => { gs.keys[e.key] = false; });
+
+  // Touch controls
+  function setupTouchBtn(id, pressKey, onPress) {
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    const down = e => { e.preventDefault(); btn.classList.add('pressed'); if (pressKey) gs.keys[pressKey] = true; if (onPress) onPress(); };
+    const up   = e => { e.preventDefault(); btn.classList.remove('pressed'); if (pressKey) gs.keys[pressKey] = false; };
+    btn.addEventListener('touchstart', down, { passive: false });
+    btn.addEventListener('touchend',   up,   { passive: false });
+    btn.addEventListener('touchcancel',up,   { passive: false });
+    btn.addEventListener('mousedown',  down);
+    btn.addEventListener('mouseup',    up);
+  }
+  setupTouchBtn('touch-left',  '1');
+  setupTouchBtn('touch-right', '2');
+  setupTouchBtn('touch-jump',  null, () => { gs.keys['_jumpPressed'] = true; });
+  setupTouchBtn('touch-hit',   null, () => { tryHitSign(); });
 }
 
 function tryHitSign() {

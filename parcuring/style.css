@@ -416,3 +416,58 @@ body {
   color: #fff;
   letter-spacing: 0.4px;
 }
+
+/* ===== TOUCH CONTROLS ===== */
+#touch-controls {
+  position: fixed;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 18px;
+  pointer-events: none;
+  z-index: 200;
+}
+.touch-left-group, .touch-right-group {
+  display: flex;
+  gap: 12px;
+  pointer-events: all;
+}
+.touch-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.5);
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-size: 1.8rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: background 0.1s;
+}
+.touch-btn:active, .touch-btn.pressed {
+  background: rgba(255,255,255,0.3);
+}
+.touch-jump {
+  background: rgba(30,120,255,0.55);
+  border-color: #4af;
+  width: 80px;
+  height: 80px;
+  font-size: 2rem;
+}
+.touch-hit {
+  background: rgba(247,180,30,0.55);
+  border-color: #f7c948;
+}
+/* Ascunde hint-ul de tastatură pe mobil */
+@media (pointer: coarse) {
+  .controls-hint { display: none; }
+}
