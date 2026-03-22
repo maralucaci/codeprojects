@@ -2657,6 +2657,8 @@ function loadLevel() {
     jumpsLeft: (shopState.equipped[gs.charId] || []).includes('top_wings') ? 3 : 2,
   };
   gs.cameraX = 0;
+  gs.checkpointX = lvl.spawn.x;
+  gs.checkpointY = lvl.spawn.y;
 
   document.getElementById('hud-level').textContent = `Nivel ${gs.levelIdx + 1} / 10`;
   updateHUD();
@@ -2788,7 +2790,7 @@ function update() {
   // Collide Y with platforms
   for (const pl of allPlatforms) {
     if (rectsOverlap(p.x, p.y, p.w, p.h, pl.x, pl.y, pl.w, pl.h)) {
-      if (p.vy > 0) { p.y = pl.y - p.h; p.onGround = true; p.jumpsLeft = (shopState.equipped[gs.charId] || []).includes('top_wings') ? 3 : 2; }
+      if (p.vy > 0) { p.y = pl.y - p.h; p.onGround = true; p.jumpsLeft = (shopState.equipped[gs.charId] || []).includes('top_wings') ? 3 : 2; if (p.x > gs.checkpointX) { gs.checkpointX = p.x; gs.checkpointY = p.y; } }
       if (p.vy < 0) { p.y = pl.y + pl.h; }
       p.vy = 0;
     }
@@ -2815,9 +2817,9 @@ function update() {
       gameOver();
       return;
     }
-    // Respawn
-    p.x = lvl.spawn.x;
-    p.y = lvl.spawn.y;
+    // Respawn la checkpoint
+    p.x = gs.checkpointX;
+    p.y = gs.checkpointY - 60;
     p.vx = 0; p.vy = 0;
   }
 
@@ -2925,10 +2927,13 @@ function render(ctx, canvas) {
       }
       ctx.closePath(); ctx.fill();
       ctx.restore();
-      // Valoare
-      ctx.fillStyle = '#7a3d00'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText('10', cx + r, cy + r + 10);
-      ctx.textAlign = 'left'; ctx.shadowBlur = 0; ctx.font = '16px sans-serif';
+      // Valoare deasupra monedei speciale
+      ctx.save();
+      ctx.fillStyle = '#fff'; ctx.strokeStyle = '#b8600a'; ctx.lineWidth = 2;
+      ctx.font = 'bold 10px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.strokeText('10', cx + r, cy - r - 6);
+      ctx.fillText('10', cx + r, cy - r - 6);
+      ctx.restore();
     } else {
       // Moneda normala (5) — galbena simpla
       ctx.fillStyle = 'rgba(255,215,0,0.25)';
@@ -2941,10 +2946,12 @@ function render(ctx, canvas) {
       ctx.beginPath(); ctx.ellipse(cx + r - 2, cy - 3, 3, 2, -0.4, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = '#cc8800'; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(cx + r, cy, r, 0, Math.PI * 2); ctx.stroke();
-      // Valoare
-      ctx.fillStyle = '#7a5000'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
-      ctx.fillText('5', cx + r, cy + r + 9);
-      ctx.textAlign = 'left'; ctx.font = '16px sans-serif';
+      // Valoare in centrul monedei
+      ctx.save();
+      ctx.fillStyle = '#7a3d00'; ctx.font = 'bold 9px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('5', cx + r, cy + 1);
+      ctx.restore();
     }
   }
 
