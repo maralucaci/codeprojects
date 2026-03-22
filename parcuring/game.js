@@ -1193,6 +1193,7 @@ function saveShopState() {
       coins:    shopState.coins,
       owned:    shopState.owned,
       equipped: shopState.equipped,
+      shopChar: shopState.shopChar,
     }));
   } catch(e) {}
 }
@@ -3885,6 +3886,10 @@ function renderShop() {
 document.querySelectorAll('.shop-char-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     shopState.shopChar = btn.dataset.char;
+    if (!Array.isArray(shopState.equipped[shopState.shopChar])) {
+      shopState.equipped[shopState.shopChar] = [];
+    }
+    saveShopState();
     renderShop();
   });
 });
