@@ -1830,7 +1830,7 @@ function loadLevel() {
     vy: 0,
     onGround: false,
     facing: 1,
-    jumpsLeft: (shopState.equipped[charId] || []).includes('top_wings') ? 3 : 2,
+    jumpsLeft: (shopState.equipped[gs.charId] || []).includes('top_wings') ? 3 : 2,
   };
   gs.cameraX = 0;
 
@@ -2104,6 +2104,7 @@ function render(ctx, canvas) {
       // Valoare
       ctx.fillStyle = '#7a3d00'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('10', cx + r, cy + r + 10);
+      ctx.textAlign = 'left'; ctx.shadowBlur = 0; ctx.font = '16px sans-serif';
     } else {
       // Moneda normala (5) — galbena simpla
       ctx.fillStyle = 'rgba(255,215,0,0.25)';
@@ -2119,6 +2120,7 @@ function render(ctx, canvas) {
       // Valoare
       ctx.fillStyle = '#7a5000'; ctx.font = 'bold 7px sans-serif'; ctx.textAlign = 'center';
       ctx.fillText('5', cx + r, cy + r + 9);
+      ctx.textAlign = 'left'; ctx.font = '16px sans-serif';
     }
   }
 
