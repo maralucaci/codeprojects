@@ -110,8 +110,8 @@ function drawCharacter(canvas, s) {
   rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH, 8);
   ctx.fill();
 
-  // ── Clothing: Bottom ──
-  drawBottom(ctx, s.bottom, botCol, cx, bodyY + 58, isGirl);
+  // ── Clothing: Bottom ── (botY = linia soldului)
+  drawBottom(ctx, s.bottom, botCol, cx, bodyY + bodyH - 22, isGirl);
 
   // ── Clothing: Top ──
   drawTop(ctx, s.top, topCol, cx, bodyY, bodyW, bodyH, isGirl);
@@ -274,23 +274,12 @@ function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
   ctx.fill();
   // Bangs / front fringe
   if (style === 'long_straight' || style === 'bob' || style === 'twin_tails') {
-    // side bangs (se opresc la fruntea, nu acoperă ochii)
+    // franje frontale (doar fruntea, nu pe fata)
     ctx.beginPath();
-    ctx.moveTo(cx - hr + 5, hy - hr/3);
-    ctx.quadraticCurveTo(cx - hr - 4, hy + 2, cx - hr + 18, hy + 8);
-    ctx.quadraticCurveTo(cx - hr + 10, hy - 2, cx - hr + 18, hy - hr/3 + 5);
-    ctx.fill();
-    ctx.beginPath();
-    ctx.moveTo(cx + hr - 5, hy - hr/3);
-    ctx.quadraticCurveTo(cx + hr + 4, hy + 2, cx + hr - 18, hy + 8);
-    ctx.quadraticCurveTo(cx + hr - 10, hy - 2, cx + hr - 18, hy - hr/3 + 5);
-    ctx.fill();
-    // front bangs (fruntea, maxim pana la hy - 8)
-    ctx.beginPath();
-    ctx.moveTo(cx - hr + 8, hy - 10);
-    ctx.quadraticCurveTo(cx - 20, hy - 2, cx - 5, hy - 5);
-    ctx.quadraticCurveTo(cx + 5, hy - 3, cx + 15, hy - 5);
-    ctx.quadraticCurveTo(cx + 25, hy - 2, cx + hr - 8, hy - 10);
+    ctx.moveTo(cx - hr + 8, hy - 12);
+    ctx.quadraticCurveTo(cx - 15, hy - 4, cx - 5, hy - 6);
+    ctx.quadraticCurveTo(cx + 5, hy - 4, cx + 15, hy - 6);
+    ctx.quadraticCurveTo(cx + 25, hy - 4, cx + hr - 8, hy - 12);
     ctx.fill();
   } else if (style === 'short' || style === 'spiky') {
     // spiky points
@@ -625,20 +614,20 @@ function drawBottom(ctx, style, col, cx, botY, isGirl) {
     ctx.closePath();
     ctx.fill();
   } else if (style === 'panties') {
-    // chiloți fată
+    // chiloți fată - pornesc de la sold, acoperă zona soldului + coapse sus
     ctx.beginPath();
-    ctx.moveTo(cx - 36, botY - 5);
-    ctx.quadraticCurveTo(cx - 38, botY + 30, cx - 10, botY + 32);
-    ctx.quadraticCurveTo(cx, botY + 28, cx + 10, botY + 32);
-    ctx.quadraticCurveTo(cx + 38, botY + 30, cx + 36, botY - 5);
+    ctx.moveTo(cx - 38, botY);
+    ctx.quadraticCurveTo(cx - 40, botY + 40, cx - 12, botY + 44);
+    ctx.quadraticCurveTo(cx, botY + 38, cx + 12, botY + 44);
+    ctx.quadraticCurveTo(cx + 40, botY + 40, cx + 38, botY);
     ctx.closePath();
     ctx.fill();
-    // elastic
-    ctx.fillStyle = shadeColor(col, -20);
+    // elastic sus
+    ctx.fillStyle = shadeColor(col, -25);
     ctx.beginPath();
-    ctx.moveTo(cx - 36, botY - 5);
-    ctx.quadraticCurveTo(cx, botY - 14, cx + 36, botY - 5);
-    ctx.quadraticCurveTo(cx, botY + 2, cx - 36, botY - 5);
+    ctx.moveTo(cx - 38, botY);
+    ctx.quadraticCurveTo(cx, botY - 10, cx + 38, botY);
+    ctx.quadraticCurveTo(cx, botY + 8, cx - 38, botY);
     ctx.fill();
   } else if (style === 'boxers') {
     // boxeri băiat
