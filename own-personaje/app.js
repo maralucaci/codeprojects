@@ -95,16 +95,23 @@ function drawCharacter(canvas, s) {
   const cx = W/2;
   const isGirl = s.gender !== 'boy';
 
-  // ── Wings (behind body) ──
+  // ── Coordonate fixe ──
+  const bodyW = isGirl ? 80 : 90;
+  const bodyH = isGirl ? 110 : 120;
+  const bodyY = 250;
+  const headR = 60;
+  const headY = bodyY - headR - 10;
+
+  // ── Wings (behind everything) ──
   if (s.accWings) drawWings(ctx, cx, 240, isGirl);
 
   // ── Tail ──
   if (s.accTail) drawTail(ctx, cx, 320, hairCol);
 
+  // ── Hair back — PRIMUL lucru desenat, sub tot ──
+  drawHairBack(ctx, s.hairStyle, hairCol, cx, headY, headR, isGirl);
+
   // ── Body ──
-  const bodyW = isGirl ? 80 : 90;
-  const bodyH = isGirl ? 110 : 120;
-  const bodyY = 250;
   ctx.fillStyle = skin.face;
   ctx.beginPath();
   rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH, 8);
@@ -120,14 +127,12 @@ function drawCharacter(canvas, s) {
   ctx.fillStyle = skin.face;
   ctx.fillRect(cx - 12, bodyY - 16, 24, 22);
 
-  // ── Head coords ──
-  const headR = 60;
-  const headY = bodyY - headR - 10;
-
-  // ── Hair (back layer) — INAINTE de fata ──
-  drawHairBack(ctx, s.hairStyle, hairCol, cx, headY, headR, isGirl);
-
   // ── Head ──
+  // par cap (cerc mare, INAINTE de fata → se vede in jurul ei)
+  ctx.fillStyle = hairCol;
+  ctx.beginPath();
+  ctx.arc(cx, headY - 4, headR + 7, 0, Math.PI * 2);
+  ctx.fill();
   // shadow
   ctx.fillStyle = skin.shadow;
   ctx.beginPath();
@@ -270,10 +275,6 @@ function drawHairBack(ctx, style, col, cx, hy, hr, isGirl) {
 
 function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
   ctx.fillStyle = col;
-  // Semicercul de SUS al capului (nu cel de jos care acopera barbia)
-  ctx.beginPath();
-  ctx.arc(cx, hy, hr + 4, Math.PI, 0, true);
-  ctx.fill();
   // Bangs / front fringe
   if (style === 'long_straight' || style === 'bob' || style === 'twin_tails') {
     // franje frontale (doar fruntea, nu pe fata)
