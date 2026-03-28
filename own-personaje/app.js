@@ -107,7 +107,7 @@ function drawCharacter(canvas, s) {
   const bodyY = 250;
   ctx.fillStyle = skin.face;
   ctx.beginPath();
-  ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH, 8);
+  rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH, 8);
   ctx.fill();
 
   // ── Clothing: Bottom ──
@@ -192,11 +192,11 @@ function drawCharacter(canvas, s) {
   ctx.fillStyle = skin.face;
   // left arm
   ctx.beginPath();
-  ctx.roundRect(cx - bodyW/2 - 18, bodyY + 10, 16, 60, 8);
+  rrect(ctx,cx - bodyW/2 - 18, bodyY + 10, 16, 60, 8);
   ctx.fill();
   // right arm
   ctx.beginPath();
-  ctx.roundRect(cx + bodyW/2 + 2, bodyY + 10, 16, 60, 8);
+  rrect(ctx,cx + bodyW/2 + 2, bodyY + 10, 16, 60, 8);
   ctx.fill();
 
   // ── Hands ──
@@ -207,8 +207,8 @@ function drawCharacter(canvas, s) {
   // ── Legs ──
   const legY = bodyY + bodyH;
   ctx.fillStyle = skin.face;
-  ctx.beginPath(); ctx.roundRect(cx - 28, legY, 22, 60, 8); ctx.fill();
-  ctx.beginPath(); ctx.roundRect(cx + 6, legY, 22, 60, 8);  ctx.fill();
+  ctx.beginPath(); rrect(ctx,cx - 28, legY, 22, 60, 8); ctx.fill();
+  ctx.beginPath(); rrect(ctx,cx + 6, legY, 22, 60, 8);  ctx.fill();
 
   // Shoes
   ctx.fillStyle = '#333';
@@ -499,14 +499,14 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
   ctx.fillStyle = col;
   if (style === 'tshirt') {
     ctx.beginPath();
-    ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH * 0.6, 4);
+    rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.6, 4);
     ctx.fill();
     // sleeves
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 16, bodyY + 6, 18, 30, 4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 18, 30, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 16, bodyY + 6, 18, 30, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 18, 30, 4); ctx.fill();
   } else if (style === 'uniform') {
     ctx.beginPath();
-    ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 4);
+    rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 4);
     ctx.fill();
     // collar white
     ctx.fillStyle = '#fff';
@@ -516,11 +516,11 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
     ctx.lineTo(cx + 14, bodyY);
     ctx.fill();
     ctx.fillStyle = col;
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 14, bodyY + 6, 16, 28, 4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 16, 28, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 14, bodyY + 6, 16, 28, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 16, 28, 4); ctx.fill();
   } else if (style === 'hoodie') {
     ctx.beginPath();
-    ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 8);
+    rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 8);
     ctx.fill();
     // hood
     ctx.beginPath();
@@ -529,11 +529,11 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
     ctx.fill();
     // pocket
     ctx.fillStyle = shadeColor(col, -20);
-    ctx.beginPath(); ctx.roundRect(cx - 16, bodyY + 42, 32, 16, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - 16, bodyY + 42, 32, 16, 4); ctx.fill();
     ctx.fillStyle = col;
     // sleeves
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 16, bodyY + 6, 18, 38, 8); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 18, 38, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 16, bodyY + 6, 18, 38, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 18, 38, 8); ctx.fill();
   } else if (style === 'dress') {
     ctx.beginPath();
     ctx.moveTo(cx - bodyW/2 + 5, bodyY);
@@ -544,19 +544,19 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
     ctx.fill();
     // bodice
     ctx.fillStyle = shadeColor(col, -15);
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2, bodyY, bodyW, 40, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2, bodyY, bodyW, 40, 4); ctx.fill();
     ctx.fillStyle = col;
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 12, bodyY + 6, 14, 22, 4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 14, 22, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 12, bodyY + 6, 14, 22, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 14, 22, 4); ctx.fill();
   } else if (style === 'crop') {
     ctx.beginPath();
-    ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH * 0.4, 4);
+    rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.4, 4);
     ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 14, bodyY + 6, 16, 22, 4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 16, 22, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 14, bodyY + 6, 16, 22, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 16, 22, 4); ctx.fill();
   } else if (style === 'jacket') {
     ctx.beginPath();
-    ctx.roundRect(cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 4);
+    rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.65, 4);
     ctx.fill();
     ctx.fillStyle = shadeColor(col, -25);
     ctx.beginPath();
@@ -564,8 +564,8 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
     ctx.beginPath();
     ctx.moveTo(cx + 16, bodyY); ctx.lineTo(cx + 6, bodyY + 40); ctx.lineTo(cx + 16, bodyY + 40); ctx.closePath(); ctx.fill();
     ctx.fillStyle = col;
-    ctx.beginPath(); ctx.roundRect(cx - bodyW/2 - 14, bodyY + 6, 16, 36, 4); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + bodyW/2 - 2, bodyY + 6, 16, 36, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - bodyW/2 - 14, bodyY + 6, 16, 36, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + bodyW/2 - 2, bodyY + 6, 16, 36, 4); ctx.fill();
   }
 }
 
@@ -590,15 +590,15 @@ function drawBottom(ctx, style, col, cx, botY, isGirl) {
       ctx.stroke();
     }
   } else if (style === 'pants') {
-    ctx.beginPath(); ctx.roundRect(cx - 38, botY - 5, 34, 90, 8); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + 4, botY - 5, 34, 90, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - 38, botY - 5, 34, 90, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + 4, botY - 5, 34, 90, 8); ctx.fill();
     ctx.fillStyle = shadeColor(col, -15);
-    ctx.beginPath(); ctx.roundRect(cx - 38, botY - 5, 76, 12, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - 38, botY - 5, 76, 12, 4); ctx.fill();
   } else if (style === 'shorts') {
-    ctx.beginPath(); ctx.roundRect(cx - 38, botY - 5, 34, 45, 8); ctx.fill();
-    ctx.beginPath(); ctx.roundRect(cx + 4, botY - 5, 34, 45, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - 38, botY - 5, 34, 45, 8); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx + 4, botY - 5, 34, 45, 8); ctx.fill();
     ctx.fillStyle = shadeColor(col, -15);
-    ctx.beginPath(); ctx.roundRect(cx - 38, botY - 5, 76, 12, 4); ctx.fill();
+    ctx.beginPath(); rrect(ctx,cx - 38, botY - 5, 76, 12, 4); ctx.fill();
   } else if (style === 'mini') {
     ctx.beginPath();
     ctx.moveTo(cx - 42, botY - 5);
@@ -709,14 +709,14 @@ function drawHalo(ctx, cx, hy, hr) {
 function drawGlasses(ctx, cx, hy) {
   ctx.strokeStyle = '#555';
   ctx.lineWidth = 2.5;
-  ctx.beginPath(); ctx.roundRect(cx - 44, hy - 4, 28, 20, 6); ctx.stroke();
-  ctx.beginPath(); ctx.roundRect(cx + 16, hy - 4, 28, 20, 6); ctx.stroke();
+  ctx.beginPath(); rrect(ctx,cx - 44, hy - 4, 28, 20, 6); ctx.stroke();
+  ctx.beginPath(); rrect(ctx,cx + 16, hy - 4, 28, 20, 6); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx - 16, hy + 6); ctx.lineTo(cx + 16, hy + 6); ctx.stroke();
 }
 
 function drawMask(ctx, cx, hy, skin) {
   ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.roundRect(cx - 26, hy + 22, 52, 28, 6); ctx.fill();
+  ctx.beginPath(); rrect(ctx,cx - 26, hy + 22, 52, 28, 6); ctx.fill();
   ctx.strokeStyle = '#ddd'; ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(cx - 22, hy + 32); ctx.lineTo(cx + 22, hy + 32); ctx.stroke();
   ctx.beginPath(); ctx.moveTo(cx - 22, hy + 39); ctx.lineTo(cx + 22, hy + 39); ctx.stroke();
@@ -727,7 +727,7 @@ function drawMask(ctx, cx, hy, skin) {
 
 function drawScarf(ctx, cx, bodyY, col) {
   ctx.fillStyle = col;
-  ctx.beginPath(); ctx.roundRect(cx - 30, bodyY - 10, 60, 18, 6); ctx.fill();
+  ctx.beginPath(); rrect(ctx,cx - 30, bodyY - 10, 60, 18, 6); ctx.fill();
   ctx.fillStyle = shadeColor(col, -20);
   ctx.beginPath(); ctx.ellipse(cx + 10, bodyY + 14, 10, 20, 0.3, 0, Math.PI*2); ctx.fill();
 }
@@ -772,6 +772,21 @@ function drawStar(ctx, cx, cy, n, r1, r2) {
     i === 0 ? ctx.moveTo(cx + r * Math.cos(a), cy + r * Math.sin(a))
             : ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a));
   }
+  ctx.closePath();
+}
+
+// ── roundRect polyfill (compatibil cu toate browserele) ────
+function rrect(ctx, x, y, w, h, r) {
+  r = Math.min(r, w / 2, h / 2);
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
   ctx.closePath();
 }
 
@@ -927,7 +942,32 @@ document.getElementById('btn-modal-delete').addEventListener('click', () => {
   renderLibrary();
 });
 
+// ── Cover screen ──────────────────────────────────────────
+document.getElementById('screen-cover').addEventListener('click', () => {
+  showScreen('screen-home');
+});
+
+function drawCoverChar() {
+  const cc = document.getElementById('cover-canvas');
+  if (!cc) return;
+  const coverState = {
+    gender:'girl', skin:'light',
+    eyeShape:'wide', eyeColor:'pink',
+    eyebrow:'arched', browColor:'black',
+    hairStyle:'twin_tails', hairColor:'blonde',
+    mouth:'smile', lipColor:'pink',
+    top:'dress', topColor:'pink',
+    bottom:'none', bottomColor:'black',
+    accBow:true, accGlasses:false, accCatEars:false, accHeadband:false,
+    accMask:false, accScarf:false, accWings:false, accHalo:true,
+    accHorns:false, accTail:false,
+    bg:'pastel',
+  };
+  drawCharacter(cc, coverState);
+}
+
 // ── Init ──────────────────────────────────────────────────
-showScreen('screen-home');
+showScreen('screen-cover');
+drawCoverChar();
 markSelections();
 render();
