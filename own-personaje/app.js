@@ -111,7 +111,7 @@ function drawCharacter(canvas, s) {
   ctx.fill();
 
   // ── Clothing: Bottom ──
-  drawBottom(ctx, s.bottom, botCol, cx, bodyY + bodyH - 10, isGirl);
+  drawBottom(ctx, s.bottom, botCol, cx, bodyY + 58, isGirl);
 
   // ── Clothing: Top ──
   drawTop(ctx, s.top, topCol, cx, bodyY, bodyW, bodyH, isGirl);
@@ -274,23 +274,23 @@ function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
   ctx.fill();
   // Bangs / front fringe
   if (style === 'long_straight' || style === 'bob' || style === 'twin_tails') {
-    // side bangs
+    // side bangs (se opresc la fruntea, nu acoperă ochii)
     ctx.beginPath();
     ctx.moveTo(cx - hr + 5, hy - hr/3);
-    ctx.quadraticCurveTo(cx - hr - 5, hy + 20, cx - hr + 20, hy + 30);
-    ctx.quadraticCurveTo(cx - hr + 10, hy + 5, cx - hr + 18, hy - hr/3 + 5);
+    ctx.quadraticCurveTo(cx - hr - 4, hy + 2, cx - hr + 18, hy + 8);
+    ctx.quadraticCurveTo(cx - hr + 10, hy - 2, cx - hr + 18, hy - hr/3 + 5);
     ctx.fill();
     ctx.beginPath();
     ctx.moveTo(cx + hr - 5, hy - hr/3);
-    ctx.quadraticCurveTo(cx + hr + 5, hy + 20, cx + hr - 20, hy + 30);
-    ctx.quadraticCurveTo(cx + hr - 10, hy + 5, cx + hr - 18, hy - hr/3 + 5);
+    ctx.quadraticCurveTo(cx + hr + 4, hy + 2, cx + hr - 18, hy + 8);
+    ctx.quadraticCurveTo(cx + hr - 10, hy - 2, cx + hr - 18, hy - hr/3 + 5);
     ctx.fill();
-    // front bangs
+    // front bangs (fruntea, maxim pana la hy - 8)
     ctx.beginPath();
     ctx.moveTo(cx - hr + 8, hy - 10);
-    ctx.quadraticCurveTo(cx - 20, hy + 30, cx - 5, hy + 20);
-    ctx.quadraticCurveTo(cx + 5, hy + 25, cx + 15, hy + 22);
-    ctx.quadraticCurveTo(cx + 25, hy + 28, cx + hr - 8, hy - 10);
+    ctx.quadraticCurveTo(cx - 20, hy - 2, cx - 5, hy - 5);
+    ctx.quadraticCurveTo(cx + 5, hy - 3, cx + 15, hy - 5);
+    ctx.quadraticCurveTo(cx + 25, hy - 2, cx + hr - 8, hy - 10);
     ctx.fill();
   } else if (style === 'short' || style === 'spiky') {
     // spiky points
@@ -314,8 +314,8 @@ function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
   } else if (style === 'ponytail') {
     ctx.beginPath();
     ctx.moveTo(cx - hr + 8, hy - 10);
-    ctx.quadraticCurveTo(cx - 10, hy + 25, cx + 5, hy + 22);
-    ctx.quadraticCurveTo(cx + 15, hy + 25, cx + hr - 8, hy - 10);
+    ctx.quadraticCurveTo(cx - 10, hy - 3, cx + 5, hy - 5);
+    ctx.quadraticCurveTo(cx + 15, hy - 3, cx + hr - 8, hy - 10);
     ctx.fill();
     // ponytail tie
     ctx.fillStyle = '#e91e8c';
@@ -334,8 +334,8 @@ function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
     // front bangs
     ctx.beginPath();
     ctx.moveTo(cx - hr + 8, hy - 10);
-    ctx.quadraticCurveTo(cx - 10, hy + 25, cx + 5, hy + 22);
-    ctx.quadraticCurveTo(cx + 15, hy + 25, cx + hr - 8, hy - 10);
+    ctx.quadraticCurveTo(cx - 10, hy - 3, cx + 5, hy - 5);
+    ctx.quadraticCurveTo(cx + 15, hy - 3, cx + hr - 8, hy - 10);
     ctx.fill();
   } else if (style === 'curly') {
     // curly front bumps
