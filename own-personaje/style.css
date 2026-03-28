@@ -42,19 +42,19 @@ body {
   letter-spacing: 8px;
 }
 .cover-title {
-  font-size: 2.6rem;
+  font-size: 4.2rem;
   font-weight: 900;
   color: #7a4f00;
-  text-shadow: 2px 2px 0 #daa520, 0 0 20px rgba(184,134,11,0.4);
+  text-shadow: 3px 3px 0 #daa520, 0 0 30px rgba(184,134,11,0.5);
   text-align: center;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
+  line-height: 1.1;
 }
 .cover-sub {
-  font-size: 1rem;
-  color: #a06000;
-  font-weight: 600;
-  letter-spacing: 3px;
-  text-transform: uppercase;
+  font-size: 1.1rem;
+  color: #8a5000;
+  font-weight: 700;
+  letter-spacing: 2px;
 }
 #cover-canvas {
   border-radius: 12px;
@@ -62,10 +62,10 @@ body {
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 .cover-tap {
-  font-size: 1rem;
+  font-size: 1.3rem;
   color: #8a5e00;
-  font-weight: 700;
-  letter-spacing: 1px;
+  font-weight: 800;
+  letter-spacing: 2px;
   animation: pulse-gold 1.5s ease-in-out infinite;
 }
 @keyframes pulse-gold {
@@ -234,21 +234,21 @@ body {
 }
 .option-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-  gap: 6px;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 7px;
   margin-bottom: 4px;
 }
 .opt-card {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
-  padding: 8px 4px;
+  gap: 5px;
+  padding: 10px 6px;
   background: rgba(255,255,255,0.06);
   border: 2px solid transparent;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   color: rgba(255,255,255,0.7);
   transition: all 0.15s;
   text-align: center;
@@ -264,7 +264,9 @@ body {
   background: rgba(46,204,113,0.15);
   color: #fff;
 }
-.opt-icon { font-size: 1.4rem; }
+.opt-icon { font-size: 1.7rem; }
+#tab-acc .opt-card { padding: 12px 8px; font-size: 0.9rem; }
+#tab-acc .opt-icon { font-size: 2rem; }
 .swatch {
   width: 32px; height: 32px;
   border-radius: 50%;

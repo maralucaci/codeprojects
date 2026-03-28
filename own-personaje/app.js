@@ -41,8 +41,8 @@ function defaultState() {
     eyebrow:'arched', browColor:'black',
     hairStyle:'long_straight', hairColor:'pink',
     mouth:'smile', lipColor:'natural',
-    top:'uniform', topColor:'blue',
-    bottom:'skirt', bottomColor:'black',
+    top:'bra', topColor:'pink',
+    bottom:'panties', bottomColor:'pink',
     accGlasses:false, accBow:false, accCatEars:false, accHeadband:false,
     accMask:false, accScarf:false, accWings:false, accHalo:false,
     accHorns:false, accTail:false,
@@ -497,7 +497,24 @@ function drawMouth(ctx, style, col, cx, hy) {
 function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
   if (style === 'none') return;
   ctx.fillStyle = col;
-  if (style === 'tshirt') {
+  if (style === 'bra') {
+    // bustieră
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(cx - 22, bodyY + 2);
+    ctx.quadraticCurveTo(cx - 28, bodyY + 26, cx - 4, bodyY + 24);
+    ctx.quadraticCurveTo(cx, bodyY + 18, cx + 4, bodyY + 24);
+    ctx.quadraticCurveTo(cx + 28, bodyY + 26, cx + 22, bodyY + 2);
+    ctx.fill();
+    // linie centrală
+    ctx.strokeStyle = shadeColor(col, -30);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx, bodyY + 18); ctx.lineTo(cx, bodyY + 24); ctx.stroke();
+    // bretele
+    ctx.strokeStyle = col; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(cx - 18, bodyY + 3); ctx.lineTo(cx - 14, bodyY - 12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 18, bodyY + 3); ctx.lineTo(cx + 14, bodyY - 12); ctx.stroke();
+  } else if (style === 'tshirt') {
     ctx.beginPath();
     rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.6, 4);
     ctx.fill();
@@ -607,6 +624,42 @@ function drawBottom(ctx, style, col, cx, botY, isGirl) {
     ctx.lineTo(cx + 42, botY - 5);
     ctx.closePath();
     ctx.fill();
+  } else if (style === 'panties') {
+    // chiloți fată
+    ctx.beginPath();
+    ctx.moveTo(cx - 36, botY - 5);
+    ctx.quadraticCurveTo(cx - 38, botY + 30, cx - 10, botY + 32);
+    ctx.quadraticCurveTo(cx, botY + 28, cx + 10, botY + 32);
+    ctx.quadraticCurveTo(cx + 38, botY + 30, cx + 36, botY - 5);
+    ctx.closePath();
+    ctx.fill();
+    // elastic
+    ctx.fillStyle = shadeColor(col, -20);
+    ctx.beginPath();
+    ctx.moveTo(cx - 36, botY - 5);
+    ctx.quadraticCurveTo(cx, botY - 14, cx + 36, botY - 5);
+    ctx.quadraticCurveTo(cx, botY + 2, cx - 36, botY - 5);
+    ctx.fill();
+  } else if (style === 'boxers') {
+    // boxeri băiat
+    ctx.beginPath(); ctx.moveTo(cx - 38, botY - 5); ctx.fill();
+    ctx.fillStyle = col;
+    ctx.beginPath();
+    ctx.moveTo(cx - 38, botY - 5);
+    ctx.lineTo(cx - 34, botY + 50);
+    ctx.lineTo(cx - 2, botY + 48);
+    ctx.lineTo(cx + 2, botY + 48);
+    ctx.lineTo(cx + 34, botY + 50);
+    ctx.lineTo(cx + 38, botY - 5);
+    ctx.closePath();
+    ctx.fill();
+    // dungă centrală
+    ctx.strokeStyle = shadeColor(col, -20);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx, botY - 5); ctx.lineTo(cx, botY + 48); ctx.stroke();
+    // elastic
+    ctx.fillStyle = shadeColor(col, -25);
+    ctx.beginPath(); ctx.fillRect(cx - 38, botY - 5, 76, 10);
   }
 }
 
@@ -947,27 +1000,7 @@ document.getElementById('screen-cover').addEventListener('click', () => {
   showScreen('screen-home');
 });
 
-function drawCoverChar() {
-  const cc = document.getElementById('cover-canvas');
-  if (!cc) return;
-  const coverState = {
-    gender:'girl', skin:'light',
-    eyeShape:'wide', eyeColor:'pink',
-    eyebrow:'arched', browColor:'black',
-    hairStyle:'twin_tails', hairColor:'blonde',
-    mouth:'smile', lipColor:'pink',
-    top:'dress', topColor:'pink',
-    bottom:'none', bottomColor:'black',
-    accBow:true, accGlasses:false, accCatEars:false, accHeadband:false,
-    accMask:false, accScarf:false, accWings:false, accHalo:true,
-    accHorns:false, accTail:false,
-    bg:'pastel',
-  };
-  drawCharacter(cc, coverState);
-}
-
 // ── Init ──────────────────────────────────────────────────
 showScreen('screen-cover');
-drawCoverChar();
 markSelections();
 render();
