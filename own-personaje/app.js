@@ -498,22 +498,22 @@ function drawTop(ctx, style, col, cx, bodyY, bodyW, bodyH, isGirl) {
   if (style === 'none') return;
   ctx.fillStyle = col;
   if (style === 'bra') {
-    // bustieră
+    const by = bodyY + 14; // mutat mai jos, nu la gat
     ctx.fillStyle = col;
     ctx.beginPath();
-    ctx.moveTo(cx - 22, bodyY + 2);
-    ctx.quadraticCurveTo(cx - 28, bodyY + 26, cx - 4, bodyY + 24);
-    ctx.quadraticCurveTo(cx, bodyY + 18, cx + 4, bodyY + 24);
-    ctx.quadraticCurveTo(cx + 28, bodyY + 26, cx + 22, bodyY + 2);
+    ctx.moveTo(cx - 24, by);
+    ctx.quadraticCurveTo(cx - 30, by + 24, cx - 4, by + 22);
+    ctx.quadraticCurveTo(cx, by + 16, cx + 4, by + 22);
+    ctx.quadraticCurveTo(cx + 30, by + 24, cx + 24, by);
     ctx.fill();
     // linie centrală
     ctx.strokeStyle = shadeColor(col, -30);
     ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.moveTo(cx, bodyY + 18); ctx.lineTo(cx, bodyY + 24); ctx.stroke();
-    // bretele
+    ctx.beginPath(); ctx.moveTo(cx, by + 16); ctx.lineTo(cx, by + 22); ctx.stroke();
+    // bretele (pe umeri, nu pana la gat)
     ctx.strokeStyle = col; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(cx - 18, bodyY + 3); ctx.lineTo(cx - 14, bodyY - 12); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(cx + 18, bodyY + 3); ctx.lineTo(cx + 14, bodyY - 12); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx - 20, by + 2); ctx.lineTo(cx - 28, by - 8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 20, by + 2); ctx.lineTo(cx + 28, by - 8); ctx.stroke();
   } else if (style === 'tshirt') {
     ctx.beginPath();
     rrect(ctx,cx - bodyW/2, bodyY, bodyW, bodyH * 0.6, 4);
@@ -873,9 +873,19 @@ document.querySelectorAll('.opt-card:not(.toggle-card)').forEach(card => {
   card.addEventListener('click', () => {
     const key = card.dataset.key, val = card.dataset.val;
     state[key] = val;
-    // mark selected
-    document.querySelectorAll(`.opt-card[data-key="${key}"]`).forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
+    // schimbarea genului aplica defaults potrivite
+    if (key === 'gender') {
+      if (val === 'boy') {
+        Object.assign(state, { hairStyle:'short', hairColor:'black', top:'none', topColor:'blue', bottom:'boxers', bottomColor:'black' });
+      } else {
+        Object.assign(state, { hairStyle:'long_straight', hairColor:'pink', top:'bra', topColor:'pink', bottom:'panties', bottomColor:'pink' });
+      }
+      document.querySelectorAll('.opt-card:not(.toggle-card)').forEach(c => c.classList.remove('selected'));
+      markSelections();
+    } else {
+      document.querySelectorAll(`.opt-card[data-key="${key}"]`).forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+    }
     render();
   });
 });
