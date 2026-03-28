@@ -120,9 +120,14 @@ function drawCharacter(canvas, s) {
   ctx.fillStyle = skin.face;
   ctx.fillRect(cx - 12, bodyY - 16, 24, 22);
 
-  // ── Head ──
+  // ── Head coords ──
   const headR = 60;
   const headY = bodyY - headR - 10;
+
+  // ── Hair (back layer) — INAINTE de fata ──
+  drawHairBack(ctx, s.hairStyle, hairCol, cx, headY, headR, isGirl);
+
+  // ── Head ──
   // shadow
   ctx.fillStyle = skin.shadow;
   ctx.beginPath();
@@ -138,9 +143,6 @@ function drawCharacter(canvas, s) {
   ctx.beginPath();
   ctx.ellipse(cx, headY + headR - 8, 30, 22, 0, 0, Math.PI);
   ctx.fill();
-
-  // ── Hair (back layer) ──
-  drawHairBack(ctx, s.hairStyle, hairCol, cx, headY, headR, isGirl);
 
   // ── Ears ──
   ctx.fillStyle = skin.face;
@@ -268,9 +270,9 @@ function drawHairBack(ctx, style, col, cx, hy, hr, isGirl) {
 
 function drawHairFront(ctx, style, col, cx, hy, hr, isGirl) {
   ctx.fillStyle = col;
-  // Base top of head
+  // Semicercul de SUS al capului (nu cel de jos care acopera barbia)
   ctx.beginPath();
-  ctx.arc(cx, hy, hr + 4, Math.PI, 0);
+  ctx.arc(cx, hy, hr + 4, Math.PI, 0, true);
   ctx.fill();
   // Bangs / front fringe
   if (style === 'long_straight' || style === 'bob' || style === 'twin_tails') {
@@ -833,7 +835,9 @@ function rrect(ctx, x, y, w, h, r) {
 }
 
 function shadeColor(hex, pct) {
-  const n = parseInt(hex.replace('#',''), 16);
+  let h = hex.replace('#','');
+  if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  const n = parseInt(h, 16);
   const r = Math.max(0, Math.min(255, (n >> 16) + pct));
   const g = Math.max(0, Math.min(255, ((n >> 8) & 0xff) + pct));
   const b = Math.max(0, Math.min(255, (n & 0xff) + pct));
