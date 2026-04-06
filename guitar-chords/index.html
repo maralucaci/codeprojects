@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>🎸 Guitar Chords</title>
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -48,12 +48,9 @@
       <!-- PLAYER VIEW (while playing) -->
       <div id="player-view" class="hidden">
 
-        <!-- YOUTUBE PLAYER -->
+        <!-- YOUTUBE PLAYER (controlled via IFrame API) -->
         <div class="yt-wrap">
-          <iframe id="yt-frame" width="100%" height="160"
-            frameborder="0" allow="autoplay; encrypted-media" allowfullscreen
-            src="about:blank"></iframe>
-          <div class="yt-hint">▶ Pornește cântecul pe YouTube, apoi apasă PLAY aici</div>
+          <div id="yt-player"></div>
         </div>
 
         <!-- TOP ROW: current chord | strum arrow | next chord -->
@@ -69,7 +66,7 @@
           <div class="player-center">
             <div class="strum-arrow" id="strum-arrow">↓</div>
             <div class="strum-word" id="strum-word">DOWN</div>
-            <div class="beat-dots" id="beat-dots">
+            <div class="beat-dots">
               <div class="bdot"></div>
               <div class="bdot"></div>
               <div class="bdot"></div>
@@ -82,7 +79,6 @@
             <div class="player-next-name" id="player-next-name">—</div>
             <canvas id="player-next-canvas" width="120" height="140"></canvas>
 
-            <!-- SPEED CONTROL -->
             <div class="speed-wrap">
               <div class="speed-bpm" id="speed-bpm">80 BPM</div>
               <div class="speed-line">
@@ -95,7 +91,6 @@
 
         </div>
 
-        <!-- PROGRESS BAR -->
         <div class="progress-wrap">
           <div class="progress-fill" id="progress-fill"></div>
         </div>
@@ -107,13 +102,14 @@
       <p>🎵 Caută un cântec și află cum să-l cânți la chitară!</p>
     </div>
 
-    <!-- BOTTOM BAR -->
     <div class="bottom-bar hidden" id="bottom-bar">
       <div class="chord-seq" id="chord-seq"></div>
       <button class="play-btn" id="btn-play">▶ PLAY</button>
     </div>
   </div>
 
-  <script src="app.js?v=5"></script>
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

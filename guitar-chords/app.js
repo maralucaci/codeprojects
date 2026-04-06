@@ -101,15 +101,33 @@ const SONGS = [
 ];
 
 // ══════════════════════════════════════════════
-//  YOUTUBE
+//  YOUTUBE IFrame API
 // ══════════════════════════════════════════════
-function loadYouTube(song) {
-  const frame = document.getElementById('yt-frame');
-  if (song.yt) {
-    frame.src = `https://www.youtube.com/embed/${song.yt}?rel=0`;
-  } else {
-    frame.src = 'about:blank';
-  }
+let ytPlayer = null;
+let ytReady  = false;
+
+window.onYouTubeIframeAPIReady = function () {
+  ytReady = true;
+};
+
+function createYTPlayer(videoId, onReady) {
+  if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
+  ytPlayer = new YT.Player('yt-player', {
+    height: '160', width: '100%',
+    videoId: videoId,
+    playerVars: { autoplay: 0, rel: 0, modestbranding: 1 },
+    events: {
+      onReady: () => { if (onReady) onReady(); },
+    }
+  });
+}
+
+function ytPlay()  { if (ytPlayer && ytPlayer.playVideo)  ytPlayer.playVideo(); }
+function ytStop()  { if (ytPlayer && ytPlayer.stopVideo)  ytPlayer.stopVideo(); }
+
+function loadYouTube(song, autoplay) {
+  if (!ytReady || !song.yt) return;
+  createYTPlayer(song.yt, autoplay ? ytPlay : null);
 }
 
 // ══════════════════════════════════════════════
@@ -187,7 +205,7 @@ function startPlayer() {
   document.getElementById('diagrams-section').classList.add('hidden');
   document.getElementById('player-view').classList.remove('hidden');
 
-  loadYouTube(pl.song);
+  loadYouTube(pl.song, true); // autoplay=true
   updateChordDisplay();
   scheduleBeat();
 }
@@ -201,7 +219,7 @@ function stopPlayer() {
   document.getElementById('player-view').classList.add('hidden');
   document.getElementById('diagrams-section').classList.remove('hidden');
   document.getElementById('progress-fill').style.width = '0%';
-  document.getElementById('yt-frame').src = 'about:blank';
+  ytStop();
   highlightSeq(-1);
 }
 
