@@ -24,72 +24,72 @@
       <span class="logo">🎸 Guitar Chords</span>
     </header>
 
+    <!-- SEARCH -->
     <div class="search-wrap">
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Caută un cântec... ex: Shape of You" autocomplete="off">
+        <input type="text" id="search-input" placeholder="Caută un cântec... ex: Wonderwall" autocomplete="off">
         <button id="btn-search">🔍</button>
       </div>
       <div id="suggestions" class="suggestions hidden"></div>
     </div>
 
-    <div id="result-area" class="hidden">
+    <!-- SONG VIEW (shown after search) -->
+    <div id="song-view" class="hidden">
+
       <div class="song-title-bar">
         <span id="song-name"></span>
         <span id="song-artist"></span>
       </div>
 
-      <!-- PLAYER (shown when playing) -->
-      <div id="player-panel" class="hidden">
-        <div class="player-top">
+      <!-- STATIC DIAGRAMS (shown when not playing) -->
+      <div id="diagrams-section">
+        <div class="diagrams-grid" id="diagrams-grid"></div>
+        <div class="lyrics-wrap" id="lyrics-wrap"></div>
+      </div>
 
-          <!-- Current chord (left) -->
-          <div class="player-current">
-            <div class="player-label">ACORD CURENT</div>
-            <div class="player-chord-name" id="player-chord-name">—</div>
-            <canvas id="player-canvas" width="160" height="190"></canvas>
-            <div class="player-finger-hint" id="player-finger-hint"></div>
-          </div>
+      <!-- PLAYER VIEW (shown when playing, full top area) -->
+      <div id="player-view" class="hidden">
+        <div class="player-left">
+          <div class="player-label">ACORD CURENT</div>
+          <div class="player-chord-name" id="player-chord-name">—</div>
+          <canvas id="player-canvas" width="180" height="210"></canvas>
+          <div class="player-hint" id="player-hint"></div>
+        </div>
 
-          <!-- Next chord (center) -->
-          <div class="player-next">
+        <div class="player-right">
+          <div class="player-next-wrap">
             <div class="player-label">URMĂTOR</div>
             <div class="player-next-name" id="player-next-name">—</div>
-            <canvas id="player-next-canvas" width="110" height="130"></canvas>
+            <canvas id="player-next-canvas" width="120" height="140"></canvas>
           </div>
 
-          <!-- Speed control (right) -->
-          <div class="player-speed">
-            <div class="player-label">VITEZĂ</div>
-            <div class="speed-bpm" id="speed-bpm">80 BPM</div>
-            <div class="speed-row">
+          <div class="speed-wrap">
+            <div class="speed-label" id="speed-bpm">80 BPM</div>
+            <div class="speed-line">
               <button class="speed-btn" id="btn-slower">−</button>
-              <input type="range" id="speed-slider" min="40" max="240" value="80" class="speed-slider">
+              <input type="range" id="speed-slider" min="40" max="240" value="80">
               <button class="speed-btn" id="btn-faster">+</button>
             </div>
           </div>
-
         </div>
 
-        <!-- Progress bar -->
-        <div class="progress-bar-wrap">
-          <div class="progress-bar" id="progress-bar"></div>
+        <!-- Progress -->
+        <div class="progress-wrap">
+          <div class="progress-fill" id="progress-fill"></div>
         </div>
       </div>
 
-      <!-- CHORD DIAGRAMS (shown when not playing) -->
-      <div class="diagrams-grid" id="diagrams-grid"></div>
-
-      <!-- BOTTOM BAR -->
-      <div class="bottom-bar">
-        <div class="chord-sequence" id="chord-sequence"></div>
-        <button class="play-btn" id="btn-play">▶ PLAY</button>
-      </div>
-
-      <div class="lyrics-wrap" id="lyrics-wrap"></div>
     </div>
 
+    <!-- EMPTY STATE -->
     <div id="empty-state">
       <p>🎵 Caută un cântec și află cum să-l cânți la chitară!</p>
+    </div>
+
+    <!-- BOTTOM BAR (always visible after search) -->
+    <div class="bottom-bar hidden" id="bottom-bar">
+      <div class="chord-seq" id="chord-seq"></div>
+      <button class="play-btn" id="btn-play">▶ PLAY</button>
     </div>
   </div>
 
