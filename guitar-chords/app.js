@@ -122,7 +122,7 @@ const SONGS = [
     lyrics:'[Am]There is a [C]house in New Orleans\n[D]They call the [E]Rising Sun\n[Am]And it\'s been the [C]ruin of many a poor boy\n[D]And God I [E]know I\'m one' },
   { title:'La Bamba (Easy)', artist:'Ritchie Valens', chords:['C','G','D'], bpm:170, yt:'ZEI3NaRPn60',
     lyrics:'[C]Para bailar la bamba\n[G]Para bailar la bamba\n[D]Se necesita una poca de gracia' },
-  { title:'Smoke on the Water', artist:'Deep Purple', chords:['G','C','Dm'], bpm:112, yt:'zUwW3T57NoA',
+  { title:'Smoke on the Water', artist:'Deep Purple', chords:['G','C','Dm'], bpm:112, yt:'aBr2kKAHN6M',
     lyrics:'[G]We all came out to [C]Montreux\n[Dm]On the Lake Geneva [G]shoreline\n[G]To make records with a [C]mobile\n[Dm]We didn\'t have much [G]time' },
   { title:'Horse With No Name', artist:'America', chords:['Em','D'], bpm:100, yt:'zSAJ0l4OBHM',
     lyrics:'[Em]On the first part of the journey\n[D]I was looking at all the life\n[Em]There were plants and birds and rocks and things\n[D]There was sand and hills and rings' },
@@ -137,25 +137,45 @@ const SONGS = [
 // ══════════════════════════════════════════════
 let ytPlayer = null;
 let ytReady  = false;
+let ytPending = null; // { videoId, autoplay } waiting for API
 
 window.onYouTubeIframeAPIReady = function () {
   ytReady = true;
+  if (ytPending) {
+    const { videoId, onReady } = ytPending;
+    ytPending = null;
+    createYTPlayer(videoId, onReady);
+  }
 };
 
 function createYTPlayer(videoId, onReady) {
-  if (ytPlayer) { ytPlayer.destroy(); ytPlayer = null; }
+  if (ytPlayer) { try { ytPlayer.destroy(); } catch(e){} ytPlayer = null; }
+  // Ensure container exists
+  const wrap = document.querySelector('.yt-wrap');
+  if (wrap && !document.getElementById('yt-player')) {
+    wrap.innerHTML = '<div id="yt-player"></div>';
+  }
   ytPlayer = new YT.Player('yt-player', {
     height: '160', width: '100%',
     videoId: videoId,
     playerVars: { autoplay: 0, rel: 0, modestbranding: 1 },
     events: {
       onReady: () => { if (onReady) onReady(); },
+      onError: (e) => {
+        // Video blocked/restricted — show message, don't crash
+        const bar = document.getElementById('music-bar');
+        if (bar) {
+          const txt = bar.querySelector('.music-bar-text');
+          if (txt) txt.innerHTML = '⚠️ Videoul nu poate fi redat (restricționat). Continuă să cânți!';
+        }
+      }
     }
   });
 }
 
 function ytPlay()  { if (ytPlayer && ytPlayer.playVideo)  ytPlayer.playVideo(); }
 function ytStop() {
+  ytPending = null;
   try {
     if (ytPlayer) {
       if (ytPlayer.pauseVideo) ytPlayer.pauseVideo();
@@ -170,8 +190,14 @@ function ytStop() {
 }
 
 function loadYouTube(song, autoplay) {
-  if (!ytReady || !song.yt) return;
-  createYTPlayer(song.yt, autoplay ? ytPlay : null);
+  if (!song.yt) return;
+  const onReady = autoplay ? ytPlay : null;
+  if (!ytReady) {
+    // API not ready yet — queue it
+    ytPending = { videoId: song.yt, onReady };
+    return;
+  }
+  createYTPlayer(song.yt, onReady);
 }
 
 // ══════════════════════════════════════════════
