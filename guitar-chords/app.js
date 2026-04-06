@@ -1,41 +1,40 @@
 'use strict';
 
 // ══════════════════════════════════════════════
-//  CHORD SHAPES  (strings: E A D G B e, fret 0=open, -1=muted)
-//  positions: [{string, fret, finger}]  barre: {fret, from, to}
+//  CHORD SHAPES
 // ══════════════════════════════════════════════
 const CHORD_SHAPES = {
-  'C':   { positions:[{s:5,f:3,n:3},{s:4,f:2,n:2},{s:2,f:1,n:1}], open:[1,2,4], muted:[6] },
-  'Cm':  { positions:[{s:5,f:3,n:3},{s:4,f:5,n:4},{s:3,f:5,n:4},{s:2,f:4,n:3}], barre:{fret:3,from:1,to:5} },
-  'D':   { positions:[{s:3,f:2,n:1},{s:2,f:3,n:3},{s:1,f:2,n:2}], open:[4], muted:[5,6] },
-  'Dm':  { positions:[{s:3,f:2,n:2},{s:2,f:3,n:3},{s:1,f:1,n:1}], open:[4], muted:[5,6] },
-  'E':   { positions:[{s:5,f:2,n:2},{s:4,f:2,n:3},{s:3,f:1,n:1}], open:[1,2,4,6] },
-  'Em':  { positions:[{s:5,f:2,n:2},{s:4,f:2,n:3}], open:[1,2,3,4,6] },
-  'F':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4},{s:3,f:2,n:2}], barre:{fret:1,from:1,to:6} },
-  'Fm':  { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4}], barre:{fret:1,from:1,to:6} },
-  'G':   { positions:[{s:6,f:3,n:2},{s:5,f:2,n:1},{s:1,f:3,n:3}], open:[2,3,4,5] },
-  'Gm':  { positions:[{s:5,f:5,n:3},{s:4,f:5,n:4},{s:3,f:3,n:2}], barre:{fret:3,from:1,to:6} },
-  'A':   { positions:[{s:4,f:2,n:1},{s:3,f:2,n:2},{s:2,f:2,n:3}], open:[1,5,6], muted:[6] },
-  'Am':  { positions:[{s:4,f:2,n:2},{s:3,f:2,n:3},{s:2,f:1,n:1}], open:[1,4,5], muted:[6] },
-  'B':   { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:4,n:4}], barre:{fret:2,from:1,to:5}, muted:[6] },
-  'Bm':  { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:3,n:2}], barre:{fret:2,from:1,to:5}, muted:[6] },
-  'F#m': { positions:[{s:5,f:4,n:3},{s:4,f:4,n:4},{s:3,f:2,n:1}], barre:{fret:2,from:1,to:5}, muted:[6] },
-  'C#m': { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:5}, muted:[6] },
-  'G#m': { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:6} },
-  'E7':  { positions:[{s:5,f:2,n:2},{s:3,f:1,n:1}], open:[1,2,4,6] },
-  'A7':  { positions:[{s:4,f:2,n:2},{s:2,f:2,n:3}], open:[1,3,5], muted:[6] },
-  'D7':  { positions:[{s:3,f:2,n:2},{s:2,f:1,n:1},{s:1,f:2,n:3}], open:[4], muted:[5,6] },
-  'G7':  { positions:[{s:6,f:3,n:3},{s:5,f:2,n:2},{s:1,f:1,n:1}], open:[2,3,4] },
+  'C':    { positions:[{s:5,f:3,n:3},{s:4,f:2,n:2},{s:2,f:1,n:1}], open:[1,2,4], muted:[6] },
+  'Cm':   { positions:[{s:5,f:3,n:3},{s:4,f:5,n:4},{s:3,f:5,n:4},{s:2,f:4,n:3}], barre:{fret:3,from:1,to:5} },
+  'D':    { positions:[{s:3,f:2,n:1},{s:2,f:3,n:3},{s:1,f:2,n:2}], open:[4], muted:[5,6] },
+  'Dm':   { positions:[{s:3,f:2,n:2},{s:2,f:3,n:3},{s:1,f:1,n:1}], open:[4], muted:[5,6] },
+  'E':    { positions:[{s:5,f:2,n:2},{s:4,f:2,n:3},{s:3,f:1,n:1}], open:[1,2,4,6] },
+  'Em':   { positions:[{s:5,f:2,n:2},{s:4,f:2,n:3}], open:[1,2,3,4,6] },
+  'F':    { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4},{s:3,f:2,n:2}], barre:{fret:1,from:1,to:6} },
+  'Fm':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4}], barre:{fret:1,from:1,to:6} },
+  'G':    { positions:[{s:6,f:3,n:2},{s:5,f:2,n:1},{s:1,f:3,n:3}], open:[2,3,4,5] },
+  'Gm':   { positions:[{s:5,f:5,n:3},{s:4,f:5,n:4},{s:3,f:3,n:2}], barre:{fret:3,from:1,to:6} },
+  'A':    { positions:[{s:4,f:2,n:1},{s:3,f:2,n:2},{s:2,f:2,n:3}], open:[1,5,6], muted:[6] },
+  'Am':   { positions:[{s:4,f:2,n:2},{s:3,f:2,n:3},{s:2,f:1,n:1}], open:[1,4,5], muted:[6] },
+  'B':    { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:4,n:4}], barre:{fret:2,from:1,to:5}, muted:[6] },
+  'Bm':   { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:3,n:2}], barre:{fret:2,from:1,to:5}, muted:[6] },
+  'F#m':  { positions:[{s:5,f:4,n:3},{s:4,f:4,n:4},{s:3,f:2,n:1}], barre:{fret:2,from:1,to:5}, muted:[6] },
+  'C#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:5}, muted:[6] },
+  'G#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:6} },
+  'E7':   { positions:[{s:5,f:2,n:2},{s:3,f:1,n:1}], open:[1,2,4,6] },
+  'A7':   { positions:[{s:4,f:2,n:2},{s:2,f:2,n:3}], open:[1,3,5], muted:[6] },
+  'D7':   { positions:[{s:3,f:2,n:2},{s:2,f:1,n:1},{s:1,f:2,n:3}], open:[4], muted:[5,6] },
+  'G7':   { positions:[{s:6,f:3,n:3},{s:5,f:2,n:2},{s:1,f:1,n:1}], open:[2,3,4] },
   'Cadd9':{ positions:[{s:5,f:3,n:3},{s:4,f:2,n:2},{s:1,f:3,n:4}], open:[2,3], muted:[6] },
-  'Dsus2':{ positions:[{s:3,f:2,n:1},{s:2,f:3,n:3}], open:[1,4], muted:[5,6] },
-  'Esus2':{ positions:[{s:5,f:2,n:2},{s:4,f:2,n:3}], open:[1,2,3,4,6] },
+  'Bb':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4},{s:3,f:3,n:4}], barre:{fret:1,from:1,to:5}, muted:[6] },
+  'Ab':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:6,n:4}], barre:{fret:4,from:1,to:6} },
+  'Db':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:6,n:4}], barre:{fret:4,from:1,to:5}, muted:[6] },
 };
 
 // ══════════════════════════════════════════════
 //  SONG DATABASE
 // ══════════════════════════════════════════════
 const SONGS = [
-  // POP
   { title:'Shape of You', artist:'Ed Sheeran', chords:['C#m','A','B','E'], bpm:96,
     lyrics:'[C#m]Every day dis-[A]covering something brand new\n[B]I\'m in love with the shape of [E]you' },
   { title:'Blinding Lights', artist:'The Weeknd', chords:['Am','F','C','G'], bpm:171,
@@ -56,8 +55,6 @@ const SONGS = [
     lyrics:'[D]When your legs don\'t work like they used to before\n[A]And I can\'t sweep you off of your feet\n[Bm]Will your mouth still remember the taste of my love\n[G]Will your eyes still smile from your cheeks' },
   { title:'Stay With Me', artist:'Sam Smith', chords:['Am','F','C','G'], bpm:86,
     lyrics:'[Am]Guess it\'s true I\'m not good at a one-night stand\n[F]But I still need love \'cause I\'m just a man\n[C]These nights never seem to go to plan\n[G]I don\'t want you to leave, will you hold my hand' },
-
-  // ROCK
   { title:'Wonderwall', artist:'Oasis', chords:['Em','G','D','A'], bpm:87,
     lyrics:'[Em]Today is gonna be the day\n[G]That they\'re gonna throw it back to you\n[D]By now you should have somehow\n[A]Realized what you gotta do' },
   { title:'Hotel California', artist:'Eagles', chords:['Bm','F#m','A','E'], bpm:75,
@@ -65,61 +62,43 @@ const SONGS = [
   { title:'Knockin on Heavens Door', artist:'Bob Dylan', chords:['G','D','Am','C'], bpm:70,
     lyrics:'[G]Mama, take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin\' dark, [Am]too dark to see\n[D]I feel I\'m knockin\' on heaven\'s door' },
   { title:'Sweet Home Alabama', artist:'Lynyrd Skynyrd', chords:['D','C','G'], bpm:98,
-    lyrics:'[D]Big wheels keep on turning\n[C]Carry me home to see my kin\n[G]Singing songs about the Southland\n[D]I miss Alabamy once again' },
+    lyrics:'[D]Big wheels keep on turning\n[C]Carry me home to see my kin\n[G]Singing songs about the Southland' },
   { title:'Wish You Were Here', artist:'Pink Floyd', chords:['Em','G','A','C','D'], bpm:63,
     lyrics:'[Em]So, so you think you can tell\n[G]Heaven from hell\n[A]Blue skies from pain\n[C]Can you tell a green field\n[D]From a cold steel rail' },
   { title:'Nothing Else Matters', artist:'Metallica', chords:['Em','D','C','Am'], bpm:69,
     lyrics:'[Em]So close, no matter how far\n[D]Couldn\'t be much more from the heart\n[C]Forever trusting who we are\n[Am]And nothing else matters' },
-  { title:'Back in Black', artist:'AC/DC', chords:['E','B','A','D','G'], bpm:96,
-    lyrics:'[E]Back in black I hit the sack\n[B]I\'ve been too long I\'m glad to be back\n[A]Yes I\'m let loose from the noose\n[D]That\'s kept me hanging about' },
-  { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117,
-    lyrics:'[F]Load up on guns, bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no, I know a dirty word' },
-
-  // R&B / SOUL
   { title:'Shallow', artist:'Lady Gaga', chords:['Em','D','G','C','Am'], bpm:96,
     lyrics:'[Em]Tell me something girl\n[D]Are you happy in this modern world\n[G]Or do you need more\n[C]Is there something else you\'re searching for' },
   { title:'All of Me', artist:'John Legend', chords:['Em','C','G','D'], bpm:63,
     lyrics:'[Em]What would I do without your smart mouth\n[C]Drawing me in and kicking me out\n[G]Got my head spinning no kidding I can\'t pin you down\n[D]What\'s going on in that beautiful mind' },
   { title:'Hallelujah', artist:'Leonard Cohen', chords:['C','Am','F','G','E'], bpm:64,
     lyrics:'[C]I\'ve heard there was a [Am]secret chord\n[C]That David played and [Am]it pleased the Lord\n[F]But you don\'t really [G]care for music do you' },
-
-  // ROMÂNEȘTI
   { title:'Dragostea Din Tei', artist:'O-Zone', chords:['F','C','Dm','Bb'], bpm:140,
-    lyrics:'[F]Ma-ia-hii [C]ma-ia-huu\n[Dm]Ma-ia-hoo [Bb]ma-ia-haa\n[F]Alo, salut, sunt eu, [C]un haiduc\n[Dm]Și te rog, iubito, [Bb]primește-i flori' },
-  { title:'Codrule Codrutule', artist:'Folk Românesc', chords:['Am','G','F','E'], bpm:90,
-    lyrics:'[Am]Codrule, codruțule\n[G]Ce mai faci drăguțule\n[F]Că de când nu te-am văzut\n[E]Mult mi-a fost și mi-a căzut' },
+    lyrics:'[F]Ma-ia-hii [C]ma-ia-huu\n[Dm]Ma-ia-hoo [Bb]ma-ia-haa' },
   { title:'Doi Străini', artist:'Irina Rimes', chords:['Am','F','C','G'], bpm:95,
-    lyrics:'[Am]Eram doi străini [F]în același oraș\n[C]Ne-am întâlnit [G]la o schimbare de iarnă\n[Am]Eram doi nebuni [F]cu același vis\n[C]Ne-am recunoscut [G]dintr-o privire' },
+    lyrics:'[Am]Eram doi străini [F]în același oraș\n[C]Ne-am întâlnit [G]la o schimbare de iarnă' },
   { title:'Vara Nu Dorm', artist:'Carla\'s Dreams', chords:['Dm','Bb','F','C'], bpm:110,
-    lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Mă gândesc la tine [C]toată\n[Dm]Zilele fug [Bb]repede\n[F]Și-ți simt lipsa [C]tot mai mult' },
-  { title:'Nu Sunt Eu', artist:'Smiley', chords:['Am','F','C','G'], bpm:105,
-    lyrics:'[Am]Nu sunt eu cel de care ai nevoie\n[F]Nu pot să-ți dau ce vrei să-ți dea cineva\n[C]Dar pot să stau și să ascult în voie\n[G]Tot ce ți-e greu, tot ce te apasă' },
-  { title:'Lumea ta', artist:'Carla\'s Dreams', chords:['Dm','Am','Bb','F'], bpm:120,
-    lyrics:'[Dm]Vreau să fiu [Am]în lumea ta\n[Bb]Vreau să știu [F]ce gândești\n[Dm]Să fiu lângă [Am]tine-ntr-una\n[Bb]Noaptea când te [F]risipești' },
-  { title:'Rău', artist:'Delia', chords:['Am','F','C','G'], bpm:130,
-    lyrics:'[Am]Eu știu că îți fac rău\n[F]Că nu e bine\n[C]Dar nu mă pot opri\n[G]Să nu fiu cu tine' },
-
-  // LATIN / INTERNATIONAL
+    lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Mă gândesc la tine [C]toată' },
   { title:'Despacito', artist:'Luis Fonsi', chords:['Bm','G','D','A'], bpm:89,
     lyrics:'[Bm]Sí, sabes que ya llevo un rato mirándote\n[G]Tengo que bailar contigo hoy\n[D]Vi que tu mirada ya estaba llamándome\n[A]Muéstrame el camino que yo voy' },
   { title:'La Bamba', artist:'Ritchie Valens', chords:['C','F','G'], bpm:170,
-    lyrics:'[C]Para bailar la bamba\n[F]Para bailar la bamba\n[G]Se necesita una poca de gracia\n[C]Una poca de gracia para mi para ti' },
+    lyrics:'[C]Para bailar la bamba\n[F]Para bailar la bamba\n[G]Se necesita una poca de gracia' },
   { title:'Bella Ciao', artist:'Folk Italiano', chords:['Dm','A','C','F'], bpm:104,
-    lyrics:'[Dm]Una mattina mi son svegliato\n[A]O bella ciao, bella ciao\n[Dm]Bella ciao ciao ciao\n[Dm]Una mattina mi son svegliato\n[C]E ho trovato l\'invasor' },
+    lyrics:'[Dm]Una mattina mi son svegliato\n[A]O bella ciao, bella ciao\n[Dm]Bella ciao ciao ciao' },
   { title:'Africa', artist:'Toto', chords:['F#m','D','A','E'], bpm:93,
-    lyrics:'[F#m]I hear the drums echoing tonight\n[D]But she hears only whispers of some quiet conversation\n[A]She\'s coming in twelve-thirty flight\n[E]The moonlit wings reflect the stars that guide me towards salvation' },
+    lyrics:'[F#m]I hear the drums echoing tonight\n[D]But she hears only whispers of some quiet conversation\n[A]She\'s coming in twelve-thirty flight\n[E]The moonlit wings reflect the stars' },
   { title:'Stand By Me', artist:'Ben E. King', chords:['A','F#m','D','E'], bpm:121,
-    lyrics:'[A]When the night has come\n[F#m]And the land is dark\n[D]And the moon is the only light we\'ll see\n[E]No I won\'t be afraid, no I won\'t be afraid\n[A]Just as long as you stand, stand by me' },
-  { title:'Knockin on Heavens Door', artist:'Guns N Roses', chords:['G','D','Am','C'], bpm:72,
-    lyrics:'[G]Mama, take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin\' dark, too dark to see\n[Am]I feel I\'m knockin\' on heaven\'s door' },
+    lyrics:'[A]When the night has come\n[F#m]And the land is dark\n[D]And the moon is the only light we\'ll see\n[E]No I won\'t be afraid' },
   { title:'Hey There Delilah', artist:'Plain White T\'s', chords:['D','F#m','Bm','G','A'], bpm:94,
-    lyrics:'[D]Hey there Delilah what\'s it like in New York City\n[F#m]I\'m a thousand miles away but girl tonight you look so pretty\n[Bm]Yes you do [G]Times Square can\'t shine as bright as you\n[A]I swear it\'s true' },
+    lyrics:'[D]Hey there Delilah what\'s it like in New York City\n[F#m]I\'m a thousand miles away but girl tonight you look so pretty' },
   { title:'Riptide', artist:'Vance Joy', chords:['Am','G','C','F'], bpm:104,
     lyrics:'[Am]I was scared of dentists and the dark\n[G]I was scared of pretty girls and starting conversations\n[C]Oh, all my friends are turning green\n[Am]You\'re the magician\'s assistant in their dream' },
   { title:'Budapest', artist:'George Ezra', chords:['C','F','G','Am'], bpm:130,
-    lyrics:'[C]My house in Budapest\n[F]My hidden treasure chest\n[G]Golden grand piano\n[Am]My beautiful Castillo\n[F]You, ooh, you, ooh [C]I\'d leave it all' },
+    lyrics:'[C]My house in Budapest\n[F]My hidden treasure chest\n[G]Golden grand piano\n[Am]My beautiful Castillo' },
   { title:'Take Me to Church', artist:'Hozier', chords:['Am','F','C','G','Em'], bpm:129,
     lyrics:'[Am]My lover\'s got humor\n[F]She\'s the giggle at a funeral\n[C]Knows everybody\'s disapproval\n[G]I should\'ve worshipped her sooner' },
+  { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117,
+    lyrics:'[F]Load up on guns, bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no, I know a dirty word' },
 ];
 
 // ══════════════════════════════════════════════
@@ -139,69 +118,50 @@ function drawChordDiagram(canvas, chordName) {
     return;
   }
 
-  // Grid settings
   const strings = 6, frets = 5;
-  const pl = 28, pt = 24, pr = 10, pb = 10;
+  const pl = W < 140 ? 24 : 28;
+  const pt = H < 160 ? 20 : 24;
+  const pr = 10, pb = 10;
   const gw = W - pl - pr;
   const gh = H - pt - pb;
   const sx = gw / (strings - 1);
   const fy = gh / frets;
 
-  // Determine min fret for positioning
-  let minFret = 99, maxFret = 0;
-  (shape.positions || []).forEach(p => {
-    if (p.f > 0) { minFret = Math.min(minFret, p.f); maxFret = Math.max(maxFret, p.f); }
-  });
-  if (shape.barre) { minFret = Math.min(minFret, shape.barre.fret); maxFret = Math.max(maxFret, shape.barre.fret); }
+  let minFret = 99;
+  (shape.positions || []).forEach(p => { if (p.f > 0) minFret = Math.min(minFret, p.f); });
+  if (shape.barre) minFret = Math.min(minFret, shape.barre.fret);
   if (minFret === 99) minFret = 1;
   const offset = minFret > 1 && !shape.barre ? minFret - 1 : 0;
   const startFret = offset + 1;
 
-  // Fret number
   if (offset > 0) {
     ctx.fillStyle = '#f5c518';
-    ctx.font = 'bold 11px Segoe UI';
+    ctx.font = `bold ${W < 140 ? 10 : 11}px Segoe UI`;
     ctx.textAlign = 'left';
     ctx.fillText(startFret + 'fr', 1, pt + fy * 0.7);
   }
 
-  // Nut (only if starting at fret 1)
   if (offset === 0) {
     ctx.fillStyle = '#eee';
     ctx.fillRect(pl, pt - 3, gw, 4);
   }
 
-  // Grid lines (frets)
-  ctx.strokeStyle = '#444';
-  ctx.lineWidth = 1;
+  ctx.strokeStyle = '#444'; ctx.lineWidth = 1;
   for (let i = 0; i <= frets; i++) {
-    ctx.beginPath();
-    ctx.moveTo(pl, pt + i * fy);
-    ctx.lineTo(pl + gw, pt + i * fy);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pl, pt + i * fy); ctx.lineTo(pl + gw, pt + i * fy); ctx.stroke();
   }
-
-  // Grid lines (strings)
   for (let i = 0; i < strings; i++) {
-    ctx.beginPath();
-    ctx.moveTo(pl + i * sx, pt);
-    ctx.lineTo(pl + i * sx, pt + gh);
-    ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pl + i * sx, pt); ctx.lineTo(pl + i * sx, pt + gh); ctx.stroke();
   }
 
-  // Open / muted strings
   (shape.open || []).forEach(s => {
     const x = pl + (6 - s) * sx;
-    ctx.strokeStyle = '#4caf50';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.arc(x, pt - 10, 5, 0, Math.PI * 2);
-    ctx.stroke();
+    ctx.strokeStyle = '#4caf50'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.arc(x, pt - 10, 5, 0, Math.PI * 2); ctx.stroke();
   });
   (shape.muted || []).forEach(s => {
     const x = pl + (6 - s) * sx;
-    ctx.strokeStyle = '#e74c3c';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = '#e74c3c'; ctx.lineWidth = 2;
     const sz = 4;
     ctx.beginPath();
     ctx.moveTo(x - sz, pt - 14); ctx.lineTo(x + sz, pt - 6);
@@ -209,7 +169,6 @@ function drawChordDiagram(canvas, chordName) {
     ctx.stroke();
   });
 
-  // Barre
   if (shape.barre) {
     const y = pt + (shape.barre.fret - startFret + 0.5) * fy;
     const x1 = pl + (6 - shape.barre.to) * sx;
@@ -220,27 +179,108 @@ function drawChordDiagram(canvas, chordName) {
     ctx.fill();
   }
 
-  // Finger positions
+  const dotR = W < 140 ? 8 : 9;
   (shape.positions || []).forEach(p => {
     if (p.f <= 0) return;
     const x = pl + (6 - p.s) * sx;
     const y = pt + (p.f - startFret + 0.5) * fy;
     ctx.fillStyle = '#f5c518';
-    ctx.beginPath();
-    ctx.arc(x, y, 9, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.beginPath(); ctx.arc(x, y, dotR, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#000';
-    ctx.font = 'bold 10px Segoe UI';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.font = `bold ${W < 140 ? 9 : 10}px Segoe UI`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
     ctx.fillText(p.n, x, y);
   });
-
   ctx.textBaseline = 'alphabetic';
 }
 
 // ══════════════════════════════════════════════
-//  SEARCH
+//  PLAYER STATE
+// ══════════════════════════════════════════════
+const player = {
+  song: null,
+  playing: false,
+  idx: 0,
+  bpm: 80,
+  timer: null,
+  progress: 0,
+  progressTimer: null,
+};
+
+function msPerChord() {
+  // 4 beats per chord at current BPM
+  return (60000 / player.bpm) * 4;
+}
+
+function startPlayer() {
+  if (player.playing) return;
+  player.playing = true;
+  document.getElementById('btn-play').textContent = '⏹ STOP';
+  document.getElementById('btn-play').classList.add('playing');
+  document.getElementById('player-panel').classList.remove('hidden');
+  document.getElementById('diagrams-grid').classList.add('hidden');
+  scheduleNext();
+  startProgress();
+}
+
+function stopPlayer() {
+  player.playing = false;
+  clearTimeout(player.timer);
+  clearInterval(player.progressTimer);
+  document.getElementById('btn-play').textContent = '▶ PLAY';
+  document.getElementById('btn-play').classList.remove('playing');
+  document.getElementById('player-panel').classList.add('hidden');
+  document.getElementById('diagrams-grid').classList.remove('hidden');
+  document.getElementById('progress-bar').style.width = '0%';
+  updateSequenceHighlight(-1);
+}
+
+function scheduleNext() {
+  if (!player.playing) return;
+  showChord(player.idx);
+  player.timer = setTimeout(() => {
+    player.idx = (player.idx + 1) % player.song.chords.length;
+    player.progress = 0;
+    scheduleNext();
+  }, msPerChord());
+}
+
+function startProgress() {
+  clearInterval(player.progressTimer);
+  player.progress = 0;
+  const interval = 50;
+  player.progressTimer = setInterval(() => {
+    if (!player.playing) return;
+    player.progress += interval;
+    const pct = Math.min(100, (player.progress / msPerChord()) * 100);
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }, interval);
+}
+
+function showChord(idx) {
+  const chords = player.song.chords;
+  const current = chords[idx];
+  const next = chords[(idx + 1) % chords.length];
+
+  document.getElementById('player-chord-name').textContent = current;
+  document.getElementById('player-next-name').textContent = next;
+  document.getElementById('player-finger-hint').textContent = getFingerHint(current);
+
+  drawChordDiagram(document.getElementById('player-canvas'), current);
+  drawChordDiagram(document.getElementById('player-next-canvas'), next);
+
+  updateSequenceHighlight(idx);
+  startProgress();
+}
+
+function updateSequenceHighlight(idx) {
+  document.querySelectorAll('.seq-chord').forEach((el, i) => {
+    el.classList.toggle('active', i === idx);
+  });
+}
+
+// ══════════════════════════════════════════════
+//  RENDER SONG
 // ══════════════════════════════════════════════
 function searchSongs(query) {
   const q = query.toLowerCase().trim();
@@ -251,62 +291,58 @@ function searchSongs(query) {
   ).slice(0, 8);
 }
 
-// ══════════════════════════════════════════════
-//  RENDER SONG
-// ══════════════════════════════════════════════
 function renderSong(song) {
+  if (player.playing) stopPlayer();
+  player.song = song;
+  player.idx = 0;
+  player.bpm = song.bpm || 80;
+
   document.getElementById('empty-state').classList.add('hidden');
   document.getElementById('result-area').classList.remove('hidden');
+  document.getElementById('player-panel').classList.add('hidden');
+  document.getElementById('diagrams-grid').classList.remove('hidden');
 
   document.getElementById('song-name').textContent = song.title;
   document.getElementById('song-artist').textContent = '— ' + song.artist;
 
-  // Chord strip
-  const strip = document.getElementById('chord-strip');
-  strip.innerHTML = '';
-  song.chords.forEach(c => {
-    const pill = document.createElement('div');
-    pill.className = 'chord-pill';
-    pill.textContent = c;
-    strip.appendChild(pill);
+  // Speed
+  const slider = document.getElementById('speed-slider');
+  slider.value = player.bpm;
+  document.getElementById('speed-bpm').textContent = player.bpm + ' BPM';
+
+  // Chord sequence (bottom bar)
+  const seq = document.getElementById('chord-sequence');
+  seq.innerHTML = '';
+  song.chords.forEach((c, i) => {
+    const el = document.createElement('div');
+    el.className = 'seq-chord';
+    el.textContent = c;
+    seq.appendChild(el);
   });
 
   // Diagrams
   const grid = document.getElementById('diagrams-grid');
   grid.innerHTML = '';
-  const unique = [...new Set(song.chords)];
-  unique.forEach(c => {
+  [...new Set(song.chords)].forEach(c => {
     const card = document.createElement('div');
     card.className = 'diagram-card';
-
     const label = document.createElement('div');
     label.className = 'chord-label';
     label.textContent = c;
-
     const canvas = document.createElement('canvas');
     canvas.className = 'chord-canvas';
-    canvas.width = 110;
-    canvas.height = 130;
-
+    canvas.width = 110; canvas.height = 130;
     const hint = document.createElement('div');
     hint.className = 'finger-hint';
     hint.textContent = getFingerHint(c);
-
-    card.appendChild(label);
-    card.appendChild(canvas);
-    card.appendChild(hint);
+    card.appendChild(label); card.appendChild(canvas); card.appendChild(hint);
     grid.appendChild(card);
-
     drawChordDiagram(canvas, c);
   });
 
-  // Lyrics with chords
+  // Lyrics
   const lyricsWrap = document.getElementById('lyrics-wrap');
-  if (song.lyrics) {
-    lyricsWrap.innerHTML = formatLyrics(song.lyrics);
-  } else {
-    lyricsWrap.innerHTML = '';
-  }
+  lyricsWrap.innerHTML = song.lyrics ? formatLyrics(song.lyrics) : '';
 }
 
 function formatLyrics(raw) {
@@ -320,17 +356,24 @@ function formatLyrics(raw) {
 
 function getFingerHint(chord) {
   const hints = {
-    'C':'Deget 1→B(1), 2→D(2), 3→A(3)', 'D':'Deget 1→G(2), 2→e(2), 3→B(3)',
-    'E':'Deget 1→G(1), 2→A(2), 3→D(2)', 'G':'Deget 2→A(2), 1→d(2), 3→e(3)',
-    'A':'Deget 1,2,3→DGB(2)', 'Am':'Deget 1→B(1), 2→D(2), 3→G(2)',
-    'Em':'Deget 2→A(2), 3→D(2)', 'Dm':'Deget 1→e(1), 2→G(2), 3→B(3)',
-    'F':'Barre fret 1, deget 3→D(3), 4→A(3)', 'Bm':'Barre fret 2 + degete',
+    'C':'Deget 1→B(1), 2→D(2), 3→A(3)',
+    'D':'Deget 1→G(2), 2→e(2), 3→B(3)',
+    'E':'Deget 1→G(1), 2→A(2), 3→D(2)',
+    'G':'Deget 1→A(2), 2→E(3), 3→e(3)',
+    'A':'Deget 1,2,3→DGB(2)',
+    'Am':'Deget 1→B(1), 2→D(2), 3→G(2)',
+    'Em':'Deget 2→A(2), 3→D(2)',
+    'Dm':'Deget 1→e(1), 2→G(2), 3→B(3)',
+    'F':'Barre fret 1, 3→D(3), 4→A(3)',
+    'Bm':'Barre fret 2 + degete 3,4',
+    'C#m':'Barre fret 4 + degete',
+    'F#m':'Barre fret 2 + degete',
   };
   return hints[chord] || '';
 }
 
 // ══════════════════════════════════════════════
-//  UI EVENTS
+//  EVENTS
 // ══════════════════════════════════════════════
 document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('screen-cover').classList.add('hidden');
@@ -338,6 +381,7 @@ document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('search-input').focus();
 });
 
+// Search
 const input = document.getElementById('search-input');
 const suggestionsEl = document.getElementById('suggestions');
 
@@ -374,7 +418,33 @@ input.addEventListener('keydown', e => {
 });
 
 document.addEventListener('click', e => {
-  if (!suggestionsEl.contains(e.target) && e.target !== input) {
+  if (!suggestionsEl.contains(e.target) && e.target !== input)
     suggestionsEl.classList.add('hidden');
+});
+
+// Play / Stop
+document.getElementById('btn-play').addEventListener('click', () => {
+  if (!player.song) return;
+  player.playing ? stopPlayer() : startPlayer();
+});
+
+// Speed slider
+const slider = document.getElementById('speed-slider');
+slider.addEventListener('input', () => {
+  player.bpm = parseInt(slider.value);
+  document.getElementById('speed-bpm').textContent = player.bpm + ' BPM';
+  if (player.playing) {
+    clearTimeout(player.timer);
+    scheduleNext();
   }
+});
+
+document.getElementById('btn-slower').addEventListener('click', () => {
+  slider.value = Math.max(40, parseInt(slider.value) - 10);
+  slider.dispatchEvent(new Event('input'));
+});
+
+document.getElementById('btn-faster').addEventListener('click', () => {
+  slider.value = Math.min(240, parseInt(slider.value) + 10);
+  slider.dispatchEvent(new Event('input'));
 });

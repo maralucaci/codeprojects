@@ -38,9 +38,52 @@
         <span id="song-artist"></span>
       </div>
 
-      <div class="chord-strip" id="chord-strip"></div>
+      <!-- PLAYER (shown when playing) -->
+      <div id="player-panel" class="hidden">
+        <div class="player-top">
 
+          <!-- Current chord (left) -->
+          <div class="player-current">
+            <div class="player-label">ACORD CURENT</div>
+            <div class="player-chord-name" id="player-chord-name">—</div>
+            <canvas id="player-canvas" width="160" height="190"></canvas>
+            <div class="player-finger-hint" id="player-finger-hint"></div>
+          </div>
+
+          <!-- Next chord (center) -->
+          <div class="player-next">
+            <div class="player-label">URMĂTOR</div>
+            <div class="player-next-name" id="player-next-name">—</div>
+            <canvas id="player-next-canvas" width="110" height="130"></canvas>
+          </div>
+
+          <!-- Speed control (right) -->
+          <div class="player-speed">
+            <div class="player-label">VITEZĂ</div>
+            <div class="speed-bpm" id="speed-bpm">80 BPM</div>
+            <div class="speed-row">
+              <button class="speed-btn" id="btn-slower">−</button>
+              <input type="range" id="speed-slider" min="40" max="240" value="80" class="speed-slider">
+              <button class="speed-btn" id="btn-faster">+</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-bar-wrap">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+
+      <!-- CHORD DIAGRAMS (shown when not playing) -->
       <div class="diagrams-grid" id="diagrams-grid"></div>
+
+      <!-- BOTTOM BAR -->
+      <div class="bottom-bar">
+        <div class="chord-sequence" id="chord-sequence"></div>
+        <button class="play-btn" id="btn-play">▶ PLAY</button>
+      </div>
 
       <div class="lyrics-wrap" id="lyrics-wrap"></div>
     </div>
