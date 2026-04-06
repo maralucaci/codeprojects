@@ -123,7 +123,19 @@ function createYTPlayer(videoId, onReady) {
 }
 
 function ytPlay()  { if (ytPlayer && ytPlayer.playVideo)  ytPlayer.playVideo(); }
-function ytStop()  { if (ytPlayer && ytPlayer.stopVideo)  ytPlayer.stopVideo(); }
+function ytStop() {
+  try {
+    if (ytPlayer) {
+      if (ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+      if (ytPlayer.stopVideo)  ytPlayer.stopVideo();
+      ytPlayer.destroy();
+      ytPlayer = null;
+    }
+  } catch(e) {}
+  // Recreate empty container
+  const wrap = document.querySelector('.yt-wrap');
+  if (wrap) { wrap.innerHTML = '<div id="yt-player"></div>'; }
+}
 
 function loadYouTube(song, autoplay) {
   if (!ytReady || !song.yt) return;
