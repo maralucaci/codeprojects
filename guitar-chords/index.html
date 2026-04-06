@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎸 Guitar Chords</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- COVER -->
+  <div id="screen-cover">
+    <div class="cover-box">
+      <h1>🎸</h1>
+      <h2>Guitar Chords</h2>
+      <p>Află acordurile oricărui cântec</p>
+      <button id="btn-start">START</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="screen-app" class="hidden">
+    <header>
+      <span class="logo">🎸 Guitar Chords</span>
+    </header>
+
+    <div class="search-wrap">
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Caută un cântec... ex: Shape of You" autocomplete="off">
+        <button id="btn-search">🔍</button>
+      </div>
+      <div id="suggestions" class="suggestions hidden"></div>
+    </div>
+
+    <div id="result-area" class="hidden">
+      <div class="song-title-bar">
+        <span id="song-name"></span>
+        <span id="song-artist"></span>
+      </div>
+
+      <div class="chord-strip" id="chord-strip"></div>
+
+      <div class="diagrams-grid" id="diagrams-grid"></div>
+
+      <div class="lyrics-wrap" id="lyrics-wrap"></div>
+    </div>
+
+    <div id="empty-state">
+      <p>🎵 Caută un cântec și află cum să-l cânți la chitară!</p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
