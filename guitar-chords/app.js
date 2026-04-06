@@ -80,10 +80,6 @@ const SONGS = [
     lyrics:'[C]I\'ve heard there was a [Am]secret chord\n[C]That David played and [Am]it pleased the Lord\n[F]But you don\'t really [G]care for music do you' },
   { title:'Dragostea Din Tei', artist:'O-Zone', chords:['F','C','Dm','Bb'], bpm:140, yt:'YbaTFBHtUBY',
     lyrics:'[F]Ma-ia-hii [C]ma-ia-huu\n[Dm]Ma-ia-hoo [Bb]ma-ia-haa' },
-  { title:'Doi Straini', artist:'Irina Rimes', chords:['Am','F','C','G'], bpm:95,
-    lyrics:'[Am]Eram doi straini [F]in acelasi oras\n[C]Ne-am intalnit [G]la o schimbare de iarna' },
-  { title:'Vara Nu Dorm', artist:'Carla\'s Dreams', chords:['Dm','Bb','F','C'], bpm:110,
-    lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Ma gandesc la tine [C]toata' },
   { title:'Despacito', artist:'Luis Fonsi', chords:['Bm','G','D','A'], bpm:89, yt:'ktvTqknDobU',
     lyrics:'[Bm]Si sabes que ya llevo un rato mirandote\n[G]Tengo que bailar contigo hoy\n[D]Vi que tu mirada ya estaba llamandome\n[A]Muestrame el camino que yo voy' },
   { title:'La Bamba', artist:'Ritchie Valens', chords:['C','F','G'], bpm:170, yt:'ZEI3NaRPn60',
@@ -161,12 +157,22 @@ function createYTPlayer(videoId, onReady) {
     playerVars: { autoplay: 0, rel: 0, modestbranding: 1 },
     events: {
       onReady: () => { if (onReady) onReady(); },
-      onError: (e) => {
-        // Video blocked/restricted — show message, don't crash
-        const bar = document.getElementById('music-bar');
-        if (bar) {
-          const txt = bar.querySelector('.music-bar-text');
-          if (txt) txt.innerHTML = '⚠️ Videoul nu poate fi redat (restricționat). Continuă să cânți!';
+      onStateChange: (e) => {
+        // YT.PlayerState.PLAYING = 1 — muzica a pornit, sincronizăm acordurile
+        if (e.data === 1 && pl.waitingForYT) {
+          pl.waitingForYT = false;
+          clearTimeout(pl.ytFallbackTimer);
+          scheduleBeat();
+        }
+      },
+      onError: () => {
+        // Video blocat/restricționat — pornim totuși ritmul acordurilor
+        const txt = document.querySelector('.music-bar-text');
+        if (txt) txt.innerHTML = '⚠️ Fără audio (videoul e restricționat). Continuă să cânți după ritm!';
+        if (pl.waitingForYT) {
+          pl.waitingForYT = false;
+          clearTimeout(pl.ytFallbackTimer);
+          scheduleBeat();
         }
       }
     }
@@ -260,6 +266,7 @@ const pl = {
   song: null, playing: false,
   chordIdx: 0, beatIdx: 0,
   bpm: 80, beatTimer: null, progTimer: null, prog: 0,
+  waitingForYT: false, ytFallbackTimer: null,
 };
 
 function msPerBeat()  { return 60000 / pl.bpm; }
@@ -275,14 +282,30 @@ function startPlayer() {
   document.getElementById('diagrams-section').classList.add('hidden');
   document.getElementById('player-view').classList.remove('hidden');
 
-  loadYouTube(pl.song, true);
   document.getElementById('music-bar-title').textContent = pl.song.title + ' — ' + pl.song.artist;
   updateChordDisplay();
-  scheduleBeat();
+
+  if (pl.song.yt) {
+    // Așteptăm YouTube să înceapă, acordurile pornesc sincronizat
+    pl.waitingForYT = true;
+    loadYouTube(pl.song, true);
+    // Fallback: dacă YouTube nu pornește în 6 sec, pornim acordurile oricum
+    pl.ytFallbackTimer = setTimeout(() => {
+      if (pl.waitingForYT && pl.playing) {
+        pl.waitingForYT = false;
+        scheduleBeat();
+      }
+    }, 6000);
+  } else {
+    // Fără YouTube — pornim imediat
+    scheduleBeat();
+  }
 }
 
 function stopPlayer() {
   pl.playing = false;
+  pl.waitingForYT = false;
+  clearTimeout(pl.ytFallbackTimer);
   clearTimeout(pl.beatTimer);
   clearInterval(pl.progTimer);
   document.getElementById('btn-play').textContent = '▶ PLAY';
