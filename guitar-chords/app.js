@@ -5,7 +5,7 @@
 // ══════════════════════════════════════════════
 const CHORD_SHAPES = {
   'C':    { positions:[{s:5,f:3,n:3},{s:4,f:2,n:2},{s:2,f:1,n:1}], open:[1,2,4], muted:[6] },
-  'Cm':   { positions:[{s:5,f:3,n:3},{s:4,f:5,n:4},{s:3,f:5,n:4},{s:2,f:4,n:3}], barre:{fret:3,from:1,to:5} },
+  'Cm':   { positions:[{s:5,f:3,n:3},{s:4,f:5,n:4}], barre:{fret:3,from:1,to:5} },
   'D':    { positions:[{s:3,f:2,n:1},{s:2,f:3,n:3},{s:1,f:2,n:2}], open:[4], muted:[5,6] },
   'Dm':   { positions:[{s:3,f:2,n:2},{s:2,f:3,n:3},{s:1,f:1,n:1}], open:[4], muted:[5,6] },
   'E':    { positions:[{s:5,f:2,n:2},{s:4,f:2,n:3},{s:3,f:1,n:1}], open:[1,2,4,6] },
@@ -13,22 +13,100 @@ const CHORD_SHAPES = {
   'F':    { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4},{s:3,f:2,n:2}], barre:{fret:1,from:1,to:6} },
   'Fm':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4}], barre:{fret:1,from:1,to:6} },
   'G':    { positions:[{s:6,f:3,n:2},{s:5,f:2,n:1},{s:1,f:3,n:3}], open:[2,3,4,5] },
-  'Gm':   { positions:[{s:5,f:5,n:3},{s:4,f:5,n:4},{s:3,f:3,n:2}], barre:{fret:3,from:1,to:6} },
+  'Gm':   { positions:[{s:5,f:5,n:3},{s:4,f:5,n:4}], barre:{fret:3,from:1,to:6} },
   'A':    { positions:[{s:4,f:2,n:1},{s:3,f:2,n:2},{s:2,f:2,n:3}], open:[1,5,6], muted:[6] },
   'Am':   { positions:[{s:4,f:2,n:2},{s:3,f:2,n:3},{s:2,f:1,n:1}], open:[1,4,5], muted:[6] },
   'B':    { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:4,n:4}], barre:{fret:2,from:1,to:5}, muted:[6] },
   'Bm':   { positions:[{s:4,f:4,n:3},{s:3,f:4,n:4},{s:2,f:3,n:2}], barre:{fret:2,from:1,to:5}, muted:[6] },
-  'F#m':  { positions:[{s:5,f:4,n:3},{s:4,f:4,n:4},{s:3,f:2,n:1}], barre:{fret:2,from:1,to:5}, muted:[6] },
-  'C#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:5}, muted:[6] },
-  'G#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:4,n:2}], barre:{fret:4,from:1,to:6} },
+  'F#m':  { positions:[{s:5,f:4,n:3},{s:4,f:4,n:4}], barre:{fret:2,from:1,to:5}, muted:[6] },
+  'C#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:5}, muted:[6] },
+  'G#m':  { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:6} },
   'E7':   { positions:[{s:5,f:2,n:2},{s:3,f:1,n:1}], open:[1,2,4,6] },
   'A7':   { positions:[{s:4,f:2,n:2},{s:2,f:2,n:3}], open:[1,3,5], muted:[6] },
   'D7':   { positions:[{s:3,f:2,n:2},{s:2,f:1,n:1},{s:1,f:2,n:3}], open:[4], muted:[5,6] },
   'G7':   { positions:[{s:6,f:3,n:3},{s:5,f:2,n:2},{s:1,f:1,n:1}], open:[2,3,4] },
-  'Bb':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4},{s:3,f:3,n:4}], barre:{fret:1,from:1,to:5}, muted:[6] },
-  'Ab':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:6,n:4}], barre:{fret:4,from:1,to:6} },
-  'Db':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4},{s:3,f:6,n:4}], barre:{fret:4,from:1,to:5}, muted:[6] },
+  'Bb':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4}], barre:{fret:1,from:1,to:5}, muted:[6] },
+  'Ab':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:6} },
+  'Db':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:5}, muted:[6] },
 };
+
+// ══════════════════════════════════════════════
+//  GUITAR AUDIO ENGINE
+// ══════════════════════════════════════════════
+// Standard tuning: string 6→1 = E2 A2 D3 G3 B3 E4
+const STRING_BASE = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
+// index 0 = string 6 (low E), index 5 = string 1 (high e)
+
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function stringFreq(stringNum, fret) {
+  // stringNum 1-6 (1=high e, 6=low E)
+  const base = STRING_BASE[6 - stringNum];
+  return base * Math.pow(2, fret / 12);
+}
+
+function getChordFrequencies(chordName) {
+  const shape = CHORD_SHAPES[chordName];
+  if (!shape) return [];
+  // index 0 = string 6 (low E), index 5 = string 1 (high e)
+  const freqs = [null, null, null, null, null, null];
+
+  // Open strings
+  (shape.open || []).forEach(s => { freqs[6 - s] = stringFreq(s, 0); });
+
+  // Barre
+  if (shape.barre) {
+    for (let s = shape.barre.from; s <= shape.barre.to; s++) {
+      if (freqs[6 - s] === null) freqs[6 - s] = stringFreq(s, shape.barre.fret);
+    }
+  }
+
+  // Fretted positions (override)
+  (shape.positions || []).forEach(p => { freqs[6 - p.s] = stringFreq(p.s, p.f); });
+
+  // Muted
+  (shape.muted || []).forEach(s => { freqs[6 - s] = null; });
+
+  return freqs; // index 0 = low E (first for down strum)
+}
+
+function playStrum(chordName, direction) {
+  const ctx = getAudioCtx();
+  const freqs = getChordFrequencies(chordName);
+  // down = low→high, up = high→low
+  const ordered = direction === 'U' ? [...freqs].reverse() : freqs;
+
+  ordered.forEach((freq, i) => {
+    if (!freq) return;
+    const t = ctx.currentTime + i * 0.013;
+
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    const filt = ctx.createBiquadFilter();
+
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+
+    filt.type = 'lowpass';
+    filt.frequency.value = 2200;
+    filt.Q.value = 1;
+
+    osc.connect(filt);
+    filt.connect(gain);
+    gain.connect(ctx.destination);
+
+    gain.gain.setValueAtTime(0.18, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
+
+    osc.start(t);
+    osc.stop(t + 1.4);
+  });
+}
 
 // ══════════════════════════════════════════════
 //  SONGS
@@ -59,13 +137,13 @@ const SONGS = [
   { title:'Hotel California', artist:'Eagles', chords:['Bm','F#m','A','E'], bpm:75,
     lyrics:'[Bm]On a dark desert highway [F#m]cool wind in my hair\n[A]Warm smell of colitas [E]rising up through the air' },
   { title:'Knockin on Heavens Door', artist:'Bob Dylan', chords:['G','D','Am','C'], bpm:70,
-    lyrics:'[G]Mama, take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin\' dark, [Am]too dark to see\n[D]Knockin\' on heaven\'s door' },
+    lyrics:'[G]Mama take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin dark [Am]too dark to see\n[D]Knockin on heavens door' },
   { title:'Sweet Home Alabama', artist:'Lynyrd Skynyrd', chords:['D','C','G'], bpm:98,
     lyrics:'[D]Big wheels keep on turning\n[C]Carry me home to see my kin\n[G]Singing songs about the Southland' },
   { title:'Wish You Were Here', artist:'Pink Floyd', chords:['Em','G','A','C','D'], bpm:63,
-    lyrics:'[Em]So, so you think you can tell\n[G]Heaven from hell\n[A]Blue skies from pain\n[C]Can you tell a green field\n[D]From a cold steel rail' },
+    lyrics:'[Em]So so you think you can tell\n[G]Heaven from hell\n[A]Blue skies from pain\n[C]Can you tell a green field\n[D]From a cold steel rail' },
   { title:'Nothing Else Matters', artist:'Metallica', chords:['Em','D','C','Am'], bpm:69,
-    lyrics:'[Em]So close, no matter how far\n[D]Couldn\'t be much more from the heart\n[C]Forever trusting who we are\n[Am]And nothing else matters' },
+    lyrics:'[Em]So close no matter how far\n[D]Couldnt be much more from the heart\n[C]Forever trusting who we are\n[Am]And nothing else matters' },
   { title:'Shallow', artist:'Lady Gaga', chords:['Em','D','G','C','Am'], bpm:96,
     lyrics:'[Em]Tell me something girl\n[D]Are you happy in this modern world\n[G]Or do you need more\n[C]Is there something else you\'re searching for' },
   { title:'All of Me', artist:'John Legend', chords:['Em','C','G','D'], bpm:63,
@@ -74,16 +152,16 @@ const SONGS = [
     lyrics:'[C]I\'ve heard there was a [Am]secret chord\n[C]That David played and [Am]it pleased the Lord\n[F]But you don\'t really [G]care for music do you' },
   { title:'Dragostea Din Tei', artist:'O-Zone', chords:['F','C','Dm','Bb'], bpm:140,
     lyrics:'[F]Ma-ia-hii [C]ma-ia-huu\n[Dm]Ma-ia-hoo [Bb]ma-ia-haa' },
-  { title:'Doi Străini', artist:'Irina Rimes', chords:['Am','F','C','G'], bpm:95,
-    lyrics:'[Am]Eram doi străini [F]în același oraș\n[C]Ne-am întâlnit [G]la o schimbare de iarnă' },
+  { title:'Doi Straini', artist:'Irina Rimes', chords:['Am','F','C','G'], bpm:95,
+    lyrics:'[Am]Eram doi straini [F]in acelasi oras\n[C]Ne-am intalnit [G]la o schimbare de iarna' },
   { title:'Vara Nu Dorm', artist:'Carla\'s Dreams', chords:['Dm','Bb','F','C'], bpm:110,
-    lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Mă gândesc la tine [C]toată' },
+    lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Ma gandesc la tine [C]toata' },
   { title:'Despacito', artist:'Luis Fonsi', chords:['Bm','G','D','A'], bpm:89,
-    lyrics:'[Bm]Sí, sabes que ya llevo un rato mirándote\n[G]Tengo que bailar contigo hoy\n[D]Vi que tu mirada ya estaba llamándome\n[A]Muéstrame el camino que yo voy' },
+    lyrics:'[Bm]Si sabes que ya llevo un rato mirandote\n[G]Tengo que bailar contigo hoy\n[D]Vi que tu mirada ya estaba llamandome\n[A]Muestrame el camino que yo voy' },
   { title:'La Bamba', artist:'Ritchie Valens', chords:['C','F','G'], bpm:170,
     lyrics:'[C]Para bailar la bamba\n[F]Para bailar la bamba\n[G]Se necesita una poca de gracia' },
   { title:'Bella Ciao', artist:'Folk Italiano', chords:['Dm','A','C','F'], bpm:104,
-    lyrics:'[Dm]Una mattina mi son svegliato\n[A]O bella ciao, bella ciao\n[Dm]Bella ciao ciao ciao' },
+    lyrics:'[Dm]Una mattina mi son svegliato\n[A]O bella ciao bella ciao\n[Dm]Bella ciao ciao ciao' },
   { title:'Africa', artist:'Toto', chords:['F#m','D','A','E'], bpm:93,
     lyrics:'[F#m]I hear the drums echoing tonight\n[D]But she hears only whispers\n[A]She\'s coming in twelve-thirty flight\n[E]The moonlit wings reflect the stars' },
   { title:'Stand By Me', artist:'Ben E. King', chords:['A','F#m','D','E'], bpm:121,
@@ -91,13 +169,13 @@ const SONGS = [
   { title:'Hey There Delilah', artist:'Plain White T\'s', chords:['D','F#m','Bm','G','A'], bpm:94,
     lyrics:'[D]Hey there Delilah what\'s it like in New York City\n[F#m]I\'m a thousand miles away\n[Bm]Yes you do [G]Times Square can\'t shine as bright as you\n[A]I swear it\'s true' },
   { title:'Riptide', artist:'Vance Joy', chords:['Am','G','C','F'], bpm:104,
-    lyrics:'[Am]I was scared of dentists and the dark\n[G]I was scared of pretty girls\n[C]Oh, all my friends are turning green\n[Am]You\'re the magician\'s assistant in their dream' },
+    lyrics:'[Am]I was scared of dentists and the dark\n[G]I was scared of pretty girls\n[C]Oh all my friends are turning green\n[Am]You\'re the magician\'s assistant in their dream' },
   { title:'Budapest', artist:'George Ezra', chords:['C','F','G','Am'], bpm:130,
     lyrics:'[C]My house in Budapest\n[F]My hidden treasure chest\n[G]Golden grand piano\n[Am]My beautiful Castillo' },
   { title:'Take Me to Church', artist:'Hozier', chords:['Am','F','C','G','Em'], bpm:129,
     lyrics:'[Am]My lover\'s got humor\n[F]She\'s the giggle at a funeral\n[C]Knows everybody\'s disapproval\n[G]I should\'ve worshipped her sooner' },
   { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117,
-    lyrics:'[F]Load up on guns, bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no, I know a dirty word' },
+    lyrics:'[F]Load up on guns bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no I know a dirty word' },
 ];
 
 // ══════════════════════════════════════════════
@@ -107,66 +185,32 @@ function drawChordDiagram(canvas, chordName) {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0, 0, W, H);
-
   const shape = CHORD_SHAPES[chordName];
-  if (!shape) {
-    ctx.fillStyle = '#555'; ctx.font = '12px Segoe UI';
-    ctx.textAlign = 'center'; ctx.fillText('no diagram', W/2, H/2);
-    return;
-  }
+  if (!shape) { ctx.fillStyle='#555'; ctx.font='12px Segoe UI'; ctx.textAlign='center'; ctx.fillText('?',W/2,H/2); return; }
 
-  const strings = 6, frets = 5;
-  const pl = 28, pt = 24, pr = 10, pb = 10;
-  const gw = W - pl - pr, gh = H - pt - pb;
-  const sx = gw / (strings - 1), fy = gh / frets;
+  const strings=6, frets=5, pl=28, pt=24, pr=10, pb=10;
+  const gw=W-pl-pr, gh=H-pt-pb, sx=gw/(strings-1), fy=gh/frets;
 
-  let minFret = 99;
-  (shape.positions || []).forEach(p => { if (p.f > 0) minFret = Math.min(minFret, p.f); });
-  if (shape.barre) minFret = Math.min(minFret, shape.barre.fret);
-  if (minFret === 99) minFret = 1;
-  const offset = minFret > 1 && !shape.barre ? minFret - 1 : 0;
-  const startFret = offset + 1;
+  let minFret=99;
+  (shape.positions||[]).forEach(p=>{ if(p.f>0) minFret=Math.min(minFret,p.f); });
+  if(shape.barre) minFret=Math.min(minFret,shape.barre.fret);
+  if(minFret===99) minFret=1;
+  const offset = minFret>1 && !shape.barre ? minFret-1 : 0;
+  const startFret = offset+1;
 
-  if (offset > 0) {
-    ctx.fillStyle = '#f5c518'; ctx.font = 'bold 11px Segoe UI';
-    ctx.textAlign = 'left'; ctx.fillText(startFret + 'fr', 1, pt + fy * 0.7);
-  }
-  if (offset === 0) { ctx.fillStyle = '#eee'; ctx.fillRect(pl, pt - 3, gw, 4); }
+  if(offset>0){ ctx.fillStyle='#f5c518'; ctx.font='bold 11px Segoe UI'; ctx.textAlign='left'; ctx.fillText(startFret+'fr',1,pt+fy*0.7); }
+  if(offset===0){ ctx.fillStyle='#eee'; ctx.fillRect(pl,pt-3,gw,4); }
 
-  ctx.strokeStyle = '#444'; ctx.lineWidth = 1;
-  for (let i = 0; i <= frets; i++) {
-    ctx.beginPath(); ctx.moveTo(pl, pt + i*fy); ctx.lineTo(pl+gw, pt+i*fy); ctx.stroke();
-  }
-  for (let i = 0; i < strings; i++) {
-    ctx.beginPath(); ctx.moveTo(pl+i*sx, pt); ctx.lineTo(pl+i*sx, pt+gh); ctx.stroke();
-  }
+  ctx.strokeStyle='#444'; ctx.lineWidth=1;
+  for(let i=0;i<=frets;i++){ ctx.beginPath(); ctx.moveTo(pl,pt+i*fy); ctx.lineTo(pl+gw,pt+i*fy); ctx.stroke(); }
+  for(let i=0;i<strings;i++){ ctx.beginPath(); ctx.moveTo(pl+i*sx,pt); ctx.lineTo(pl+i*sx,pt+gh); ctx.stroke(); }
 
-  (shape.open||[]).forEach(s => {
-    const x = pl+(6-s)*sx;
-    ctx.strokeStyle='#4caf50'; ctx.lineWidth=1.5;
-    ctx.beginPath(); ctx.arc(x, pt-10, 5, 0, Math.PI*2); ctx.stroke();
-  });
-  (shape.muted||[]).forEach(s => {
-    const x = pl+(6-s)*sx;
-    ctx.strokeStyle='#e74c3c'; ctx.lineWidth=2;
-    ctx.beginPath(); ctx.moveTo(x-4,pt-14); ctx.lineTo(x+4,pt-6); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x+4,pt-14); ctx.lineTo(x-4,pt-6); ctx.stroke();
-  });
+  (shape.open||[]).forEach(s=>{ const x=pl+(6-s)*sx; ctx.strokeStyle='#4caf50'; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(x,pt-10,5,0,Math.PI*2); ctx.stroke(); });
+  (shape.muted||[]).forEach(s=>{ const x=pl+(6-s)*sx; ctx.strokeStyle='#e74c3c'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(x-4,pt-14); ctx.lineTo(x+4,pt-6); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x+4,pt-14); ctx.lineTo(x-4,pt-6); ctx.stroke(); });
 
-  if (shape.barre) {
-    const y = pt+(shape.barre.fret-startFret+0.5)*fy;
-    const x1 = pl+(6-shape.barre.to)*sx, x2 = pl+(6-shape.barre.from)*sx;
-    ctx.fillStyle='#f5c518'; ctx.beginPath();
-    ctx.roundRect(x1-4, y-8, x2-x1+8, 16, 8); ctx.fill();
-  }
+  if(shape.barre){ const y=pt+(shape.barre.fret-startFret+0.5)*fy, x1=pl+(6-shape.barre.to)*sx, x2=pl+(6-shape.barre.from)*sx; ctx.fillStyle='#f5c518'; ctx.beginPath(); ctx.roundRect(x1-4,y-8,x2-x1+8,16,8); ctx.fill(); }
 
-  (shape.positions||[]).forEach(p => {
-    if (p.f <= 0) return;
-    const x = pl+(6-p.s)*sx, y = pt+(p.f-startFret+0.5)*fy;
-    ctx.fillStyle='#f5c518'; ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle='#000'; ctx.font='bold 10px Segoe UI';
-    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(p.n,x,y);
-  });
+  (shape.positions||[]).forEach(p=>{ if(p.f<=0) return; const x=pl+(6-p.s)*sx, y=pt+(p.f-startFret+0.5)*fy; ctx.fillStyle='#f5c518'; ctx.beginPath(); ctx.arc(x,y,9,0,Math.PI*2); ctx.fill(); ctx.fillStyle='#000'; ctx.font='bold 10px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(p.n,x,y); });
   ctx.textBaseline='alphabetic';
 }
 
@@ -174,42 +218,50 @@ function drawChordDiagram(canvas, chordName) {
 //  FINGER HINTS
 // ══════════════════════════════════════════════
 const HINTS = {
-  'C':'Deget 1→B(1), 2→D(2), 3→A(3)',
-  'D':'Deget 1→G(2), 2→e(2), 3→B(3)',
-  'E':'Deget 1→G(1), 2→A(2), 3→D(2)',
-  'G':'Deget 1→A(2), 2→E(3), 3→e(3)',
-  'A':'Deget 1,2,3→D,G,B fret 2',
-  'Am':'Deget 1→B(1), 2→D(2), 3→G(2)',
-  'Em':'Deget 2→A(2), 3→D(2)',
-  'Dm':'Deget 1→e(1), 2→G(2), 3→B(3)',
-  'F':'Barre fret 1 + deget 3→D, 4→A',
-  'Bm':'Barre fret 2 + degete 3,4',
-  'C#m':'Barre fret 4 + degete 3,4',
-  'F#m':'Barre fret 2 + degete 3,4',
+  'C':'Deget 1→B(1), 2→D(2), 3→A(3)', 'D':'Deget 1→G(2), 2→e(2), 3→B(3)',
+  'E':'Deget 1→G(1), 2→A(2), 3→D(2)', 'G':'Deget 1→A(2), 2→E(3), 3→e(3)',
+  'A':'Deget 1,2,3→D,G,B fret 2', 'Am':'Deget 1→B(1), 2→D(2), 3→G(2)',
+  'Em':'Deget 2→A(2), 3→D(2)', 'Dm':'Deget 1→e(1), 2→G(2), 3→B(3)',
+  'F':'Barre fret 1 + deget 3→D, 4→A', 'Bm':'Barre fret 2 + degete 3,4',
+  'C#m':'Barre fret 4 + degete 3,4', 'F#m':'Barre fret 2 + degete 3,4',
 };
+
+// ══════════════════════════════════════════════
+//  STRUM PATTERN  D=down U=up
+// ══════════════════════════════════════════════
+const STRUM_PATTERN = ['D','D','U','D','D','U','D','U']; // 8 strums / 2 bars
 
 // ══════════════════════════════════════════════
 //  PLAYER STATE
 // ══════════════════════════════════════════════
-const pl = { song:null, playing:false, idx:0, bpm:80, timer:null, prog:0, progTimer:null };
+const pl = {
+  song: null, playing: false,
+  chordIdx: 0, beatIdx: 0,
+  bpm: 80, beatTimer: null, progTimer: null, prog: 0,
+};
 
-function msPerChord() { return (60000 / pl.bpm) * 4; }
+function msPerBeat()  { return 60000 / pl.bpm; }
+function msPerChord() { return msPerBeat() * 4; } // 4 beats per chord
 
 function startPlayer() {
   if (pl.playing) return;
+  getAudioCtx(); // unlock audio on user gesture
   pl.playing = true;
-  pl.idx = 0;
+  pl.chordIdx = 0;
+  pl.beatIdx  = 0;
+
   document.getElementById('btn-play').textContent = '⏹ STOP';
   document.getElementById('btn-play').classList.add('playing');
-  // switch views
   document.getElementById('diagrams-section').classList.add('hidden');
   document.getElementById('player-view').classList.remove('hidden');
-  tick();
+
+  updateChordDisplay();
+  scheduleBeat();
 }
 
 function stopPlayer() {
   pl.playing = false;
-  clearTimeout(pl.timer);
+  clearTimeout(pl.beatTimer);
   clearInterval(pl.progTimer);
   document.getElementById('btn-play').textContent = '▶ PLAY';
   document.getElementById('btn-play').classList.remove('playing');
@@ -219,41 +271,72 @@ function stopPlayer() {
   highlightSeq(-1);
 }
 
-function tick() {
+function scheduleBeat() {
   if (!pl.playing) return;
-  showChord(pl.idx);
+
+  const strumDir = STRUM_PATTERN[pl.beatIdx % STRUM_PATTERN.length];
+  showStrumDirection(strumDir);
+  playStrum(pl.song.chords[pl.chordIdx], strumDir);
+
+  pl.beatIdx++;
+
+  // Every 4 beats → advance chord
+  if (pl.beatIdx % 4 === 0) {
+    pl.chordIdx = (pl.chordIdx + 1) % pl.song.chords.length;
+    updateChordDisplay();
+  }
+
   startProgress();
-  pl.timer = setTimeout(() => {
-    pl.idx = (pl.idx + 1) % pl.song.chords.length;
-    tick();
-  }, msPerChord());
+  pl.beatTimer = setTimeout(scheduleBeat, msPerBeat());
+}
+
+function updateChordDisplay() {
+  const chords = pl.song.chords;
+  const cur = chords[pl.chordIdx];
+  const nxt = chords[(pl.chordIdx + 1) % chords.length];
+
+  document.getElementById('player-chord-name').textContent = cur;
+  document.getElementById('player-next-name').textContent  = nxt;
+  document.getElementById('player-hint').textContent = HINTS[cur] || '';
+
+  drawChordDiagram(document.getElementById('player-canvas'), cur);
+  drawChordDiagram(document.getElementById('player-next-canvas'), nxt);
+  highlightSeq(pl.chordIdx);
+}
+
+function showStrumDirection(dir) {
+  const arrow = document.getElementById('strum-arrow');
+  const word  = document.getElementById('strum-word');
+  arrow.textContent = dir === 'D' ? '↓' : '↑';
+  word.textContent  = dir === 'D' ? 'DOWN' : 'UP';
+
+  // Pulse animation
+  arrow.classList.remove('pulse');
+  void arrow.offsetWidth; // reflow
+  arrow.classList.add('pulse');
+  setTimeout(() => arrow.classList.remove('pulse'), 150);
+
+  // Beat dots
+  const beatInChord = pl.beatIdx % 4;
+  document.querySelectorAll('.bdot').forEach((dot, i) =>
+    dot.classList.toggle('active', i === beatInChord)
+  );
 }
 
 function startProgress() {
   clearInterval(pl.progTimer);
   pl.prog = 0;
-  const step = 50;
+  const step = 40;
   pl.progTimer = setInterval(() => {
     if (!pl.playing) return;
     pl.prog += step;
     document.getElementById('progress-fill').style.width =
-      Math.min(100, (pl.prog / msPerChord()) * 100) + '%';
+      Math.min(100, (pl.prog / msPerBeat()) * 100) + '%';
   }, step);
 }
 
-function showChord(idx) {
-  const chords = pl.song.chords;
-  const cur = chords[idx], nxt = chords[(idx+1) % chords.length];
-  document.getElementById('player-chord-name').textContent = cur;
-  document.getElementById('player-next-name').textContent = nxt;
-  document.getElementById('player-hint').textContent = HINTS[cur] || '';
-  drawChordDiagram(document.getElementById('player-canvas'), cur);
-  drawChordDiagram(document.getElementById('player-next-canvas'), nxt);
-  highlightSeq(idx);
-}
-
 function highlightSeq(idx) {
-  document.querySelectorAll('.seq-pill').forEach((el,i) =>
+  document.querySelectorAll('.seq-pill').forEach((el, i) =>
     el.classList.toggle('active', i === idx));
 }
 
@@ -278,15 +361,14 @@ function renderSong(song) {
   document.getElementById('player-view').classList.add('hidden');
   document.getElementById('diagrams-section').classList.remove('hidden');
 
-  document.getElementById('song-name').textContent = song.title;
+  document.getElementById('song-name').textContent   = song.title;
   document.getElementById('song-artist').textContent = '— ' + song.artist;
 
-  // speed slider
   const slider = document.getElementById('speed-slider');
   slider.value = pl.bpm;
   document.getElementById('speed-bpm').textContent = pl.bpm + ' BPM';
 
-  // bottom sequence
+  // Bottom chord sequence
   const seq = document.getElementById('chord-seq');
   seq.innerHTML = '';
   song.chords.forEach(c => {
@@ -295,7 +377,7 @@ function renderSong(song) {
     seq.appendChild(el);
   });
 
-  // diagrams
+  // Static diagrams
   const grid = document.getElementById('diagrams-grid');
   grid.innerHTML = '';
   [...new Set(song.chords)].forEach(c => {
@@ -309,10 +391,11 @@ function renderSong(song) {
     drawChordDiagram(cvs, c);
   });
 
-  // lyrics
+  // Lyrics
   const lw = document.getElementById('lyrics-wrap');
   lw.innerHTML = song.lyrics ? song.lyrics.split('\n').map(line =>
-    '<div>' + line.replace(/\[([^\]]+)\]/g, (_,c) => `<span class="chord-inline">${c}</span>`) + '</div>'
+    '<div>' + line.replace(/\[([^\]]+)\]/g, (_,c) =>
+      `<span class="chord-inline">${c}</span>`) + '</div>'
   ).join('') : '';
 }
 
@@ -325,35 +408,35 @@ document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('search-input').focus();
 });
 
-const input = document.getElementById('search-input');
-const sugg  = document.getElementById('suggestions');
+const inputEl = document.getElementById('search-input');
+const suggEl  = document.getElementById('suggestions');
 
-input.addEventListener('input', () => {
-  const res = searchSongs(input.value);
-  if (!res.length) { sugg.classList.add('hidden'); return; }
-  sugg.innerHTML = '';
+inputEl.addEventListener('input', () => {
+  const res = searchSongs(inputEl.value);
+  if (!res.length) { suggEl.classList.add('hidden'); return; }
+  suggEl.innerHTML = '';
   res.forEach(s => {
     const item = document.createElement('div');
     item.className = 'suggestion-item';
     item.innerHTML = `<div class="s-title">${s.title}</div><div class="s-artist">${s.artist}</div>`;
-    item.addEventListener('click', () => { input.value = s.title; sugg.classList.add('hidden'); renderSong(s); });
-    sugg.appendChild(item);
+    item.addEventListener('click', () => { inputEl.value = s.title; suggEl.classList.add('hidden'); renderSong(s); });
+    suggEl.appendChild(item);
   });
-  sugg.classList.remove('hidden');
+  suggEl.classList.remove('hidden');
 });
 
 document.getElementById('btn-search').addEventListener('click', () => {
-  const res = searchSongs(input.value);
+  const res = searchSongs(inputEl.value);
   if (res.length) renderSong(res[0]);
-  sugg.classList.add('hidden');
+  suggEl.classList.add('hidden');
 });
 
-input.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { const res = searchSongs(input.value); if (res.length) renderSong(res[0]); sugg.classList.add('hidden'); }
+inputEl.addEventListener('keydown', e => {
+  if (e.key === 'Enter') { const r = searchSongs(inputEl.value); if (r.length) renderSong(r[0]); suggEl.classList.add('hidden'); }
 });
 
 document.addEventListener('click', e => {
-  if (!sugg.contains(e.target) && e.target !== input) sugg.classList.add('hidden');
+  if (!suggEl.contains(e.target) && e.target !== inputEl) suggEl.classList.add('hidden');
 });
 
 document.getElementById('btn-play').addEventListener('click', () => {
@@ -365,9 +448,7 @@ const slider = document.getElementById('speed-slider');
 slider.addEventListener('input', () => {
   pl.bpm = parseInt(slider.value);
   document.getElementById('speed-bpm').textContent = pl.bpm + ' BPM';
-  if (pl.playing) { clearTimeout(pl.timer); tick(); }
 });
-
 document.getElementById('btn-slower').addEventListener('click', () => {
   slider.value = Math.max(40, parseInt(slider.value) - 10);
   slider.dispatchEvent(new Event('input'));
