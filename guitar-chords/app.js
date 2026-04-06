@@ -31,152 +31,86 @@ const CHORD_SHAPES = {
 };
 
 // ══════════════════════════════════════════════
-//  GUITAR AUDIO ENGINE
-// ══════════════════════════════════════════════
-// Standard tuning: string 6→1 = E2 A2 D3 G3 B3 E4
-const STRING_BASE = [82.41, 110.00, 146.83, 196.00, 246.94, 329.63];
-// index 0 = string 6 (low E), index 5 = string 1 (high e)
-
-let audioCtx = null;
-function getAudioCtx() {
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-
-function stringFreq(stringNum, fret) {
-  // stringNum 1-6 (1=high e, 6=low E)
-  const base = STRING_BASE[6 - stringNum];
-  return base * Math.pow(2, fret / 12);
-}
-
-function getChordFrequencies(chordName) {
-  const shape = CHORD_SHAPES[chordName];
-  if (!shape) return [];
-  // index 0 = string 6 (low E), index 5 = string 1 (high e)
-  const freqs = [null, null, null, null, null, null];
-
-  // Open strings
-  (shape.open || []).forEach(s => { freqs[6 - s] = stringFreq(s, 0); });
-
-  // Barre
-  if (shape.barre) {
-    for (let s = shape.barre.from; s <= shape.barre.to; s++) {
-      if (freqs[6 - s] === null) freqs[6 - s] = stringFreq(s, shape.barre.fret);
-    }
-  }
-
-  // Fretted positions (override)
-  (shape.positions || []).forEach(p => { freqs[6 - p.s] = stringFreq(p.s, p.f); });
-
-  // Muted
-  (shape.muted || []).forEach(s => { freqs[6 - s] = null; });
-
-  return freqs; // index 0 = low E (first for down strum)
-}
-
-function playStrum(chordName, direction) {
-  const ctx = getAudioCtx();
-  const freqs = getChordFrequencies(chordName);
-  // down = low→high, up = high→low
-  const ordered = direction === 'U' ? [...freqs].reverse() : freqs;
-
-  ordered.forEach((freq, i) => {
-    if (!freq) return;
-    const t = ctx.currentTime + i * 0.013;
-
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
-    const filt = ctx.createBiquadFilter();
-
-    osc.type = 'sawtooth';
-    osc.frequency.value = freq;
-
-    filt.type = 'lowpass';
-    filt.frequency.value = 2200;
-    filt.Q.value = 1;
-
-    osc.connect(filt);
-    filt.connect(gain);
-    gain.connect(ctx.destination);
-
-    gain.gain.setValueAtTime(0.18, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 1.4);
-
-    osc.start(t);
-    osc.stop(t + 1.4);
-  });
-}
-
-// ══════════════════════════════════════════════
-//  SONGS
+//  SONGS  (yt = YouTube video ID)
 // ══════════════════════════════════════════════
 const SONGS = [
-  { title:'Shape of You', artist:'Ed Sheeran', chords:['C#m','A','B','E'], bpm:96,
+  { title:'Shape of You', artist:'Ed Sheeran', chords:['C#m','A','B','E'], bpm:96, yt:'JGwWNGJdvx8',
     lyrics:'[C#m]Every day dis-[A]covering something brand new\n[B]I\'m in love with the shape of [E]you' },
-  { title:'Blinding Lights', artist:'The Weeknd', chords:['Am','F','C','G'], bpm:171,
+  { title:'Blinding Lights', artist:'The Weeknd', chords:['Am','F','C','G'], bpm:171, yt:'4NRXx6U8ABQ',
     lyrics:'[Am]I\'ve been tryna call\n[F]I\'ve been on my own for long enough\n[C]Maybe you can show me how to love\n[G]Maybe' },
-  { title:'Someone Like You', artist:'Adele', chords:['A','C#m','F#m','D'], bpm:68,
+  { title:'Someone Like You', artist:'Adele', chords:['A','C#m','F#m','D'], bpm:68, yt:'hLQl3WQQoQ0',
     lyrics:'[A]I heard that you\'re settled down\n[C#m]That you found a girl\n[F#m]I heard that your dreams came true\n[D]Guess she gave you things I didn\'t give to you' },
-  { title:'Counting Stars', artist:'OneRepublic', chords:['Am','C','G','F'], bpm:122,
+  { title:'Counting Stars', artist:'OneRepublic', chords:['Am','C','G','F'], bpm:122, yt:'hT_nvWreIhg',
     lyrics:'[Am]Lately I\'ve been losing sleep\n[C]Dreaming about the things that we could be\n[G]But baby I\'ve been praying hard\n[F]No more counting dollars, we\'ll be counting stars' },
-  { title:'Let Her Go', artist:'Passenger', chords:['C','G','Am','F'], bpm:104,
+  { title:'Let Her Go', artist:'Passenger', chords:['C','G','Am','F'], bpm:104, yt:'RBumgq5yVrA',
     lyrics:'[C]Well you only need the light when it\'s burning low\n[G]Only miss the sun when it starts to snow\n[Am]Only know you love her when you let her go\n[F]And you let her go' },
-  { title:'Viva La Vida', artist:'Coldplay', chords:['C','D','G','Em'], bpm:138,
+  { title:'Viva La Vida', artist:'Coldplay', chords:['C','D','G','Em'], bpm:138, yt:'dvgZkm1xWPE',
     lyrics:'[C]I used to rule the world\n[D]Seas would rise when I gave the word\n[G]Now in the morning I sleep alone\n[Em]Sweep the streets I used to own' },
-  { title:'Photograph', artist:'Ed Sheeran', chords:['Em','C','G','D'], bpm:108,
+  { title:'Photograph', artist:'Ed Sheeran', chords:['Em','C','G','D'], bpm:108, yt:'Mt3hvgMpGl4',
     lyrics:'[Em]Loving can hurt, [C]loving can hurt sometimes\n[G]But it\'s the only thing that I know\n[D]When it gets hard sometimes' },
-  { title:'Perfect', artist:'Ed Sheeran', chords:['G','Em','C','D'], bpm:95,
+  { title:'Perfect', artist:'Ed Sheeran', chords:['G','Em','C','D'], bpm:95, yt:'2Vv-BfVoq4g',
     lyrics:'[G]I found a love for me\n[Em]Darling just dive right in\n[C]Well I found a girl beautiful and sweet\n[D]I never knew you were the someone waiting for me' },
-  { title:'Thinking Out Loud', artist:'Ed Sheeran', chords:['D','A','Bm','G'], bpm:79,
+  { title:'Thinking Out Loud', artist:'Ed Sheeran', chords:['D','A','Bm','G'], bpm:79, yt:'lp-EO5I60KA',
     lyrics:'[D]When your legs don\'t work like they used to before\n[A]And I can\'t sweep you off of your feet\n[Bm]Will your mouth still remember the taste of my love\n[G]Will your eyes still smile from your cheeks' },
-  { title:'Stay With Me', artist:'Sam Smith', chords:['Am','F','C','G'], bpm:86,
+  { title:'Stay With Me', artist:'Sam Smith', chords:['Am','F','C','G'], bpm:86, yt:'pB-5XG-DbAA',
     lyrics:'[Am]Guess it\'s true I\'m not good at a one-night stand\n[F]But I still need love\n[C]These nights never seem to go to plan\n[G]I don\'t want you to leave' },
-  { title:'Wonderwall', artist:'Oasis', chords:['Em','G','D','A'], bpm:87,
+  { title:'Wonderwall', artist:'Oasis', chords:['Em','G','D','A'], bpm:87, yt:'bx1Bh8ZvH84',
     lyrics:'[Em]Today is gonna be the day\n[G]That they\'re gonna throw it back to you\n[D]By now you should have somehow\n[A]Realized what you gotta do' },
-  { title:'Hotel California', artist:'Eagles', chords:['Bm','F#m','A','E'], bpm:75,
+  { title:'Hotel California', artist:'Eagles', chords:['Bm','F#m','A','E'], bpm:75, yt:'BciS5krYL2I',
     lyrics:'[Bm]On a dark desert highway [F#m]cool wind in my hair\n[A]Warm smell of colitas [E]rising up through the air' },
-  { title:'Knockin on Heavens Door', artist:'Bob Dylan', chords:['G','D','Am','C'], bpm:70,
+  { title:'Knockin on Heavens Door', artist:'Bob Dylan', chords:['G','D','Am','C'], bpm:70, yt:'MDxbHKkMW_A',
     lyrics:'[G]Mama take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin dark [Am]too dark to see\n[D]Knockin on heavens door' },
-  { title:'Sweet Home Alabama', artist:'Lynyrd Skynyrd', chords:['D','C','G'], bpm:98,
+  { title:'Sweet Home Alabama', artist:'Lynyrd Skynyrd', chords:['D','C','G'], bpm:98, yt:'ye5BuYf8q4o',
     lyrics:'[D]Big wheels keep on turning\n[C]Carry me home to see my kin\n[G]Singing songs about the Southland' },
-  { title:'Wish You Were Here', artist:'Pink Floyd', chords:['Em','G','A','C','D'], bpm:63,
+  { title:'Wish You Were Here', artist:'Pink Floyd', chords:['Em','G','A','C','D'], bpm:63, yt:'IXdNnw99-Ic',
     lyrics:'[Em]So so you think you can tell\n[G]Heaven from hell\n[A]Blue skies from pain\n[C]Can you tell a green field\n[D]From a cold steel rail' },
-  { title:'Nothing Else Matters', artist:'Metallica', chords:['Em','D','C','Am'], bpm:69,
+  { title:'Nothing Else Matters', artist:'Metallica', chords:['Em','D','C','Am'], bpm:69, yt:'tAGnKpE4NCI',
     lyrics:'[Em]So close no matter how far\n[D]Couldnt be much more from the heart\n[C]Forever trusting who we are\n[Am]And nothing else matters' },
-  { title:'Shallow', artist:'Lady Gaga', chords:['Em','D','G','C','Am'], bpm:96,
+  { title:'Shallow', artist:'Lady Gaga', chords:['Em','D','G','C','Am'], bpm:96, yt:'bo_efYLyus0',
     lyrics:'[Em]Tell me something girl\n[D]Are you happy in this modern world\n[G]Or do you need more\n[C]Is there something else you\'re searching for' },
-  { title:'All of Me', artist:'John Legend', chords:['Em','C','G','D'], bpm:63,
+  { title:'All of Me', artist:'John Legend', chords:['Em','C','G','D'], bpm:63, yt:'450p7goxZqg',
     lyrics:'[Em]What would I do without your smart mouth\n[C]Drawing me in and kicking me out\n[G]Got my head spinning\n[D]What\'s going on in that beautiful mind' },
-  { title:'Hallelujah', artist:'Leonard Cohen', chords:['C','Am','F','G','E'], bpm:64,
+  { title:'Hallelujah', artist:'Leonard Cohen', chords:['C','Am','F','G','E'], bpm:64, yt:'y8AWFf7EAc4',
     lyrics:'[C]I\'ve heard there was a [Am]secret chord\n[C]That David played and [Am]it pleased the Lord\n[F]But you don\'t really [G]care for music do you' },
-  { title:'Dragostea Din Tei', artist:'O-Zone', chords:['F','C','Dm','Bb'], bpm:140,
+  { title:'Dragostea Din Tei', artist:'O-Zone', chords:['F','C','Dm','Bb'], bpm:140, yt:'YbaTFBHtUBY',
     lyrics:'[F]Ma-ia-hii [C]ma-ia-huu\n[Dm]Ma-ia-hoo [Bb]ma-ia-haa' },
   { title:'Doi Straini', artist:'Irina Rimes', chords:['Am','F','C','G'], bpm:95,
     lyrics:'[Am]Eram doi straini [F]in acelasi oras\n[C]Ne-am intalnit [G]la o schimbare de iarna' },
   { title:'Vara Nu Dorm', artist:'Carla\'s Dreams', chords:['Dm','Bb','F','C'], bpm:110,
     lyrics:'[Dm]Vara nu dorm [Bb]noaptea\n[F]Ma gandesc la tine [C]toata' },
-  { title:'Despacito', artist:'Luis Fonsi', chords:['Bm','G','D','A'], bpm:89,
+  { title:'Despacito', artist:'Luis Fonsi', chords:['Bm','G','D','A'], bpm:89, yt:'ktvTqknDobU',
     lyrics:'[Bm]Si sabes que ya llevo un rato mirandote\n[G]Tengo que bailar contigo hoy\n[D]Vi que tu mirada ya estaba llamandome\n[A]Muestrame el camino que yo voy' },
-  { title:'La Bamba', artist:'Ritchie Valens', chords:['C','F','G'], bpm:170,
+  { title:'La Bamba', artist:'Ritchie Valens', chords:['C','F','G'], bpm:170, yt:'ZEI3NaRPn60',
     lyrics:'[C]Para bailar la bamba\n[F]Para bailar la bamba\n[G]Se necesita una poca de gracia' },
-  { title:'Bella Ciao', artist:'Folk Italiano', chords:['Dm','A','C','F'], bpm:104,
+  { title:'Bella Ciao', artist:'Folk Italiano', chords:['Dm','A','C','F'], bpm:104, yt:'rMDMs9BnF20',
     lyrics:'[Dm]Una mattina mi son svegliato\n[A]O bella ciao bella ciao\n[Dm]Bella ciao ciao ciao' },
-  { title:'Africa', artist:'Toto', chords:['F#m','D','A','E'], bpm:93,
+  { title:'Africa', artist:'Toto', chords:['F#m','D','A','E'], bpm:93, yt:'FTQbiNvZqaY',
     lyrics:'[F#m]I hear the drums echoing tonight\n[D]But she hears only whispers\n[A]She\'s coming in twelve-thirty flight\n[E]The moonlit wings reflect the stars' },
-  { title:'Stand By Me', artist:'Ben E. King', chords:['A','F#m','D','E'], bpm:121,
+  { title:'Stand By Me', artist:'Ben E. King', chords:['A','F#m','D','E'], bpm:121, yt:'hwZNL7QVJjE',
     lyrics:'[A]When the night has come\n[F#m]And the land is dark\n[D]And the moon is the only light we\'ll see\n[E]No I won\'t be afraid' },
-  { title:'Hey There Delilah', artist:'Plain White T\'s', chords:['D','F#m','Bm','G','A'], bpm:94,
+  { title:'Hey There Delilah', artist:'Plain White T\'s', chords:['D','F#m','Bm','G','A'], bpm:94, yt:'7SxpPROIBiQ',
     lyrics:'[D]Hey there Delilah what\'s it like in New York City\n[F#m]I\'m a thousand miles away\n[Bm]Yes you do [G]Times Square can\'t shine as bright as you\n[A]I swear it\'s true' },
-  { title:'Riptide', artist:'Vance Joy', chords:['Am','G','C','F'], bpm:104,
+  { title:'Riptide', artist:'Vance Joy', chords:['Am','G','C','F'], bpm:104, yt:'uJ_1HMAGb4k',
     lyrics:'[Am]I was scared of dentists and the dark\n[G]I was scared of pretty girls\n[C]Oh all my friends are turning green\n[Am]You\'re the magician\'s assistant in their dream' },
-  { title:'Budapest', artist:'George Ezra', chords:['C','F','G','Am'], bpm:130,
+  { title:'Budapest', artist:'George Ezra', chords:['C','F','G','Am'], bpm:130, yt:'VHrqkTNs5Ro',
     lyrics:'[C]My house in Budapest\n[F]My hidden treasure chest\n[G]Golden grand piano\n[Am]My beautiful Castillo' },
-  { title:'Take Me to Church', artist:'Hozier', chords:['Am','F','C','G','Em'], bpm:129,
+  { title:'Take Me to Church', artist:'Hozier', chords:['Am','F','C','G','Em'], bpm:129, yt:'PVjiKRfKpPI',
     lyrics:'[Am]My lover\'s got humor\n[F]She\'s the giggle at a funeral\n[C]Knows everybody\'s disapproval\n[G]I should\'ve worshipped her sooner' },
-  { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117,
+  { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117, yt:'hTWKbfoikeg',
     lyrics:'[F]Load up on guns bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no I know a dirty word' },
 ];
+
+// ══════════════════════════════════════════════
+//  YOUTUBE
+// ══════════════════════════════════════════════
+function loadYouTube(song) {
+  const frame = document.getElementById('yt-frame');
+  if (song.yt) {
+    frame.src = `https://www.youtube.com/embed/${song.yt}?rel=0`;
+  } else {
+    frame.src = 'about:blank';
+  }
+}
 
 // ══════════════════════════════════════════════
 //  DRAW CHORD DIAGRAM
@@ -227,9 +161,9 @@ const HINTS = {
 };
 
 // ══════════════════════════════════════════════
-//  STRUM PATTERN  D=down U=up
+//  STRUM PATTERN (visual only, no audio)
 // ══════════════════════════════════════════════
-const STRUM_PATTERN = ['D','D','U','D','D','U','D','U']; // 8 strums / 2 bars
+const STRUM_PATTERN = ['D','D','U','D']; // 4 strums per chord
 
 // ══════════════════════════════════════════════
 //  PLAYER STATE
@@ -241,11 +175,9 @@ const pl = {
 };
 
 function msPerBeat()  { return 60000 / pl.bpm; }
-function msPerChord() { return msPerBeat() * 4; } // 4 beats per chord
 
 function startPlayer() {
   if (pl.playing) return;
-  getAudioCtx(); // unlock audio on user gesture
   pl.playing = true;
   pl.chordIdx = 0;
   pl.beatIdx  = 0;
@@ -255,6 +187,7 @@ function startPlayer() {
   document.getElementById('diagrams-section').classList.add('hidden');
   document.getElementById('player-view').classList.remove('hidden');
 
+  loadYouTube(pl.song);
   updateChordDisplay();
   scheduleBeat();
 }
@@ -268,6 +201,7 @@ function stopPlayer() {
   document.getElementById('player-view').classList.add('hidden');
   document.getElementById('diagrams-section').classList.remove('hidden');
   document.getElementById('progress-fill').style.width = '0%';
+  document.getElementById('yt-frame').src = 'about:blank';
   highlightSeq(-1);
 }
 
@@ -276,11 +210,10 @@ function scheduleBeat() {
 
   const strumDir = STRUM_PATTERN[pl.beatIdx % STRUM_PATTERN.length];
   showStrumDirection(strumDir);
-  playStrum(pl.song.chords[pl.chordIdx], strumDir);
 
   pl.beatIdx++;
 
-  // Every 4 beats → advance chord
+  // Every 4 beats → next chord
   if (pl.beatIdx % 4 === 0) {
     pl.chordIdx = (pl.chordIdx + 1) % pl.song.chords.length;
     updateChordDisplay();
@@ -309,18 +242,14 @@ function showStrumDirection(dir) {
   const word  = document.getElementById('strum-word');
   arrow.textContent = dir === 'D' ? '↓' : '↑';
   word.textContent  = dir === 'D' ? 'DOWN' : 'UP';
-
-  // Pulse animation
   arrow.classList.remove('pulse');
-  void arrow.offsetWidth; // reflow
+  void arrow.offsetWidth;
   arrow.classList.add('pulse');
   setTimeout(() => arrow.classList.remove('pulse'), 150);
 
-  // Beat dots
   const beatInChord = pl.beatIdx % 4;
   document.querySelectorAll('.bdot').forEach((dot, i) =>
-    dot.classList.toggle('active', i === beatInChord)
-  );
+    dot.classList.toggle('active', i === beatInChord));
 }
 
 function startProgress() {
@@ -368,7 +297,6 @@ function renderSong(song) {
   slider.value = pl.bpm;
   document.getElementById('speed-bpm').textContent = pl.bpm + ' BPM';
 
-  // Bottom chord sequence
   const seq = document.getElementById('chord-seq');
   seq.innerHTML = '';
   song.chords.forEach(c => {
@@ -377,7 +305,6 @@ function renderSong(song) {
     seq.appendChild(el);
   });
 
-  // Static diagrams
   const grid = document.getElementById('diagrams-grid');
   grid.innerHTML = '';
   [...new Set(song.chords)].forEach(c => {
@@ -391,7 +318,6 @@ function renderSong(song) {
     drawChordDiagram(cvs, c);
   });
 
-  // Lyrics
   const lw = document.getElementById('lyrics-wrap');
   lw.innerHTML = song.lyrics ? song.lyrics.split('\n').map(line =>
     '<div>' + line.replace(/\[([^\]]+)\]/g, (_,c) =>

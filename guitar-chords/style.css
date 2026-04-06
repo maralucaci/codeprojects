@@ -79,6 +79,18 @@ header { background: #111; border-bottom: 2px solid #f5c518; padding: 14px 24px;
 }
 .chord-inline { color: #f5c518; font-weight: 800; font-size: 12px; vertical-align: super; margin-right: 2px; }
 
+/* YOUTUBE */
+.yt-wrap {
+  margin-bottom: 16px;
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid #333;
+}
+.yt-wrap iframe { display: block; }
+.yt-hint {
+  background: #1a1a1a; color: #888; font-size: 13px;
+  padding: 8px 14px; text-align: center;
+}
+
 /* ── PLAYER VIEW ── */
 #player-view {
   background: #111; border: 2px solid #f5c518; border-radius: 20px;
