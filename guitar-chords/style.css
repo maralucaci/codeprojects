@@ -43,6 +43,14 @@ header { background: #111; border-bottom: 2px solid #f5c518; padding: 14px 24px;
 }
 #btn-search:hover { transform: scale(1.05); }
 
+#btn-easy {
+  padding: 14px 16px; font-size: 15px; font-weight: 800;
+  background: #1a1a1a; color: #f5c518;
+  border: 2px solid #f5c518; border-radius: 12px; cursor: pointer;
+  white-space: nowrap; transition: all 0.15s;
+}
+#btn-easy:hover, #btn-easy.active { background: #f5c518; color: #000; }
+
 /* SUGGESTIONS */
 .suggestions {
   position: absolute; top: 100%; left: 20px; right: 20px;

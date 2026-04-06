@@ -28,7 +28,13 @@ const CHORD_SHAPES = {
   'Bb':   { positions:[{s:5,f:3,n:3},{s:4,f:3,n:4}], barre:{fret:1,from:1,to:5}, muted:[6] },
   'Ab':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:6} },
   'Db':   { positions:[{s:5,f:6,n:3},{s:4,f:6,n:4}], barre:{fret:4,from:1,to:5}, muted:[6] },
+  // Power chords (ușoare)
+  'E5':   { positions:[{s:5,f:2,n:1},{s:4,f:2,n:2}], open:[6], muted:[1,2,3] },
+  'A5':   { positions:[{s:4,f:2,n:1},{s:3,f:2,n:2}], open:[5], muted:[1,2,6] },
 };
+
+// Acorduri ușoare pentru beginners
+const EASY_CHORDS = ['Am','Em','E','G','C','D','Dm','E5','A5'];
 
 // ══════════════════════════════════════════════
 //  SONGS  (yt = YouTube video ID)
@@ -98,6 +104,32 @@ const SONGS = [
     lyrics:'[Am]My lover\'s got humor\n[F]She\'s the giggle at a funeral\n[C]Knows everybody\'s disapproval\n[G]I should\'ve worshipped her sooner' },
   { title:'Smells Like Teen Spirit', artist:'Nirvana', chords:['F','Bb','Ab','Db'], bpm:117, yt:'hTWKbfoikeg',
     lyrics:'[F]Load up on guns bring your friends\n[Bb]It\'s fun to lose and to pretend\n[Ab]She\'s overboard and self-assured\n[Db]Oh no I know a dirty word' },
+
+  // ── CÂNTECE UȘOARE (Am Em E G C D Dm E5 A5) ──
+  { title:'Knockin on Heavens Door (Easy)', artist:'Bob Dylan', chords:['G','D','Am','C'], bpm:70, yt:'MDxbHKkMW_A',
+    lyrics:'[G]Mama take this badge off of me\n[D]I can\'t use it anymore\n[G]It\'s gettin dark [Am]too dark to see\n[D]Knockin on heavens door' },
+  { title:'Sweet Home Alabama (Easy)', artist:'Lynyrd Skynyrd', chords:['D','C','G'], bpm:98, yt:'ye5BuYf8q4o',
+    lyrics:'[D]Big wheels keep on turning\n[C]Carry me home to see my kin\n[G]Singing songs about the Southland' },
+  { title:'Photograph (Easy)', artist:'Ed Sheeran', chords:['Em','C','G','D'], bpm:108, yt:'Mt3hvgMpGl4',
+    lyrics:'[Em]Loving can hurt\n[C]Loving can hurt sometimes\n[G]But it\'s the only thing that I know\n[D]When it gets hard sometimes' },
+  { title:'All of Me (Easy)', artist:'John Legend', chords:['Em','C','G','D'], bpm:63, yt:'450p7goxZqg',
+    lyrics:'[Em]What would I do without your smart mouth\n[C]Drawing me in and kicking me out\n[G]Got my head spinning\n[D]What\'s going on in that beautiful mind' },
+  { title:'Viva La Vida (Easy)', artist:'Coldplay', chords:['C','D','G','Em'], bpm:138, yt:'dvgZkm1xWPE',
+    lyrics:'[C]I used to rule the world\n[D]Seas would rise when I gave the word\n[G]Now in the morning I sleep alone\n[Em]Sweep the streets I used to own' },
+  { title:'Nothing Else Matters (Easy)', artist:'Metallica', chords:['Em','D','C','Am'], bpm:69, yt:'tAGnKpE4NCI',
+    lyrics:'[Em]So close no matter how far\n[D]Couldnt be much more from the heart\n[C]Forever trusting who we are\n[Am]And nothing else matters' },
+  { title:'House of the Rising Sun', artist:'The Animals', chords:['Am','C','D','E'], bpm:76, yt:'bwABDaoo0o0',
+    lyrics:'[Am]There is a [C]house in New Orleans\n[D]They call the [E]Rising Sun\n[Am]And it\'s been the [C]ruin of many a poor boy\n[D]And God I [E]know I\'m one' },
+  { title:'La Bamba (Easy)', artist:'Ritchie Valens', chords:['C','G','D'], bpm:170, yt:'ZEI3NaRPn60',
+    lyrics:'[C]Para bailar la bamba\n[G]Para bailar la bamba\n[D]Se necesita una poca de gracia' },
+  { title:'Smoke on the Water', artist:'Deep Purple', chords:['G','C','Dm'], bpm:112, yt:'zUwW3T57NoA',
+    lyrics:'[G]We all came out to [C]Montreux\n[Dm]On the Lake Geneva [G]shoreline\n[G]To make records with a [C]mobile\n[Dm]We didn\'t have much [G]time' },
+  { title:'Horse With No Name', artist:'America', chords:['Em','D'], bpm:100, yt:'zSAJ0l4OBHM',
+    lyrics:'[Em]On the first part of the journey\n[D]I was looking at all the life\n[Em]There were plants and birds and rocks and things\n[D]There was sand and hills and rings' },
+  { title:'Zombie', artist:'The Cranberries', chords:['Em','C','G','D'], bpm:90, yt:'6Ejga4kJUts',
+    lyrics:'[Em]Another head hangs lowly\n[C]Child is slowly taken\n[G]And the violence caused such silence\n[D]Who are we mistaken' },
+  { title:'Wish You Were Here (Easy)', artist:'Pink Floyd', chords:['Em','G','C','D'], bpm:63, yt:'IXdNnw99-Ic',
+    lyrics:'[Em]So so you think you can tell\n[G]Heaven from hell\n[C]Blue skies from pain\n[D]Can you tell a green field from a cold steel rail' },
 ];
 
 // ══════════════════════════════════════════════
@@ -302,12 +334,17 @@ function highlightSeq(idx) {
 // ══════════════════════════════════════════════
 //  RENDER SONG
 // ══════════════════════════════════════════════
-function searchSongs(q) {
+function isEasySong(song) {
+  return song.chords.every(c => EASY_CHORDS.includes(c));
+}
+
+function searchSongs(q, easyOnly) {
   q = q.toLowerCase().trim();
-  if (!q) return [];
-  return SONGS.filter(s =>
+  let list = easyOnly ? SONGS.filter(isEasySong) : SONGS;
+  if (!q) return easyOnly ? list.slice(0, 10) : [];
+  return list.filter(s =>
     s.title.toLowerCase().includes(q) || s.artist.toLowerCase().includes(q)
-  ).slice(0, 8);
+  ).slice(0, 10);
 }
 
 function renderSong(song) {
@@ -366,29 +403,44 @@ document.getElementById('btn-start').addEventListener('click', () => {
 
 const inputEl = document.getElementById('search-input');
 const suggEl  = document.getElementById('suggestions');
+const btnEasy = document.getElementById('btn-easy');
+let easyMode  = false;
 
-inputEl.addEventListener('input', () => {
-  const res = searchSongs(inputEl.value);
+function showSuggestions(res) {
   if (!res.length) { suggEl.classList.add('hidden'); return; }
   suggEl.innerHTML = '';
   res.forEach(s => {
     const item = document.createElement('div');
     item.className = 'suggestion-item';
-    item.innerHTML = `<div class="s-title">${s.title}</div><div class="s-artist">${s.artist}</div>`;
+    const badge = isEasySong(s) ? '<span style="color:#f5c518;font-size:11px;margin-left:6px">🌟 UȘOR</span>' : '';
+    item.innerHTML = `<div class="s-title">${s.title}${badge}</div><div class="s-artist">${s.artist}</div>`;
     item.addEventListener('click', () => { inputEl.value = s.title; suggEl.classList.add('hidden'); renderSong(s); });
     suggEl.appendChild(item);
   });
   suggEl.classList.remove('hidden');
+}
+
+inputEl.addEventListener('input', () => {
+  showSuggestions(searchSongs(inputEl.value, easyMode));
 });
 
 document.getElementById('btn-search').addEventListener('click', () => {
-  const res = searchSongs(inputEl.value);
+  const res = searchSongs(inputEl.value, easyMode);
   if (res.length) renderSong(res[0]);
   suggEl.classList.add('hidden');
 });
 
+btnEasy.addEventListener('click', () => {
+  easyMode = !easyMode;
+  btnEasy.classList.toggle('active', easyMode);
+  btnEasy.textContent = easyMode ? '🌟 UȘOR ✓' : '🌟 UȘOR';
+  showSuggestions(searchSongs(inputEl.value, easyMode));
+  if (easyMode && !inputEl.value) inputEl.placeholder = 'Cântece ușoare...';
+  else inputEl.placeholder = 'Caută un cântec... ex: Wonderwall';
+});
+
 inputEl.addEventListener('keydown', e => {
-  if (e.key === 'Enter') { const r = searchSongs(inputEl.value); if (r.length) renderSong(r[0]); suggEl.classList.add('hidden'); }
+  if (e.key === 'Enter') { const r = searchSongs(inputEl.value, easyMode); if (r.length) renderSong(r[0]); suggEl.classList.add('hidden'); }
 });
 
 document.addEventListener('click', e => {
