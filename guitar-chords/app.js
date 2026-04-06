@@ -249,7 +249,8 @@ function startPlayer() {
   document.getElementById('diagrams-section').classList.add('hidden');
   document.getElementById('player-view').classList.remove('hidden');
 
-  loadYouTube(pl.song, true); // autoplay=true
+  loadYouTube(pl.song, true);
+  document.getElementById('music-bar-title').textContent = pl.song.title + ' — ' + pl.song.artist;
   updateChordDisplay();
   scheduleBeat();
 }

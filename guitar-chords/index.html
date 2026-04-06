@@ -49,9 +49,19 @@
       <!-- PLAYER VIEW (while playing) -->
       <div id="player-view" class="hidden">
 
-        <!-- YOUTUBE PLAYER (controlled via IFrame API) -->
+        <!-- YOUTUBE (audio only, hidden) -->
         <div class="yt-wrap">
           <div id="yt-player"></div>
+        </div>
+
+        <!-- MUSIC INDICATOR -->
+        <div class="music-bar" id="music-bar">
+          <div class="music-waves">
+            <span></span><span></span><span></span><span></span><span></span>
+          </div>
+          <div class="music-bar-text">
+            🎵 Se cântă: <strong id="music-bar-title"></strong>
+          </div>
         </div>
 
         <!-- TOP ROW: current chord | strum arrow | next chord -->
