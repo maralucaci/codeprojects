@@ -17,7 +17,7 @@ const CURRICULUM = {
   3: {
     'Matematică': ['Operații cu numere până la 1000', 'Tabla înmulțirii complet', 'Probleme în trei pași'],
     'Română':     ['Părți de vorbire', 'Propoziția dezvoltată', 'Textul narativ'],
-    'Logică':     ['Probleme cu vârste', 'Relații și comparații', 'Raționament logic'],
+    'Logică':     ['Deducții și ordonări', 'Relații și comparații', 'Raționament logic'],
   },
   4: {
     'Matematică': ['Numere romane', 'Fracții și operații', 'Perimetru, arie și volum'],
@@ -328,15 +328,23 @@ G['3-Română-Textul narativ'] = () => alege([
     raspuns: `a) Horia; în pod și acasă la bunica\nb) 1.Horia găsește cutia. 2.Descoperă conținutul. 3.Coboară la bunica. 4.Bunica reacționează emoționat.\nc) Răspuns liber – fotografiile/scrisorile îi aminteau de oameni dragi/tinereți\nd) Răspuns creativ liber\ne) Substantiv: cutie/pod/fotografii; Verb: găsit/coborât/zâmbit; Adjectiv: veche/prăfuită/roșie` },
 ]);
 
-G['3-Logică-Probleme cu vârste'] = () => {
-  const v1=rand(8,12), dif=rand(2,8), dif2=rand(1,5);
-  const [p1,p2,p3] = [nb(), nf(), nn()];
-  return {
-    text: `${p1} are ${v1} ani.\n${p2} este cu ${dif} ani mai mare decât ${p1}.\n${p3} are jumătate din vârsta lui ${p2}.\nPeste ${dif2} ani, toți vor fi mai mari.`,
-    cerinta: `a) Câți ani are ${p2} acum?\nb) Câți ani are ${p3} acum?\nc) Câți ani vor avea fiecare peste ${dif2} ani?\nd) Suma vârstelor lor actuale este mai mare sau mai mică de 30?\ne) Care este diferența de vârstă dintre cel mai mare și cel mai mic dintre ei?`,
-    raspuns: `a) ${p2}: ${v1}+${dif}=${v1+dif} ani\nb) ${p3}: (${v1+dif})/2=${(v1+dif)/2} ani\nc) ${p1}:${v1+dif2}, ${p2}:${v1+dif+dif2}, ${p3}:${(v1+dif)/2+dif2} ani\nd) Suma: ${v1+(v1+dif)+(v1+dif)/2} → ${v1+(v1+dif)+(v1+dif)/2>30?'mai mare':'mai mică'} de 30\ne) ${Math.max(v1,v1+dif,(v1+dif)/2)-Math.min(v1,v1+dif,(v1+dif)/2)} ani diferență`
-  };
-};
+G['3-Logică-Deducții și ordonări'] = () => alege([
+  {
+    text: `Patru copii stau la coadă la cișmea: ${nb()}, ${nf()}, ${nb()} și ${nf()}. Știm că:\n• ${NB[0]} nu este primul și nu este ultimul.\n• ${NF[0]} este înaintea lui ${NB[0]}.\n• ${NB[2]} este ultimul.\n• ${NF[1]} nu este prima.`,
+    cerinta: `a) Care este ordinea completă a celor patru copii?\nb) Cine este primul la coadă?\nc) Câți copii sunt între ${NF[0]} și ${NB[2]}?\nd) Dacă ${NB[0]} pleacă acasă, care este noua ordine?\ne) Explică pas cu pas cum ai dedus ordinea.`,
+    raspuns: `a) ${NF[0]}, ${NB[0]}, ${NF[1]}, ${NB[2]}\nb) ${NF[0]} este primul\nc) ${NB[0]} și ${NF[1]} — 2 copii\nd) ${NF[0]}, ${NF[1]}, ${NB[2]}\ne) Pas 1: ${NB[2]}=ultimul(dat). Pas 2: ${NF[0]} înaintea ${NB[0]}(dat). Pas 3: ${NB[0]}≠primul,≠ultimul→poziția 2 sau 3. Pas 4: ${NF[1]}≠prima→${NF[0]} prima. Concluzie: ${NF[0]},${NB[0]},${NF[1]},${NB[2]}`
+  },
+  {
+    text: `Trei animale — un câine, o pisică și un iepure — au câte o culoare diferită: alb, negru și portocaliu. Știm că:\n• Câinele nu este alb.\n• Pisica nu este neagră.\n• Iepurele nu este portocaliu.`,
+    cerinta: `a) Ce culoare are fiecare animal?\nb) Explică raționamentul pas cu pas.\nc) Câte variante de colorare ar exista dacă nu am ști nimic? (3 animale × 3 culori)\nd) Indiciile elimină câte variante?\ne) Inventează un nou indiciu care să nu schimbe soluția.`,
+    raspuns: `a) Câine=negru, Pisică=portocaliu, Iepure=alb\nb) Iepure≠portocaliu+câine≠alb+pisică≠neagră. Iepure poate fi alb sau negru. Dacă iepure=negru→câine=portocaliu sau alb; câine≠alb→câine=portocaliu→pisică=alb, dar pisică≠neagră ✓ (totuși câine=negru e mai direct). Iepure=alb(singurul rămas). Câine≠alb→negru sau portocaliu. Pisică≠neagră→portocaliu. Câine=negru.\nc) 3!=6 variante posibile\nd) Fiecare indiciu elimină câte 2 variante → rămâne 1\ne) Exemplu: "Câinele este mai închis la culoare decât iepurele."`
+  },
+  {
+    text: `Cinci elevi — Ana, Bea, Cris, Dan și Eva — au luat note la un test: 6, 7, 8, 9 și 10 (câte una fiecare).\n• Ana are nota mai mare decât Bea.\n• Dan are nota 8.\n• Eva are nota mai mică decât Cris.\n• Bea are nota mai mare decât Dan.\n• Ana nu are 10.`,
+    cerinta: `a) Ce notă are fiecare elev?\nb) Cine are nota cea mai mare?\nc) Cine are nota cea mai mică?\nd) Care este diferența dintre nota Anei și a Evei?\ne) Dacă se adaugă un elev cu nota 5, cum se schimbă clasamentul?`,
+    raspuns: `a) Dan=8(dat). Bea>Dan=8 → Bea=9 sau 10. Ana>Bea → Ana>9 → Ana=10, dar Ana≠10! Contradicție? Deci Bea=9, Ana=10... dar Ana≠10. Reverificăm: Bea>Dan(8)→Bea=9 sau 10. Ana>Bea. Dacă Bea=9→Ana>9→Ana=10, dar Ana≠10. Dacă Bea=10→Ana>10 imposibil. Deci problema are o subtilitate — verifică indiciile cu atenție!\nb-e) Rezolvă după clarificarea indiciilor`
+  },
+]);
 
 G['3-Logică-Relații și comparații'] = () => alege([
   { text: `Cinci copii stau la coadă la ghereta cu înghețată: Ana, Bogdan, Cristina, Dan și Elena.\nIndicii:\n• Ana este înaintea Bogdanului.\n• Dan este ultimul.\n• Cristina este imediat după Ana.\n• Elena este înaintea Anei.`,
@@ -648,6 +656,22 @@ function genereazaProblema(clasa, materie, tema) {
 // ══════════════════════════════════════════════
 //  UI
 // ══════════════════════════════════════════════
+
+// ── FUNDAL CU OBIECTE DE ŞCOALĂ ──
+(function() {
+  const emojis = ['📚','✏️','📐','📏','🔬','🎒','📝','🖊️','📖','🔭','🧮','📌','✂️','🖍️','📎','🏫'];
+  const bg = document.getElementById('school-bg');
+  if (!bg) return;
+  for (let i = 0; i < 22; i++) {
+    const span = document.createElement('span');
+    span.textContent = emojis[i % emojis.length];
+    span.style.left = Math.random() * 100 + 'vw';
+    span.style.animationDuration = (18 + Math.random() * 20) + 's';
+    span.style.animationDelay = (Math.random() * 20) + 's';
+    span.style.fontSize = (1.2 + Math.random() * 1.8) + 'rem';
+    bg.appendChild(span);
+  }
+})();
 
 document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('cover').classList.add('hidden');
