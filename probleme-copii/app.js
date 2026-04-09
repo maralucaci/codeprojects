@@ -662,13 +662,16 @@ function genereazaProblema(clasa, materie, tema) {
   const emojis = ['📚','✏️','📐','📏','🔬','🎒','📝','🖊️','📖','🔭','🧮','📌','✂️','🖍️','📎','🏫'];
   const bg = document.getElementById('school-bg');
   if (!bg) return;
-  for (let i = 0; i < 22; i++) {
+  for (let i = 0; i < 28; i++) {
     const span = document.createElement('span');
     span.textContent = emojis[i % emojis.length];
-    span.style.left = Math.random() * 100 + 'vw';
-    span.style.animationDuration = (18 + Math.random() * 20) + 's';
-    span.style.animationDelay = (Math.random() * 20) + 's';
-    span.style.fontSize = (1.2 + Math.random() * 1.8) + 'rem';
+    // Răspândite pe toată pagina — vizibile imediat
+    span.style.left = (2 + Math.random() * 95) + 'vw';
+    span.style.top  = (Math.random() * 200) + 'vh'; // acoperă și scroll
+    span.style.animationDuration = (4 + Math.random() * 5) + 's';
+    span.style.animationDelay = -(Math.random() * 5) + 's'; // delay negativ = deja în mișcare
+    span.style.fontSize = (1.6 + Math.random() * 1.8) + 'rem';
+    span.style.opacity = (0.25 + Math.random() * 0.25).toFixed(2);
     bg.appendChild(span);
   }
 })();
