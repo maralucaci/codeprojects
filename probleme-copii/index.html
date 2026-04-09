@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Probleme pentru Copii</title>
+  <link rel="stylesheet" href="style.css?v=1">
+</head>
+<body>
+
+  <!-- COVER -->
+  <div id="cover">
+    <div class="cover-inner">
+      <div class="cover-icon">📚</div>
+      <h1>Probleme pentru Copii</h1>
+      <p>Generează probleme de matematică și română<br>adaptate clasei copilului tău</p>
+      <button id="btn-start">Începe →</button>
+    </div>
+  </div>
+
+  <!-- APP -->
+  <div id="app" class="hidden">
+    <header>
+      <span class="logo">📚 Probleme pentru Copii</span>
+    </header>
+
+    <main>
+      <section class="form-section">
+        <h2>Configurează problemele</h2>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="sel-clasa">Clasa</label>
+            <select id="sel-clasa">
+              <option value="">— Alege clasa —</option>
+              <option value="1">Clasa I</option>
+              <option value="2">Clasa a II-a</option>
+              <option value="3">Clasa a III-a</option>
+              <option value="4">Clasa a IV-a</option>
+              <option value="5">Clasa a V-a</option>
+              <option value="6">Clasa a VI-a</option>
+              <option value="7">Clasa a VII-a</option>
+              <option value="8">Clasa a VIII-a</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sel-materie">Materia</label>
+            <select id="sel-materie" disabled>
+              <option value="">— Alege mai întâi clasa —</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="sel-tema">Tema</label>
+            <select id="sel-tema" disabled>
+              <option value="">— Alege mai întâi materia —</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="btn-genereaza" disabled>✨ Generează 5 Probleme</button>
+      </section>
+
+      <section id="probleme-section" class="hidden">
+        <div class="probleme-header">
+          <h2 id="probleme-titlu"></h2>
+          <button id="btn-print" title="Printează">🖨️ Printează</button>
+        </div>
+        <div id="lista-probleme"></div>
+        <button id="btn-alte" class="btn-secondary">🔄 Alte 5 probleme</button>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js?v=1"></script>
+</body>
+</html>
