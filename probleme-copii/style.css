@@ -2,7 +2,7 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
-  background: #1a1a2e;
+  background: #12203a;
   color: #eee;
   min-height: 100vh;
   position: relative;
@@ -36,17 +36,17 @@ body::before {
 
 .school-bg span {
   position: absolute;
-  font-size: 1.8rem;
-  opacity: 0.07;
+  font-size: 2.2rem;
+  opacity: 0;
   animation: floatUp linear infinite;
   user-select: none;
 }
 
 @keyframes floatUp {
   0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
-  10%  { opacity: 0.07; }
-  90%  { opacity: 0.07; }
-  100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  10%  { opacity: 0.55; }
+  85%  { opacity: 0.45; }
+  100% { transform: translateY(-10vh) rotate(25deg); opacity: 0; }
 }
 
 .hidden { display: none !important; }
