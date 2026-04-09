@@ -23,13 +23,13 @@ body::before {
   background-size: 100% 100%, 100% 100%, 25px 25px, 25px 25px;
 }
 
-#cover, #app, header, main { position: relative; z-index: 1; }
+#cover, #app, header, main { position: relative; z-index: 3; }
 
 /* Emoji plutitoare de şcoală */
 .school-bg {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 2;
   pointer-events: none;
   overflow: hidden;
 }
@@ -37,10 +37,9 @@ body::before {
 .school-bg span {
   position: absolute;
   font-size: 2.4rem;
-  opacity: 0.35;
   animation: bob ease-in-out infinite;
   user-select: none;
-  filter: drop-shadow(0 0 10px rgba(245,197,24,0.6));
+  filter: drop-shadow(0 0 10px rgba(245,197,24,0.5));
 }
 
 @keyframes bob {
@@ -57,7 +56,7 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: transparent;
 }
 
 .cover-inner { text-align: center; padding: 40px 24px; }

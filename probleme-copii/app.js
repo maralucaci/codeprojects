@@ -667,7 +667,7 @@ function genereazaProblema(clasa, materie, tema) {
     span.textContent = emojis[i % emojis.length];
     // Răspândite pe toată pagina — vizibile imediat
     span.style.left = (2 + Math.random() * 95) + 'vw';
-    span.style.top  = (Math.random() * 200) + 'vh'; // acoperă și scroll
+    span.style.top  = (Math.random() * 88) + 'vh';
     span.style.animationDuration = (4 + Math.random() * 5) + 's';
     span.style.animationDelay = -(Math.random() * 5) + 's'; // delay negativ = deja în mișcare
     span.style.fontSize = (1.6 + Math.random() * 1.8) + 'rem';
