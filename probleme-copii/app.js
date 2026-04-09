@@ -429,7 +429,7 @@ G['4-Română-Analiza textului'] = () => alege([
 G['4-Logică-Probleme de perspicacitate avansate'] = () => alege([
   { text: `Trei cutii conțin: una mere, una pere, una cu mere și pere amestecate.\nEtichetele sunt GREȘITE — nicio etichetă nu corespunde conținutului adevărat.\nEtichetele sunt: "Mere", "Pere", "Mere și Pere".\nPoți scoate o singură bucată de fruct dintr-o singură cutie.`,
     cerinta: `a) Din care cutie trebuie să scoți fructul ca să poți identifica toate cutiile?\nb) Explică logica completă a rezolvării.\nc) Câte variante de etichetare greșită există în total?\nd) Dacă ai avea voie să scoți câte un fruct din 2 cutii, care ar fi strategia?`,
-    raspunds: `a) Scoți din cutia "Mere și Pere"\nb) Acea cutie NU poate conține mere+pere (eticheta e greșită). Dacă scoți un măr → cutia are mere. Cutia "Mere" nu poate fi mere (etichetă greșită) → e pere sau mere+pere. Cutia "Pere" → prin eliminare rezolvi tot.\nc) 2 variante de permutări derangementale pentru 3 elemente\nd) Strategie: prima cutie confirmă, a doua elimină incertitudinile` },
+    raspuns: `a) Scoți din cutia "Mere și Pere"\nb) Acea cutie NU poate conține mere+pere (eticheta e greșită). Dacă scoți un măr → cutia are mere. Cutia "Mere" nu poate fi mere (etichetă greșită) → e pere sau mere+pere. Cutia "Pere" → prin eliminare rezolvi tot.\nc) 2 variante de permutări derangementale pentru 3 elemente\nd) Strategie: prima cutie confirmă, a doua elimină incertitudinile` },
 ]);
 
 G['4-Logică-Grile logice'] = () => alege([
