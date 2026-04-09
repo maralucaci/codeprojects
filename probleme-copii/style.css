@@ -106,7 +106,24 @@ header {
   background: #16213e;
   border-bottom: 2px solid #f5c518;
   padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
+
+#btn-back {
+  background: transparent;
+  border: 1px solid #f5c518;
+  color: #f5c518;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+#btn-back:hover { background: rgba(245,197,24,0.15); }
 
 .logo { font-size: 1.2rem; font-weight: 700; color: #f5c518; }
 

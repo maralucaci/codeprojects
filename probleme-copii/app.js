@@ -681,6 +681,12 @@ document.getElementById('btn-start').addEventListener('click', () => {
   document.getElementById('app').classList.remove('hidden');
 });
 
+document.getElementById('btn-back').addEventListener('click', () => {
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('cover').classList.remove('hidden');
+  document.getElementById('probleme-section').classList.add('hidden');
+});
+
 const selClasa   = document.getElementById('sel-clasa');
 const selMaterie = document.getElementById('sel-materie');
 const selTema    = document.getElementById('sel-tema');
