@@ -671,7 +671,7 @@ function genereazaProblema(clasa, materie, tema) {
     span.style.animationDuration = (4 + Math.random() * 5) + 's';
     span.style.animationDelay = -(Math.random() * 5) + 's'; // delay negativ = deja în mișcare
     span.style.fontSize = (1.6 + Math.random() * 1.8) + 'rem';
-    span.style.opacity = (0.25 + Math.random() * 0.25).toFixed(2);
+    span.style.opacity = (0.75 + Math.random() * 0.25).toFixed(2);
     bg.appendChild(span);
   }
 })();

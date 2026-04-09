@@ -40,7 +40,7 @@ body::before {
   opacity: 0.35;
   animation: bob ease-in-out infinite;
   user-select: none;
-  filter: drop-shadow(0 0 6px rgba(245,197,24,0.3));
+  filter: drop-shadow(0 0 10px rgba(245,197,24,0.6));
 }
 
 @keyframes bob {
