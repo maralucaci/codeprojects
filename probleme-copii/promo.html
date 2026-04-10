@@ -58,10 +58,16 @@
     #vol-wrap {
       position: fixed; top: 16px; left: 16px; z-index: 200;
       display: flex; align-items: center; gap: 8px;
-      background: rgba(0,0,0,0.4); border-radius: 20px; padding: 6px 14px;
+      background: rgba(0,0,0,0.5); border-radius: 20px; padding: 6px 14px;
+      flex-wrap: wrap; max-width: 340px;
     }
-    #vol-wrap label { font-size: 0.8rem; color: #aaa; }
-    #vol-slider { width: 80px; accent-color: #f5c518; cursor: pointer; }
+    #vol-wrap label { font-size: 0.85rem; color: #aaa; }
+    #vol-slider { width: 70px; accent-color: #f5c518; cursor: pointer; }
+    #voice-select {
+      background: #16213e; color: #eee; border: 1px solid #f5c518;
+      border-radius: 8px; padding: 3px 8px; font-size: 0.78rem;
+      cursor: pointer; max-width: 180px;
+    }
 
     /* ────────────────────────────────
        SCENA 1 — INTRO
@@ -226,8 +232,9 @@
   <button id="btn-restart">↩ Restart</button>
 </div>
 <div id="vol-wrap">
-  <label>🔊 Voce</label>
+  <label>🔊</label>
   <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.9">
+  <select id="voice-select" title="Alege vocea"></select>
 </div>
 <div id="progress-track"><div id="progress-fill"></div></div>
 
@@ -358,15 +365,76 @@ const fillEl  = document.getElementById('progress-fill');
 const volSlider = document.getElementById('vol-slider');
 
 // ── Voce ──
+let voceAleasa = null;
+
+const voiceSelect = document.getElementById('voice-select');
+
+function incarcaVoce(cb) {
+  const voci = speechSynthesis.getVoices();
+  if (voci.length > 0) { cb(voci); return; }
+  speechSynthesis.addEventListener('voiceschanged', () => cb(speechSynthesis.getVoices()), { once: true });
+}
+
+function umpleSelectVoci(voci) {
+  voiceSelect.innerHTML = '';
+  // Pus vocile române primele
+  const sortate = [...voci].sort((a,b) => {
+    if (a.lang.startsWith('ro') && !b.lang.startsWith('ro')) return -1;
+    if (!a.lang.startsWith('ro') && b.lang.startsWith('ro')) return 1;
+    return 0;
+  });
+  sortate.forEach((v, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = `${v.lang.startsWith('ro') ? '🇷🇴 ' : ''}${v.name.slice(0,22)}`;
+    opt.dataset.index = voci.indexOf(v);
+    voiceSelect.appendChild(opt);
+  });
+  // Selectează prima voce română automat
+  const roIdx = sortate.findIndex(v => v.lang.startsWith('ro'));
+  if (roIdx >= 0) { voiceSelect.selectedIndex = roIdx; voceAleasa = sortate[roIdx]; }
+  else { voceAleasa = sortate[0]; }
+}
+
+voiceSelect.addEventListener('change', () => {
+  const voci = speechSynthesis.getVoices();
+  const sortate = [...voci].sort((a,b) => {
+    if (a.lang.startsWith('ro') && !b.lang.startsWith('ro')) return -1;
+    if (!a.lang.startsWith('ro') && b.lang.startsWith('ro')) return 1;
+    return 0;
+  });
+  voceAleasa = sortate[voiceSelect.selectedIndex];
+});
+
+incarcaVoce(voci => umpleSelectVoci(voci));
+
+function alegeVoce(voci) {
+  // 1. Caută voce română
+  const ro = voci.find(v => v.lang.startsWith('ro'));
+  if (ro) return ro;
+  // 2. Fallback: orice voce locală (nu online) în engleză
+  const local = voci.find(v => v.localService && v.lang.startsWith('en'));
+  if (local) return local;
+  // 3. Orice voce disponibilă
+  return voci[0] || null;
+}
+
 function vorbeste(text) {
   if (!window.speechSynthesis) return;
   speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang  = 'ro-RO';
-  u.rate  = 0.95;
-  u.pitch = 1.05;
-  u.volume = parseFloat(volSlider.value);
-  speechSynthesis.speak(u);
+
+  function _speak() {
+    const u = new SpeechSynthesisUtterance(text);
+    if (voceAleasa) u.voice = voceAleasa;
+    u.lang   = voceAleasa?.lang || 'ro-RO';
+    u.rate   = 0.9;
+    u.pitch  = 1.0;
+    u.volume = parseFloat(volSlider.value);
+    speechSynthesis.speak(u);
+  }
+
+  if (voceAleasa) { _speak(); return; }
+  incarcaVoce(voci => { voceAleasa = alegeVoce(voci); _speak(); });
 }
 
 // ── Progress bar ──
