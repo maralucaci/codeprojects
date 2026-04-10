@@ -2,7 +2,7 @@
   "name": "Perseverence",
   "short_name": "Perseverence",
   "description": "Probleme de matematică, română și logică pentru copii",
-  "start_url": "/probleme-copii/",
+  "start_url": "/codeprojects/probleme-copii/",
   "display": "standalone",
   "background_color": "#12203a",
   "theme_color": "#f5c518",
