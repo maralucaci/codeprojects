@@ -16,107 +16,93 @@
       user-select: none;
     }
 
+    /* ── START OVERLAY ── */
+    #start-overlay {
+      position: fixed; inset: 0; z-index: 999;
+      background: #0a0e1a;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+    }
+    #start-overlay h2 { font-size: 2rem; color: #f5c518; }
+    #start-overlay p  { color: #aaa; font-size: 1rem; }
+    #btn-play-start {
+      background: #f5c518; color: #0a0e1a;
+      border: none; border-radius: 50px;
+      padding: 16px 52px; font-size: 1.3rem; font-weight: 900;
+      cursor: pointer; box-shadow: 0 0 30px rgba(245,197,24,0.5);
+      transition: transform 0.15s;
+    }
+    #btn-play-start:hover { transform: scale(1.07); }
+
     .scene {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       padding: 40px 28px;
-      opacity: 0;
-      transition: opacity 0.8s ease;
+      opacity: 0; transition: opacity 0.8s ease;
       pointer-events: none;
     }
     .scene.active { opacity: 1; pointer-events: auto; }
 
     /* ── PROGRESS ── */
-    #progress-track {
-      position: fixed; bottom: 0; left: 0; right: 0;
-      height: 6px; background: rgba(255,255,255,0.1); z-index: 100;
-    }
-    #progress-fill {
-      height: 100%; background: #f5c518;
-      width: 0%; transition: width 0.1s linear;
-    }
+    #progress-track { position:fixed; bottom:0; left:0; right:0; height:6px; background:rgba(255,255,255,0.1); z-index:100; }
+    #progress-fill  { height:100%; background:#f5c518; width:0%; transition:width 0.1s linear; }
 
     /* ── CONTROLS ── */
-    #controls {
-      position: fixed; top: 16px; right: 16px;
-      display: flex; gap: 10px; z-index: 200;
-    }
+    #controls { position:fixed; top:16px; right:16px; display:flex; gap:10px; z-index:200; }
     #controls button {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.25);
-      color: #fff; padding: 7px 16px; border-radius: 20px;
-      cursor: pointer; font-size: 0.85rem;
-      transition: all 0.2s;
+      background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.25);
+      color:#fff; padding:7px 16px; border-radius:20px; cursor:pointer; font-size:0.85rem;
+      transition:all 0.2s;
     }
-    #controls button:hover { background: rgba(245,197,24,0.2); border-color: #f5c518; }
+    #controls button:hover { background:rgba(245,197,24,0.2); border-color:#f5c518; }
 
-    /* ── VOLUME ── */
+    /* ── VOL ── */
     #vol-wrap {
-      position: fixed; top: 16px; left: 16px; z-index: 200;
-      display: flex; align-items: center; gap: 8px;
-      background: rgba(0,0,0,0.5); border-radius: 20px; padding: 6px 14px;
-      flex-wrap: wrap; max-width: 340px;
+      position:fixed; top:16px; left:16px; z-index:200;
+      display:flex; align-items:center; gap:8px;
+      background:rgba(0,0,0,0.5); border-radius:20px; padding:6px 14px;
     }
-    #vol-wrap label { font-size: 0.85rem; color: #aaa; }
-    #vol-slider { width: 70px; accent-color: #f5c518; cursor: pointer; }
-    #voice-select {
-      background: #16213e; color: #eee; border: 1px solid #f5c518;
-      border-radius: 8px; padding: 3px 8px; font-size: 0.78rem;
-      cursor: pointer; max-width: 180px;
-    }
+    #vol-wrap label { font-size:0.85rem; color:#aaa; }
+    #vol-slider { width:80px; accent-color:#f5c518; cursor:pointer; }
 
-    /* ────────────────────────────────
-       SCENA 1 — INTRO
-    ──────────────────────────────── */
-    #s1 { background: radial-gradient(ellipse at center, #1a2a4a, #0a0e1a); }
-    .emoji-rain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    /* ── SCENE 1: INTRO ── */
+    #s1 { background: radial-gradient(ellipse at center,#1a2a4a,#0a0e1a); }
+    .emoji-rain { position:absolute; inset:0; overflow:hidden; pointer-events:none; }
     .emoji-rain span {
-      position: absolute; font-size: 2rem; opacity: 0;
+      position:absolute; opacity:0;
       animation: fall linear forwards;
     }
     @keyframes fall {
-      0%   { transform: translateY(-80px) rotate(0deg); opacity:0; }
-      15%  { opacity: 0.8; }
-      85%  { opacity: 0.7; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity:0; }
+      0%   { transform:translateY(-80px) rotate(0deg); opacity:0; }
+      15%  { opacity:0.85; }
+      85%  { opacity:0.7; }
+      100% { transform:translateY(110vh) rotate(360deg); opacity:0; }
     }
     .intro-title {
-      font-size: clamp(2.8rem,7vw,5rem); font-weight:900;
-      color:#f5c518; letter-spacing:4px; text-align:center;
-      animation: popIn 0.7s 0.2s both;
-      text-shadow: 0 0 40px rgba(245,197,24,0.5);
+      font-size:clamp(3rem,8vw,5.5rem); font-weight:900; color:#f5c518;
+      letter-spacing:5px; text-align:center;
+      animation:popIn 0.7s 0.2s both;
+      text-shadow:0 0 50px rgba(245,197,24,0.6);
     }
     .intro-sub {
-      font-size: clamp(1rem,2.5vw,1.5rem); color:#aac4ff;
-      margin-top:16px; text-align:center; line-height:1.7;
-      animation: popIn 0.7s 0.8s both;
-    }
-    @keyframes popIn {
-      from { transform:scale(0.6); opacity:0; }
-      to   { transform:scale(1);   opacity:1; }
-    }
-    @keyframes fadeUp {
-      from { transform:translateY(30px); opacity:0; }
-      to   { transform:translateY(0);    opacity:1; }
+      font-size:clamp(1rem,2.5vw,1.5rem); color:#aac4ff;
+      margin-top:18px; text-align:center; line-height:1.7;
+      animation:popIn 0.7s 0.9s both;
     }
 
-    /* ────────────────────────────────
-       SCENA 2 — PROBLEMĂ GREA
-    ──────────────────────────────── */
-    #s2 { background: linear-gradient(135deg,#0f1f3d,#1a1a2e); gap: 18px; }
-    .scene-label {
-      font-size:0.82rem; text-transform:uppercase; letter-spacing:2px;
-      color:#f5c518; animation: fadeUp 0.5s 0.2s both;
-    }
+    @keyframes popIn  { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes fadeUp { from{transform:translateY(30px);opacity:0} to{transform:translateY(0);opacity:1} }
+    @keyframes slideIn{ from{transform:translateX(-40px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+    /* ── SCENE 2: PROBLEMĂ ── */
+    #s2 { background:linear-gradient(135deg,#0f1f3d,#1a1a2e); gap:18px; }
+    .scene-label { font-size:0.82rem; text-transform:uppercase; letter-spacing:2px; color:#f5c518; animation:fadeUp 0.5s 0.2s both; }
     .problem-box {
       background:#16213e; border:1px solid #2a3a5e; border-radius:18px;
       padding:24px 32px; max-width:740px; width:100%;
-      font-size:clamp(0.9rem,1.8vw,1.05rem); line-height:1.85;
-      animation: fadeUp 0.6s 0.5s both;
+      font-size:clamp(0.88rem,1.8vw,1.04rem); line-height:1.85;
+      animation:fadeUp 0.6s 0.5s both;
     }
     .problem-box strong { color:#f5c518; }
     .problem-cerinta {
@@ -124,33 +110,25 @@
       background:rgba(245,197,24,0.07); border-left:3px solid #f5c518;
       border-radius:0 12px 12px 0; padding:14px 20px;
       font-size:clamp(0.85rem,1.7vw,1rem); line-height:1.8; color:#f0e68c;
-      animation: fadeUp 0.6s 1s both;
+      animation:fadeUp 0.6s 1s both;
     }
 
-    /* ────────────────────────────────
-       SCENA 3 — FEATURES
-    ──────────────────────────────── */
-    #s3 { background: linear-gradient(135deg,#0d1f0d,#0a1a2e); gap:24px; }
+    /* ── SCENE 3: FEATURES ── */
+    #s3 { background:linear-gradient(135deg,#0d1f0d,#0a1a2e); gap:24px; }
     .s3-title { font-size:1.3rem; color:#f5c518; font-weight:700; letter-spacing:1px; }
-    .features-grid {
-      display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:16px; max-width:800px; width:100%;
-    }
+    .features-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; max-width:800px; width:100%; }
     .feat-card {
       background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1);
       border-radius:16px; padding:22px 18px; text-align:center;
-      opacity:0; transform:translateY(30px);
-      transition: border-color 0.3s;
+      opacity:0; transform:translateY(30px); transition:border-color 0.3s;
     }
-    .feat-card.show { animation: fadeUp 0.5s forwards; }
+    .feat-card.show { animation:fadeUp 0.5s forwards; }
     .feat-card:hover { border-color:#f5c518; }
-    .feat-icon { font-size:2.2rem; margin-bottom:10px; }
+    .feat-icon  { font-size:2.2rem; margin-bottom:10px; }
     .feat-title { font-size:0.95rem; font-weight:700; color:#f5c518; margin-bottom:6px; }
     .feat-desc  { font-size:0.82rem; color:#aaa; line-height:1.5; }
 
-    /* ────────────────────────────────
-       SCENA 4 — DEMO LIVE
-    ──────────────────────────────── */
+    /* ── SCENE 4: DEMO ── */
     #s4 { background:#050810; padding:16px; gap:12px; }
     .demo-label { font-size:0.95rem; color:#f5c518; font-weight:700; animation:popIn 0.5s 0.2s both; }
     .demo-frame {
@@ -161,70 +139,58 @@
     }
     .demo-frame iframe { width:100%; height:100%; border:none; }
 
-    /* ────────────────────────────────
-       SCENA 5 & 6 — TESTIMONIALE
-    ──────────────────────────────── */
-    #s5 { background: radial-gradient(ellipse at 30% 50%,#1f0d2e,#0a0e1a); }
-    #s6 { background: radial-gradient(ellipse at 70% 50%,#0d2e1a,#0a0e1a); }
-    .avatar-wrap {
-      display:flex; align-items:center; gap:30px;
-      max-width:700px; flex-wrap:wrap; justify-content:center;
-    }
+    /* ── SCENE 5 & 6: TESTIMONIALE ── */
+    #s5 { background:radial-gradient(ellipse at 30% 50%,#1f0d2e,#0a0e1a); }
+    #s6 { background:radial-gradient(ellipse at 70% 50%,#0d2e1a,#0a0e1a); }
+    .avatar-wrap { display:flex; align-items:center; gap:30px; max-width:700px; flex-wrap:wrap; justify-content:center; }
     .avatar-circle {
       width:110px; height:110px; border-radius:50%;
       display:flex; align-items:center; justify-content:center;
       font-size:3.5rem; flex-shrink:0;
-      animation: popIn 0.6s 0.3s both;
-      box-shadow:0 0 40px rgba(245,197,24,0.35);
+      animation:popIn 0.6s 0.3s both;
     }
-    .av-mom  { background: linear-gradient(135deg,#f5c518,#ff6b35); }
-    .av-kid  { background: linear-gradient(135deg,#4fc3f7,#1976d2); }
+    .av-mom { background:linear-gradient(135deg,#f5c518,#ff6b35); box-shadow:0 0 40px rgba(245,197,24,0.4); }
+    .av-kid { background:linear-gradient(135deg,#4fc3f7,#1976d2); box-shadow:0 0 40px rgba(79,195,247,0.4); }
     .avatar-bubble {
       background:#16213e; border:1px solid #2a3a5e;
       padding:20px 24px; max-width:460px;
       font-size:clamp(0.95rem,2vw,1.1rem); line-height:1.8;
-      opacity:0; animation: fadeUp 0.6s 0.7s forwards;
+      opacity:0; animation:fadeUp 0.6s 0.7s forwards;
     }
     .av-mom-bubble { border-radius:18px 18px 18px 4px; }
     .av-kid-bubble { border-radius:18px 18px 4px 18px; }
-    .avatar-name {
-      margin-top:10px; font-size:0.82rem; color:#f5c518; font-weight:700;
-      opacity:0; animation: fadeUp 0.4s 1.1s forwards;
-    }
+    .avatar-name { margin-top:10px; font-size:0.82rem; color:#f5c518; font-weight:700; opacity:0; animation:fadeUp 0.4s 1.1s forwards; }
 
-    /* ────────────────────────────────
-       SCENA 7 — OUTRO
-    ──────────────────────────────── */
-    #s7 { background: radial-gradient(ellipse at center,#1a2a4a,#0a0e1a); text-align:center; }
+    /* ── SCENE 7: OUTRO ── */
+    #s7 { background:radial-gradient(ellipse at center,#1a2a4a,#0a0e1a); text-align:center; }
     .pulse-ring {
-      position:absolute; border-radius:50%;
-      border:2px solid rgba(245,197,24,0.3);
-      animation: pulse 2.5s ease-out infinite;
-      left:50%; top:50%; transform:translate(-50%,-50%);
+      position:absolute; border-radius:50%; border:2px solid rgba(245,197,24,0.3);
+      animation:pulse 2.5s ease-out infinite; left:50%; top:50%;
     }
-    @keyframes pulse {
-      0%   { width:80px;  height:80px;  opacity:0.9; }
-      100% { width:500px; height:500px; opacity:0; }
-    }
-    .outro-logo  { font-size:clamp(3rem,9vw,5.5rem); animation:popIn 0.7s 0.2s both; }
-    .outro-title {
-      font-size:clamp(2rem,5vw,3.5rem); font-weight:900; color:#f5c518;
-      letter-spacing:4px; animation:popIn 0.7s 0.6s both;
-      text-shadow:0 0 30px rgba(245,197,24,0.5);
-    }
-    .outro-tagline { font-size:clamp(1rem,2.5vw,1.35rem); color:#aac4ff; margin-top:14px; animation:fadeUp 0.6s 1s both; }
-    .outro-badges {
-      display:flex; gap:14px; margin-top:26px; flex-wrap:wrap; justify-content:center;
-      animation:fadeUp 0.6s 1.3s both;
-    }
-    .badge {
-      background:rgba(245,197,24,0.12); border:1px solid #f5c518;
-      color:#f5c518; border-radius:30px; padding:8px 20px;
-      font-size:0.9rem; font-weight:700;
+    @keyframes pulse { 0%{width:80px;height:80px;opacity:0.9;transform:translate(-50%,-50%)} 100%{width:500px;height:500px;opacity:0;transform:translate(-50%,-50%)} }
+    .outro-logo   { font-size:clamp(3rem,9vw,5.5rem); animation:popIn 0.7s 0.2s both; }
+    .outro-title  { font-size:clamp(2rem,5vw,3.5rem); font-weight:900; color:#f5c518; letter-spacing:4px; animation:popIn 0.7s 0.6s both; text-shadow:0 0 30px rgba(245,197,24,0.5); }
+    .outro-tagline{ font-size:clamp(1rem,2.5vw,1.35rem); color:#aac4ff; margin-top:14px; animation:fadeUp 0.6s 1s both; }
+    .outro-badges { display:flex; gap:14px; margin-top:26px; flex-wrap:wrap; justify-content:center; animation:fadeUp 0.6s 1.3s both; }
+    .badge { background:rgba(245,197,24,0.12); border:1px solid #f5c518; color:#f5c518; border-radius:30px; padding:8px 20px; font-size:0.9rem; font-weight:700; }
+
+    /* ── BEAT INDICATOR ── */
+    #beat-dot {
+      position:fixed; bottom:14px; right:16px; z-index:200;
+      width:10px; height:10px; border-radius:50%; background:#f5c518;
+      opacity:0; transition:opacity 0.05s;
     }
   </style>
 </head>
 <body>
+
+<!-- START OVERLAY -->
+<div id="start-overlay">
+  <div style="font-size:4rem">🧠</div>
+  <h2>Perseverence</h2>
+  <p>Apasă pentru a porni reclama cu muzică</p>
+  <button id="btn-play-start">▶ Pornește</button>
+</div>
 
 <!-- CONTROLS -->
 <div id="controls">
@@ -232,20 +198,20 @@
   <button id="btn-restart">↩ Restart</button>
 </div>
 <div id="vol-wrap">
-  <label>🔊</label>
-  <input type="range" id="vol-slider" min="0" max="1" step="0.1" value="0.9">
-  <select id="voice-select" title="Alege vocea"></select>
+  <label>🎵</label>
+  <input type="range" id="vol-slider" min="0" max="1" step="0.05" value="0.7">
 </div>
 <div id="progress-track"><div id="progress-fill"></div></div>
+<div id="beat-dot"></div>
 
-<!-- ══ SCENA 1: INTRO ══ -->
+<!-- SCENA 1: INTRO -->
 <div class="scene active" id="s1">
   <div class="emoji-rain" id="emoji-rain"></div>
   <div class="intro-title">🧠 Perseverence</div>
   <div class="intro-sub">Probleme pentru copii — generate instant<br>Matematică &nbsp;•&nbsp; Română &nbsp;•&nbsp; Logică</div>
 </div>
 
-<!-- ══ SCENA 2: PROBLEMĂ GREA ══ -->
+<!-- SCENA 2: PROBLEMĂ GREA -->
 <div class="scene" id="s2">
   <div class="scene-label">🧩 Exemplu problemă — Clasa V–VI, Logică</div>
   <div class="problem-box">
@@ -260,75 +226,51 @@
   </div>
   <div class="problem-cerinta">
     a) Cine a câștigat concursul (locul 1)?<br>
-    b) Determină locul fiecăruia dintre cei cinci prieteni.<br>
+    b) Determină locul fiecăruia — justifică fiecare pas.<br>
     c) Câte perechi de concurenți consecutivi există?
   </div>
 </div>
 
-<!-- ══ SCENA 3: FEATURES ══ -->
+<!-- SCENA 3: FEATURES -->
 <div class="scene" id="s3">
   <div class="s3-title">✨ De ce Perseverence?</div>
   <div class="features-grid">
-    <div class="feat-card" id="fc1">
-      <div class="feat-icon">⚡</div>
-      <div class="feat-title">Instant</div>
-      <div class="feat-desc">5 probleme unice în 3 secunde — mereu altele</div>
-    </div>
-    <div class="feat-card" id="fc2">
-      <div class="feat-icon">🎓</div>
-      <div class="feat-title">Clasa I – VIII</div>
-      <div class="feat-desc">Adaptat exact nivelului copilului tău</div>
-    </div>
-    <div class="feat-card" id="fc3">
-      <div class="feat-icon">🧠</div>
-      <div class="feat-title">3 Materii</div>
-      <div class="feat-desc">Matematică, Română și Logică cu probleme reale</div>
-    </div>
-    <div class="feat-card" id="fc4">
-      <div class="feat-icon">🖨️</div>
-      <div class="feat-title">Printabil</div>
-      <div class="feat-desc">Un click și ai foaia de lucru gata de tipărit</div>
-    </div>
+    <div class="feat-card" id="fc1"><div class="feat-icon">⚡</div><div class="feat-title">Instant</div><div class="feat-desc">5 probleme unice în 3 secunde — mereu altele</div></div>
+    <div class="feat-card" id="fc2"><div class="feat-icon">🎓</div><div class="feat-title">Clasa I–VIII</div><div class="feat-desc">Adaptat exact nivelului copilului tău</div></div>
+    <div class="feat-card" id="fc3"><div class="feat-icon">🧠</div><div class="feat-title">3 Materii</div><div class="feat-desc">Matematică, Română și Logică reală</div></div>
+    <div class="feat-card" id="fc4"><div class="feat-icon">🖨️</div><div class="feat-title">Printabil</div><div class="feat-desc">Un click și ai foaia de lucru gata</div></div>
   </div>
 </div>
 
-<!-- ══ SCENA 4: DEMO ══ -->
+<!-- SCENA 4: DEMO -->
 <div class="scene" id="s4">
   <div class="demo-label">👇 Aplicația în acțiune — încearcă chiar acum!</div>
-  <div class="demo-frame">
-    <iframe src="index.html" title="Perseverence demo"></iframe>
-  </div>
+  <div class="demo-frame"><iframe src="index.html" title="demo"></iframe></div>
 </div>
 
-<!-- ══ SCENA 5: MAMA ══ -->
+<!-- SCENA 5: MAMA -->
 <div class="scene" id="s5">
   <div class="avatar-wrap">
     <div class="avatar-circle av-mom">👩</div>
     <div>
-      <div class="avatar-bubble av-mom-bubble">
-        „Aloc 30 de secunde seara, aleg tema din programa lor și am cinci exerciții gata.
-        Copiii mei chiar se întrec care rezolvă mai repede — nu mai trebuie să îi conving să facă teme!"
-      </div>
+      <div class="avatar-bubble av-mom-bubble">„Aloc 30 de secunde seara, aleg tema din programa lor și am 5 exerciții gata. Copiii mei chiar se întrec care rezolvă mai repede!"</div>
       <div class="avatar-name">— Andreea, mamă a doi copii, Clasa III și Clasa VI</div>
     </div>
   </div>
 </div>
 
-<!-- ══ SCENA 6: COPIL ══ -->
+<!-- SCENA 6: COPIL -->
 <div class="scene" id="s6">
   <div class="avatar-wrap" style="flex-direction:row-reverse">
     <div class="avatar-circle av-kid">🧒</div>
     <div>
-      <div class="avatar-bubble av-kid-bubble">
-        „Îmi place că după fiecare problemă pot vedea răspunsul și înțeleg unde am greșit.
-        La logică sunt probleme super tari, ca niște ghicitori! Cer mereu Alte cinci probleme!"
-      </div>
+      <div class="avatar-bubble av-kid-bubble">„La logică sunt probleme ca niște ghicitori! Rezolv 5, apăs din nou și primesc altele. Nu mă mai plictisesc niciodată!"</div>
       <div class="avatar-name" style="text-align:right">— Matei, 11 ani, Clasa a V-a</div>
     </div>
   </div>
 </div>
 
-<!-- ══ SCENA 7: OUTRO ══ -->
+<!-- SCENA 7: OUTRO -->
 <div class="scene" id="s7">
   <div class="pulse-ring"></div>
   <div class="outro-logo">🧠</div>
@@ -343,206 +285,242 @@
 
 <script>
 // ══════════════════════════════════════════
-//  NARAȚIE VOCE ROMÂNĂ (Web Speech API)
+//  WEB AUDIO ENGINE — muzică reală
 // ══════════════════════════════════════════
-const NARATIE = [
-  "Perseverence. Aplicația care transformă temele în aventuri pentru copilul tău.",
-  "Iată un exemplu de problemă de logică pentru clasa a cincea. Cinci prieteni participă la un concurs. Folosind indiciile, trebuie să afli ordinea exactă. Poți rezolva?",
-  "De ce Perseverence? Generezi instant cinci probleme noi. Funcționează pentru toate clasele. Ai matematică, română și logică. Iar la final, poți printa totul.",
-  "Aceasta este aplicația în acțiune. Alegi clasa, materia și tema — și în trei secunde ai cinci probleme unice, gata de rezolvat.",
-  "Andreea este mamă a doi copii. Ea ne spune că în treizeci de secunde are exercițiile gata și copiii concurează între ei cine termină primul.",
-  "Matei are unsprezece ani și spune că problemele de logică sunt ca niște ghicitori. Cere mereu alte cinci probleme noi.",
-  "Perseverence. Gratuit. Pe orice dispozitiv. Fără instalare. Învață. Gândește. Crește."
-];
-
-const DURATIONS = [4500, 9000, 7000, 10000, 8000, 8000, 7000];
-const SCENES    = ['s1','s2','s3','s4','s5','s6','s7'];
-
-let current = 0, paused = false, timer = null;
-let rafId = null, progStart = null, progDur = 0;
-
-const fillEl  = document.getElementById('progress-fill');
+let ctx, masterGain, beatDot = document.getElementById('beat-dot');
 const volSlider = document.getElementById('vol-slider');
 
-// ── Voce ──
-let voceAleasa = null;
-
-const voiceSelect = document.getElementById('voice-select');
-
-function incarcaVoce(cb) {
-  const voci = speechSynthesis.getVoices();
-  if (voci.length > 0) { cb(voci); return; }
-  speechSynthesis.addEventListener('voiceschanged', () => cb(speechSynthesis.getVoices()), { once: true });
+function initAudio() {
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = ctx.createGain();
+  masterGain.gain.value = parseFloat(volSlider.value);
+  masterGain.connect(ctx.destination);
+  volSlider.addEventListener('input', () => { masterGain.gain.value = parseFloat(volSlider.value); });
 }
 
-function umpleSelectVoci(voci) {
-  voiceSelect.innerHTML = '';
-  // Pus vocile române primele
-  const sortate = [...voci].sort((a,b) => {
-    if (a.lang.startsWith('ro') && !b.lang.startsWith('ro')) return -1;
-    if (!a.lang.startsWith('ro') && b.lang.startsWith('ro')) return 1;
-    return 0;
-  });
-  sortate.forEach((v, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.textContent = `${v.lang.startsWith('ro') ? '🇷🇴 ' : ''}${v.name.slice(0,22)}`;
-    opt.dataset.index = voci.indexOf(v);
-    voiceSelect.appendChild(opt);
-  });
-  // Selectează prima voce română automat
-  const roIdx = sortate.findIndex(v => v.lang.startsWith('ro'));
-  if (roIdx >= 0) { voiceSelect.selectedIndex = roIdx; voceAleasa = sortate[roIdx]; }
-  else { voceAleasa = sortate[0]; }
+// ── Notă pian ──
+function nota(freq, start, dur, vol=0.18, type='sine') {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = type;
+  o.frequency.value = freq;
+  g.gain.setValueAtTime(0, start);
+  g.gain.linearRampToValueAtTime(vol, start + 0.01);
+  g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+  o.connect(g); g.connect(masterGain);
+  o.start(start); o.stop(start + dur + 0.05);
 }
 
-voiceSelect.addEventListener('change', () => {
-  const voci = speechSynthesis.getVoices();
-  const sortate = [...voci].sort((a,b) => {
-    if (a.lang.startsWith('ro') && !b.lang.startsWith('ro')) return -1;
-    if (!a.lang.startsWith('ro') && b.lang.startsWith('ro')) return 1;
-    return 0;
-  });
-  voceAleasa = sortate[voiceSelect.selectedIndex];
-});
-
-incarcaVoce(voci => umpleSelectVoci(voci));
-
-function alegeVoce(voci) {
-  // 1. Caută voce română
-  const ro = voci.find(v => v.lang.startsWith('ro'));
-  if (ro) return ro;
-  // 2. Fallback: orice voce locală (nu online) în engleză
-  const local = voci.find(v => v.localService && v.lang.startsWith('en'));
-  if (local) return local;
-  // 3. Orice voce disponibilă
-  return voci[0] || null;
+// ── Chord (acord) ──
+function chord(freqs, start, dur, vol=0.1) {
+  freqs.forEach(f => nota(f, start, dur, vol, 'sine'));
 }
 
-function vorbeste(text) {
-  if (!window.speechSynthesis) return;
-  speechSynthesis.cancel();
+// ── Whoosh de tranziție ──
+function whoosh(start) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.4, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i/d.length, 2);
+  const s = ctx.createBufferSource();
+  const g = ctx.createGain();
+  const f = ctx.createBiquadFilter();
+  f.type = 'bandpass'; f.frequency.value = 800; f.Q.value = 0.5;
+  s.buffer = buf; g.gain.value = 0.15;
+  s.connect(f); f.connect(g); g.connect(masterGain);
+  s.start(start); s.stop(start + 0.4);
+}
 
-  function _speak() {
-    const u = new SpeechSynthesisUtterance(text);
-    if (voceAleasa) u.voice = voceAleasa;
-    u.lang   = voceAleasa?.lang || 'ro-RO';
-    u.rate   = 0.9;
-    u.pitch  = 1.0;
-    u.volume = parseFloat(volSlider.value);
-    speechSynthesis.speak(u);
+// ── Chime (clopoțel) ──
+function chime(start, vol=0.25) {
+  [1046.5, 1318.5, 1568].forEach((f, i) => nota(f, start + i*0.08, 1.2, vol*0.8, 'sine'));
+  nota(2093, start + 0.24, 1.5, vol, 'sine');
+}
+
+// ── Kick drum ──
+function kick(start) {
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = 'sine';
+  o.frequency.setValueAtTime(150, start);
+  o.frequency.exponentialRampToValueAtTime(40, start + 0.15);
+  g.gain.setValueAtTime(0.6, start);
+  g.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+  o.connect(g); g.connect(masterGain);
+  o.start(start); o.stop(start + 0.35);
+}
+
+// ── Hi-hat ──
+function hihat(start, vol=0.06) {
+  const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+  const d = buf.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1) * (1-i/d.length);
+  const s = ctx.createBufferSource();
+  const f = ctx.createBiquadFilter();
+  const g = ctx.createGain();
+  f.type = 'highpass'; f.frequency.value = 7000;
+  g.gain.value = vol;
+  s.buffer = buf; s.connect(f); f.connect(g); g.connect(masterGain);
+  s.start(start); s.stop(start + 0.06);
+}
+
+// ── Melodie principală (pian upbeat) ──
+// Scala Do major: C D E F G A B C  (Hz)
+const SCALE = [261.63,293.66,329.63,349.23,392,440,493.88,523.25,587.33,659.25,698.46,784];
+// [index_scala, beat_start, durata]
+const MELODY = [
+  [4,0,0.4],[6,0.5,0.4],[7,1,0.8],
+  [6,2,0.4],[4,2.5,0.4],[2,3,0.8],
+  [4,4,0.4],[6,4.5,0.4],[9,5,0.8],
+  [7,6,0.4],[6,6.5,0.4],[4,7,1.2],
+  [4,8,0.4],[6,8.5,0.4],[7,9,0.8],
+  [9,10,0.4],[7,10.5,0.4],[6,11,0.8],
+  [4,12,0.4],[2,12.5,0.4],[0,13,1.6],
+  [4,15,0.4],[6,15.5,0.4],[7,16,0.8],
+  [9,17,0.4],[11,17.5,0.4],[9,18,0.8],
+  [7,19,0.4],[6,19.5,0.4],[4,20,0.8],
+  [2,21,0.4],[4,21.5,0.4],[6,22,1.2],
+  [7,24,0.4],[6,24.5,0.4],[4,25,0.8],
+  [6,26,0.4],[7,26.5,0.4],[9,27,1.6],
+  [7,29,0.4],[6,29.5,0.4],[4,30,1.2],
+];
+
+// Acorduri fundal
+const CHORDS = [
+  [[261.63,329.63,392], 0, 4],
+  [[220,277.18,329.63], 4, 4],
+  [[196,261.63,329.63], 8, 4],
+  [[174.61,220,261.63], 12, 4],
+  [[261.63,329.63,392], 16, 4],
+  [[220,277.18,329.63], 20, 4],
+  [[196,261.63,329.63], 24, 4],
+  [[261.63,329.63,523.25], 28, 4],
+];
+
+function compuneMuzica(offsetTime) {
+  const BPM = 118, beat = 60/BPM;
+
+  // Melodie
+  MELODY.forEach(([si, b, d]) => {
+    nota(SCALE[si], offsetTime + b*beat, d*beat, 0.14, 'triangle');
+  });
+
+  // Acorduri fundal
+  CHORDS.forEach(([freqs, b, d]) => {
+    chord(freqs, offsetTime + b*beat, d*beat, 0.055);
+  });
+
+  // Beat: kick pe 1 și 3, hihat pe fiecare sfert
+  for (let b = 0; b < 32; b++) {
+    const t = offsetTime + b * beat;
+    if (b % 4 === 0 || b % 4 === 2) kick(t);
+    hihat(t);
+    hihat(t + beat * 0.5);
   }
 
-  if (voceAleasa) { _speak(); return; }
-  incarcaVoce(voci => { voceAleasa = alegeVoce(voci); _speak(); });
+  // Chime la fiecare 8 beat-uri
+  [0, 8, 16, 24].forEach(b => chime(offsetTime + b*beat, 0.18));
 }
 
-// ── Progress bar ──
-function startProgress(dur) {
-  cancelAnimationFrame(rafId);
-  progStart = performance.now();
-  progDur   = dur;
-  const base = current / SCENES.length;
-  const span = 1 / SCENES.length;
-  function tick(now) {
-    if (paused) return;
-    const t = Math.min((now - progStart) / progDur, 1);
-    fillEl.style.width = ((base + t * span) * 100).toFixed(2) + '%';
-    if (t < 1) rafId = requestAnimationFrame(tick);
-  }
-  rafId = requestAnimationFrame(tick);
-}
+// ══════════════════════════════════════════
+//  FLOW SCENE-URI
+// ══════════════════════════════════════════
+const SCENES    = ['s1','s2','s3','s4','s5','s6','s7'];
+const DURATIONS = [4500, 9000, 7000, 10000, 8000, 8000, 7500];
+let current=0, paused=false, timer=null, rafId=null, progStart=null, progDur=0;
+const fillEl = document.getElementById('progress-fill');
 
-// ── Emoji rain ──
+// Emoji rain
 const EMOJIS = ['📚','✏️','📐','🔬','🎒','📝','🖊️','📖','🧮','🏫','🎯','⭐'];
 const rain = document.getElementById('emoji-rain');
-for (let i = 0; i < 22; i++) {
+for (let i=0; i<22; i++) {
   const s = document.createElement('span');
-  s.textContent = EMOJIS[i % EMOJIS.length];
-  s.style.left   = Math.random() * 100 + 'vw';
-  s.style.animationDelay    = (Math.random() * 3.5) + 's';
-  s.style.animationDuration = (2.5 + Math.random() * 2) + 's';
-  s.style.fontSize = (1.4 + Math.random() * 1.8) + 'rem';
+  s.textContent = EMOJIS[i%EMOJIS.length];
+  s.style.left = Math.random()*100+'vw';
+  s.style.animationDelay = (Math.random()*3.5)+'s';
+  s.style.animationDuration = (2.5+Math.random()*2)+'s';
+  s.style.fontSize = (1.4+Math.random()*1.8)+'rem';
   rain.appendChild(s);
 }
 
-// ── Feature cards ──
 function animateFeatures() {
-  ['fc1','fc2','fc3','fc4'].forEach((id,i) => {
-    setTimeout(() => {
-      const el = document.getElementById(id);
-      el.style.animationDelay = '0s';
-      el.classList.add('show');
-    }, 250 + i * 200);
+  ['fc1','fc2','fc3','fc4'].forEach((id,i)=>{
+    setTimeout(()=>{ const el=document.getElementById(id); el.style.animationDelay='0s'; el.classList.add('show'); }, 250+i*200);
   });
 }
 
-// ── Afișare scenă ──
-function showScene(idx) {
-  SCENES.forEach((id,i) => document.getElementById(id).classList.toggle('active', i === idx));
-  if (idx === 2) animateFeatures();
-  current = idx;
+function flashBeat() {
+  beatDot.style.opacity = '1';
+  setTimeout(()=>{ beatDot.style.opacity='0'; }, 80);
 }
 
-// ── Run ──
-function run(idx) {
-  clearTimeout(timer);
+function showScene(idx) {
+  SCENES.forEach((id,i)=>document.getElementById(id).classList.toggle('active',i===idx));
+  if (idx===2) animateFeatures();
+  if (idx>0) whoosh(ctx.currentTime);
+  if (idx===0 || idx===6) chime(ctx.currentTime + 0.3);
+  current=idx;
+}
+
+function startProgress(dur) {
   cancelAnimationFrame(rafId);
-  const dur = DURATIONS[idx];
-  vorbeste(NARATIE[idx]);
+  progStart=performance.now(); progDur=dur;
+  const base=current/SCENES.length, span=1/SCENES.length;
+  const BPM=118, beatMs=60000/BPM;
+  let lastBeat=-1;
+  function tick(now) {
+    if (paused) return;
+    const t=now-progStart, frac=Math.min(t/dur,1);
+    fillEl.style.width=((base+frac*span)*100).toFixed(2)+'%';
+    const beatN=Math.floor(t/beatMs);
+    if (beatN!==lastBeat){ lastBeat=beatN; flashBeat(); }
+    if (frac<1) rafId=requestAnimationFrame(tick);
+  }
+  rafId=requestAnimationFrame(tick);
+}
+
+function run(idx) {
+  clearTimeout(timer); cancelAnimationFrame(rafId);
+  const dur=DURATIONS[idx];
   startProgress(dur);
-  timer = setTimeout(() => {
-    if (idx < SCENES.length - 1) {
-      showScene(idx + 1);
-      run(idx + 1);
-    } else {
-      fillEl.style.width = '100%';
-      speechSynthesis.cancel();
-    }
+  timer=setTimeout(()=>{
+    if (idx<SCENES.length-1){ showScene(idx+1); run(idx+1); }
+    else fillEl.style.width='100%';
   }, dur);
 }
 
-// ── Start ──
-showScene(0);
-// Pornire la primul click (politica browser anti-autoplay)
-let started = false;
-function startOnce() {
-  if (started) return;
-  started = true;
-  run(0);
-}
-document.addEventListener('click', e => {
-  if (!started) { startOnce(); return; }
-  if (e.target.closest('#controls') || e.target.closest('iframe') || e.target.closest('#vol-wrap')) return;
-  clearTimeout(timer); cancelAnimationFrame(rafId); speechSynthesis.cancel();
-  if (current < SCENES.length - 1) { showScene(current + 1); run(current); }
-});
-document.addEventListener('keydown', e => {
-  if (e.key === ' ') { startOnce(); }
+// ── Start la click pe overlay ──
+document.getElementById('btn-play-start').addEventListener('click', ()=>{
+  initAudio();
+  compuneMuzica(ctx.currentTime + 0.1);
+  document.getElementById('start-overlay').style.display='none';
+  showScene(0); run(0);
 });
 
-// ── Pauză ──
-document.getElementById('btn-pause').addEventListener('click', e => {
-  e.stopPropagation();
-  paused = !paused;
-  e.target.textContent = paused ? '▶ Play' : '⏸ Pauză';
-  if (paused) {
-    clearTimeout(timer); cancelAnimationFrame(rafId); speechSynthesis.pause();
-  } else {
-    speechSynthesis.resume();
-    run(current);
-  }
+// Click pe scenă = skip
+document.addEventListener('click', e=>{
+  if (e.target.closest('#start-overlay')||e.target.closest('#controls')||e.target.closest('iframe')||e.target.closest('#vol-wrap')) return;
+  if (!ctx) return;
+  clearTimeout(timer); cancelAnimationFrame(rafId);
+  if (current<SCENES.length-1){ showScene(current+1); run(current); }
 });
 
-// ── Restart ──
-document.getElementById('btn-restart').addEventListener('click', e => {
+// Pauză
+document.getElementById('btn-pause').addEventListener('click', e=>{
   e.stopPropagation();
-  paused = false;
-  e.target.textContent = '↩ Restart';
-  document.getElementById('btn-pause').textContent = '⏸ Pauză';
-  fillEl.style.width = '0%';
-  showScene(0);
-  run(0);
+  paused=!paused;
+  e.target.textContent=paused?'▶ Play':'⏸ Pauză';
+  if (paused){ clearTimeout(timer); cancelAnimationFrame(rafId); if(ctx) ctx.suspend(); }
+  else { if(ctx) ctx.resume(); run(current); }
+});
+
+// Restart
+document.getElementById('btn-restart').addEventListener('click', e=>{
+  e.stopPropagation();
+  paused=false;
+  document.getElementById('btn-pause').textContent='⏸ Pauză';
+  fillEl.style.width='0%';
+  if (ctx){ ctx.close(); initAudio(); compuneMuzica(ctx.currentTime+0.1); }
+  showScene(0); run(0);
 });
 </script>
 </body>
