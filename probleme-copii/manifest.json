@@ -1,0 +1,18 @@
+{
+  "name": "Perseverence",
+  "short_name": "Perseverence",
+  "description": "Probleme de matematică, română și logică pentru copii",
+  "start_url": "/probleme-copii/",
+  "display": "standalone",
+  "background_color": "#12203a",
+  "theme_color": "#f5c518",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
