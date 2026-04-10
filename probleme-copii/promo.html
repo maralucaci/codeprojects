@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perseverence — Promo</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #0a0e1a;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* ── SCENE ── */
+    .scene {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 24px;
+      opacity: 0;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+    }
+    .scene.active { opacity: 1; pointer-events: auto; }
+
+    /* ── PROGRESS BAR ── */
+    #progress {
+      position: fixed;
+      bottom: 0; left: 0;
+      height: 5px;
+      background: #f5c518;
+      width: 0%;
+      transition: width linear;
+      z-index: 100;
+    }
+
+    /* ── SKIP / PLAY AGAIN ── */
+    #controls {
+      position: fixed;
+      top: 16px; right: 16px;
+      display: flex; gap: 10px;
+      z-index: 200;
+    }
+    #controls button {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.3);
+      color: #fff;
+      padding: 7px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s;
+    }
+    #controls button:hover { background: rgba(245,197,24,0.25); border-color: #f5c518; }
+
+    /* ── SCENA 1 — INTRO ── */
+    #s1 { background: radial-gradient(ellipse at center, #1a2a4a 0%, #0a0e1a 70%); }
+    .emoji-rain { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .emoji-rain span {
+      position: absolute;
+      font-size: 2rem;
+      opacity: 0;
+      animation: fall 3s ease-in forwards;
+    }
+    @keyframes fall {
+      0%   { transform: translateY(-60px); opacity: 0; }
+      20%  { opacity: 0.6; }
+      100% { transform: translateY(110vh); opacity: 0; }
+    }
+    .intro-title {
+      font-size: clamp(2rem, 6vw, 4rem);
+      font-weight: 900;
+      color: #f5c518;
+      text-align: center;
+      letter-spacing: 3px;
+      animation: popIn 0.6s 0.3s both;
+    }
+    .intro-sub {
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      color: #aac4ff;
+      margin-top: 16px;
+      text-align: center;
+      animation: popIn 0.6s 0.9s both;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.7); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* ── SCENA 2 — PROBLEMA ── */
+    #s2 { background: linear-gradient(135deg, #0f1f3d, #1a1a2e); }
+    .scene-label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: #f5c518;
+      margin-bottom: 18px;
+      opacity: 0;
+      animation: fadeUp 0.5s 0.2s forwards;
+    }
+    .big-question {
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      line-height: 1.8;
+      background: #16213e;
+      border: 1px solid #2a3a5e;
+      border-radius: 18px;
+      padding: 28px 36px;
+      max-width: 720px;
+      text-align: center;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.5s forwards;
+    }
+    .cerinta-text {
+      margin-top: 20px;
+      font-size: clamp(0.9rem, 2vw, 1.1rem);
+      color: #f0e68c;
+      background: rgba(245,197,24,0.08);
+      border-left: 3px solid #f5c518;
+      border-radius: 0 10px 10px 0;
+      padding: 14px 20px;
+      max-width: 680px;
+      text-align: left;
+      opacity: 0;
+      animation: fadeUp 0.6s 1.1s forwards;
+    }
+    @keyframes fadeUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0);    opacity: 1; }
+    }
+
+    /* ── SCENA 3 — FEATURES ── */
+    #s3 { background: linear-gradient(135deg, #0d1f0d, #0a1a2e); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      max-width: 800px;
+      width: 100%;
+    }
+    .feat-card {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 24px 20px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    .feat-card.show {
+      animation: fadeUp 0.5s forwards;
+    }
+    .feat-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .feat-title { font-size: 1rem; font-weight: 700; color: #f5c518; margin-bottom: 6px; }
+    .feat-desc  { font-size: 0.85rem; color: #aaa; line-height: 1.5; }
+
+    /* ── SCENA 4 — DEMO ── */
+    #s4 { background: #0a0e1a; flex-direction: column; gap: 16px; padding: 20px; }
+    .demo-label {
+      font-size: 1rem; color: #f5c518; font-weight: 700;
+      animation: popIn 0.5s 0.2s both;
+    }
+    .demo-frame {
+      width: 100%; max-width: 860px;
+      height: calc(100vh - 120px);
+      border: 2px solid #f5c518;
+      border-radius: 14px;
+      overflow: hidden;
+      animation: popIn 0.5s 0.5s both;
+    }
+    .demo-frame iframe {
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ── SCENA 5 — TESTIMONIAL MAMA ── */
+    #s5 { background: radial-gradient(ellipse at 30% 50%, #1f0d2e, #0a0e1a); }
+    .avatar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      max-width: 700px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .avatar-circle {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #f5c518, #ff6b35);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+      flex-shrink: 0;
+      animation: popIn 0.6s 0.3s both;
+      box-shadow: 0 0 40px rgba(245,197,24,0.4);
+    }
+    .avatar-bubble {
+      background: #16213e;
+      border: 1px solid #2a3a5e;
+      border-radius: 18px 18px 18px 4px;
+      padding: 22px 26px;
+      max-width: 460px;
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      line-height: 1.8;
+      opacity: 0;
+      animation: fadeUp 0.6s 0.7s forwards;
+    }
+    .avatar-name {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #f5c518;
+      font-weight: 700;
+      opacity: 0;
+      animation: fadeUp 0.4s 1.1s forwards;
+    }
+
+    /* ── SCENA 6 — TESTIMONIAL COPIL ── */
+    #s6 { background: radial-gradient(ellipse at 70% 50%, #0d2e1a, #0a0e1a); }
+
+    /* ── SCENA 7 — OUTRO ── */
+    #s7 { background: radial-gradient(ellipse at center, #1a2a4a, #0a0e1a); text-align: center; }
+    .outro-logo {
+      font-size: clamp(3rem, 10vw, 6rem);
+      animation: popIn 0.7s 0.2s both;
+    }
+    .outro-title {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      color: #f5c518;
+      letter-spacing: 3px;
+      animation: popIn 0.7s 0.6s both;
+    }
+    .outro-tagline {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: #aac4ff;
+      margin-top: 14px;
+      animation: fadeUp 0.6s 1s both;
+    }
+    .outro-badges {
+      display: flex; gap: 16px; margin-top: 28px; flex-wrap: wrap; justify-content: center;
+      animation: fadeUp 0.6s 1.3s both;
+    }
+    .badge {
+      background: rgba(245,197,24,0.12);
+      border: 1px solid #f5c518;
+      color: #f5c518;
+      border-radius: 30px;
+      padding: 8px 22px;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .pulse-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(245,197,24,0.3);
+      animation: pulse 2s ease-out infinite;
+    }
+    @keyframes pulse {
+      0%   { width: 100px; height: 100px; opacity: 0.8; transform: translate(-50%,-50%); }
+      100% { width: 400px; height: 400px; opacity: 0; transform: translate(-50%,-50%); }
+    }
+  </style>
+</head>
+<body>
+
+<div id="controls">
+  <button id="btn-pause">⏸ Pauză</button>
+  <button id="btn-restart">↩ Restart</button>
+</div>
+<div id="progress"></div>
+
+<!-- SCENA 1: INTRO -->
+<div class="scene active" id="s1">
+  <div class="emoji-rain" id="emoji-rain"></div>
+  <div class="intro-title">🧠 Perseverence</div>
+  <div class="intro-sub">Probleme pentru copii — generate instant<br>Matematică • Română • Logică</div>
+</div>
+
+<!-- SCENA 2: O PROBLEMĂ REALĂ -->
+<div class="scene" id="s2">
+  <div class="scene-label">📝 Exemplu problemă — Clasa IV, Logică</div>
+  <div class="big-question">
+    Patru copii stau la coadă la cișmea: Ana, Bogdan, Cris și Diana.<br>
+    Ana nu este prima și nu este ultima.<br>
+    Bogdan este înaintea Anei. Diana este ultima.
+  </div>
+  <div class="cerinta-text">
+    a) Care este ordinea completă a celor patru copii?<br>
+    b) Câți copii sunt între Bogdan și Diana?<br>
+    c) Dacă Ana pleacă acasă, care este noua ordine?
+  </div>
+</div>
+
+<!-- SCENA 3: FEATURES -->
+<div class="scene" id="s3">
+  <div class="scene-label" style="opacity:1;animation:none;margin-bottom:28px;font-size:1.1rem">
+    ✨ De ce Perseverence?
+  </div>
+  <div class="features-grid">
+    <div class="feat-card" id="fc1">
+      <div class="feat-icon">⚡</div>
+      <div class="feat-title">Instant</div>
+      <div class="feat-desc">5 probleme generate în 3 secunde, mereu altele</div>
+    </div>
+    <div class="feat-card" id="fc2">
+      <div class="feat-icon">🎓</div>
+      <div class="feat-title">Toate clasele</div>
+      <div class="feat-desc">De la Clasa I la Clasa VIII, perfect adaptat</div>
+    </div>
+    <div class="feat-card" id="fc3">
+      <div class="feat-icon">🧠</div>
+      <div class="feat-title">3 materii</div>
+      <div class="feat-desc">Matematică, Română și Logică cu probleme reale</div>
+    </div>
+    <div class="feat-card" id="fc4">
+      <div class="feat-icon">🖨️</div>
+      <div class="feat-title">Printabil</div>
+      <div class="feat-desc">Un click și ai foaia de lucru gata de printat</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENA 4: DEMO LIVE -->
+<div class="scene" id="s4">
+  <div class="demo-label">👇 Aplicația în acțiune — încearcă chiar acum!</div>
+  <div class="demo-frame">
+    <iframe src="index.html" title="Perseverence demo"></iframe>
+  </div>
+</div>
+
+<!-- SCENA 5: TESTIMONIAL MAMA -->
+<div class="scene" id="s5">
+  <div class="avatar-wrap">
+    <div class="avatar-circle">👩</div>
+    <div>
+      <div class="avatar-bubble">
+        „Aloc 30 de secunde seara, aleg tema din programa lor și am 5 exerciții gata.
+        Copiii mei chiar se întrec care rezolvă mai repede — nu mai trebuie să îi conving să facă teme!"
+      </div>
+      <div class="avatar-name">— Andreea, mamă a doi copii, Clasa III și Clasa VI</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENA 6: TESTIMONIAL COPIL -->
+<div class="scene" id="s6">
+  <div class="avatar-wrap" style="flex-direction: row-reverse;">
+    <div class="avatar-circle" style="background: linear-gradient(135deg,#4fc3f7,#1976d2)">🧒</div>
+    <div>
+      <div class="avatar-bubble" style="border-radius: 18px 18px 4px 18px;">
+        „Îmi place că după fiecare problemă pot vedea răspunsul și înțeleg unde am greșit.
+        La logică sunt probleme super tari, ca niște ghicitori! Cer mereu «Alte 5 probleme»!"
+      </div>
+      <div class="avatar-name" style="text-align:right">— Matei, 11 ani, Clasa V</div>
+    </div>
+  </div>
+</div>
+
+<!-- SCENA 7: OUTRO -->
+<div class="scene" id="s7">
+  <div class="pulse-ring" style="left:50%;top:50%;"></div>
+  <div class="outro-logo">🧠</div>
+  <div class="outro-title">Perseverence</div>
+  <div class="outro-tagline">Învață. Gândește. Crește.</div>
+  <div class="outro-badges">
+    <span class="badge">✅ 100% Gratuit</span>
+    <span class="badge">📱 Funcționează pe orice device</span>
+    <span class="badge">🚀 Fără instalare</span>
+  </div>
+</div>
+
+<script>
+  const SCENES = ['s1','s2','s3','s4','s5','s6','s7'];
+  const DURATIONS = [4000, 7000, 6000, 10000, 7000, 7000, 6000]; // ms per scenă
+  let current = 0, paused = false, timer = null, startTime = null, elapsed = 0;
+
+  const progress = document.getElementById('progress');
+
+  // Emoji rain pentru scena 1
+  const EMOJIS = ['📚','✏️','📐','🔬','🎒','📝','🖊️','📖','🧮','🏫','🎯','⭐'];
+  const rain = document.getElementById('emoji-rain');
+  for (let i = 0; i < 20; i++) {
+    const s = document.createElement('span');
+    s.textContent = EMOJIS[i % EMOJIS.length];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = '-60px';
+    s.style.animationDelay = (Math.random() * 3) + 's';
+    s.style.animationDuration = (2 + Math.random() * 2) + 's';
+    s.style.fontSize = (1.5 + Math.random() * 2) + 'rem';
+    rain.appendChild(s);
+  }
+
+  // Feature cards cu delay cascadat
+  function animateFeatures() {
+    ['fc1','fc2','fc3','fc4'].forEach((id, i) => {
+      setTimeout(() => {
+        const el = document.getElementById(id);
+        el.style.animationDelay = '0s';
+        el.classList.add('show');
+      }, 300 + i * 220);
+    });
+  }
+
+  function showScene(idx) {
+    SCENES.forEach((id, i) => {
+      document.getElementById(id).classList.toggle('active', i === idx);
+    });
+    if (idx === 2) animateFeatures();
+    current = idx;
+  }
+
+  function animateProgress(duration) {
+    const start = performance.now();
+    elapsed = 0;
+    function step(now) {
+      if (paused) return;
+      elapsed = now - start;
+      const pct = Math.min((elapsed / duration) * 100, 100);
+      // progress bar span acoperă toate scenele
+      const totalPct = ((current / SCENES.length) + (pct / 100) / SCENES.length) * 100;
+      progress.style.width = totalPct + '%';
+      if (elapsed < duration) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  function next() {
+    if (current < SCENES.length - 1) {
+      showScene(current + 1);
+      run(current);
+    } else {
+      // Ultimă scenă — stă
+      progress.style.width = '100%';
+    }
+  }
+
+  function run(idx) {
+    clearTimeout(timer);
+    animateProgress(DURATIONS[idx]);
+    timer = setTimeout(next, DURATIONS[idx]);
+  }
+
+  // Start
+  showScene(0);
+  run(0);
+
+  // Pauză / Play
+  document.getElementById('btn-pause').addEventListener('click', () => {
+    paused = !paused;
+    document.getElementById('btn-pause').textContent = paused ? '▶ Play' : '⏸ Pauză';
+    if (!paused) run(current);
+    else clearTimeout(timer);
+  });
+
+  // Restart
+  document.getElementById('btn-restart').addEventListener('click', () => {
+    paused = false;
+    document.getElementById('btn-pause').textContent = '⏸ Pauză';
+    progress.style.width = '0%';
+    showScene(0);
+    run(0);
+  });
+
+  // Click = scena următoare
+  document.addEventListener('click', e => {
+    if (e.target.closest('#controls') || e.target.closest('iframe')) return;
+    clearTimeout(timer);
+    if (current < SCENES.length - 1) { showScene(current + 1); run(current); }
+  });
+</script>
+</body>
+</html>
