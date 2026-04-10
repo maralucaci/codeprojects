@@ -236,17 +236,21 @@
       width:10px; height:10px; border-radius:50%; background:#f5c518;
       opacity:0; transition:opacity 0.05s;
     }
+
+    /* ── SOUND HINT ── */
+    #sound-hint {
+      position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:200;
+      background:rgba(0,0,0,0.6); color:#f5c518; font-size:0.78rem;
+      padding:5px 16px; border-radius:30px; letter-spacing:1px;
+      opacity:1; transition:opacity 0.5s;
+      pointer-events:none;
+    }
+    #sound-hint.gone { opacity:0; }
   </style>
 </head>
 <body>
 
-<!-- START OVERLAY -->
-<div id="start-overlay">
-  <div style="font-size:4rem">🧠</div>
-  <h2>Perseverence</h2>
-  <p>Apasă pentru a porni reclama cu muzică</p>
-  <button id="btn-play-start">▶ Pornește</button>
-</div>
+<div id="sound-hint">🎵 Click oriunde pentru sunet</div>
 
 <!-- CONTROLS -->
 <div id="controls">
@@ -296,12 +300,6 @@
     <div class="feat-card" id="fc3"><div class="feat-icon">🧠</div><div class="feat-title">3 Materii</div><div class="feat-desc">Matematică, Română și Logică reală</div></div>
     <div class="feat-card" id="fc4"><div class="feat-icon">🖨️</div><div class="feat-title">Printabil</div><div class="feat-desc">Un click și ai foaia de lucru gata</div></div>
   </div>
-</div>
-
-<!-- SCENA 4: DEMO -->
-<div class="scene" id="s4">
-  <div class="demo-label">👇 Aplicația în acțiune — încearcă chiar acum!</div>
-  <div class="demo-frame"><iframe src="index.html" title="demo"></iframe></div>
 </div>
 
 <!-- SCENA 5: MAMA -->
@@ -487,8 +485,8 @@ function compuneMuzica(offsetTime) {
 // ══════════════════════════════════════════
 //  FLOW SCENE-URI
 // ══════════════════════════════════════════
-const SCENES    = ['s1','s2','s3','s4','s5','s6','s7'];
-const DURATIONS = [4500, 9000, 7000, 10000, 8000, 8000, 7500];
+const SCENES    = ['s1','s2','s3','s5','s6','s7'];
+const DURATIONS = [4500, 9000, 7000, 8000, 8000, 7500];
 let current=0, paused=false, timer=null, rafId=null, progStart=null, progDur=0;
 const fillEl = document.getElementById('progress-fill');
 
@@ -551,18 +549,40 @@ function run(idx) {
   }, dur);
 }
 
-// ── Start la click pe overlay ──
-document.getElementById('btn-play-start').addEventListener('click', ()=>{
-  initAudio();
-  compuneMuzica(ctx.currentTime + 0.1);
-  document.getElementById('start-overlay').style.display='none';
+// ── Auto-start ──
+const soundHint = document.getElementById('sound-hint');
+let audioStarted = false;
+
+function startAudio() {
+  if (audioStarted) return;
+  audioStarted = true;
+  if (!ctx) initAudio();
+  ctx.resume().then(()=>{
+    compuneMuzica(ctx.currentTime + 0.1);
+  });
+  soundHint.classList.add('gone');
+  setTimeout(()=>{ soundHint.style.display='none'; }, 600);
+}
+
+// Încearcă autoplay imediat
+window.addEventListener('load', ()=>{
   showScene(0); run(0);
+  initAudio();
+  // Dacă browserul permite autoplay, pornește imediat
+  ctx.resume().then(()=>{
+    if (ctx.state === 'running') {
+      audioStarted = true;
+      compuneMuzica(ctx.currentTime + 0.1);
+      soundHint.classList.add('gone');
+      setTimeout(()=>{ soundHint.style.display='none'; }, 600);
+    }
+  });
 });
 
-// Click pe scenă = skip
+// Fallback: primul click pornește sunetul
 document.addEventListener('click', e=>{
-  if (e.target.closest('#start-overlay')||e.target.closest('#controls')||e.target.closest('iframe')||e.target.closest('#vol-wrap')) return;
-  if (!ctx) return;
+  startAudio();
+  if (e.target.closest('#controls')||e.target.closest('#vol-wrap')) return;
   clearTimeout(timer); cancelAnimationFrame(rafId);
   if (current<SCENES.length-1){ showScene(current+1); run(current); }
 });
@@ -580,9 +600,12 @@ document.getElementById('btn-pause').addEventListener('click', e=>{
 document.getElementById('btn-restart').addEventListener('click', e=>{
   e.stopPropagation();
   paused=false;
+  audioStarted=false;
   document.getElementById('btn-pause').textContent='⏸ Pauză';
   fillEl.style.width='0%';
-  if (ctx){ ctx.close(); initAudio(); compuneMuzica(ctx.currentTime+0.1); }
+  if (ctx){ ctx.close(); ctx=null; }
+  initAudio();
+  ctx.resume().then(()=>{ compuneMuzica(ctx.currentTime+0.1); audioStarted=true; });
   showScene(0); run(0);
 });
 </script>
