@@ -93,29 +93,69 @@ function showScreen(id) {
       }
     }
 
-    // ── Cladiri prim-plan (mai rapide) ────────────────────
+    // ── Cladiri prim-plan (mai rapide, 3D) ───────────────
     const totalW2 = 18 * 90;
     for (let i = 0; i < BLDGS_FG.length; i++) {
       const b = BLDGS_FG[i];
       const bx = ((b.ox - coverOff * 0.55) % totalW2 + totalW2) % totalW2 - 60;
       const bh = b.h * H;
       const by = H * 0.88 - bh;
+      const sd = 14; // side depth 3D
+
+      // Față dreapta (3D)
+      ctx.fillStyle = b.color;
+      ctx.save(); ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      ctx.moveTo(bx + b.w, by);
+      ctx.lineTo(bx + b.w + sd, by - sd * 0.6);
+      ctx.lineTo(bx + b.w + sd, H * 0.88 - sd * 0.6);
+      ctx.lineTo(bx + b.w, H * 0.88);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fill();
+      ctx.globalAlpha = 1; ctx.restore();
+
+      // Față top (3D tavan)
+      ctx.save(); ctx.globalAlpha = 0.75;
+      ctx.fillStyle = b.color;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx + sd, by - sd * 0.6);
+      ctx.lineTo(bx + b.w + sd, by - sd * 0.6);
+      ctx.lineTo(bx + b.w, by);
+      ctx.closePath(); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fill();
+      ctx.globalAlpha = 1; ctx.restore();
+
+      // Față frontală
       ctx.fillStyle = b.color;
       ctx.beginPath(); ctx.roundRect(bx, by, b.w, bh, [4,4,0,0]); ctx.fill();
+      // Gradient lumina pe fatada
+      const bGrad = ctx.createLinearGradient(bx, by, bx + b.w, by);
+      bGrad.addColorStop(0, 'rgba(255,255,255,0.1)');
+      bGrad.addColorStop(0.5, 'rgba(255,255,255,0.0)');
+      bGrad.addColorStop(1, 'rgba(0,0,0,0.15)');
+      ctx.fillStyle = bGrad;
+      ctx.beginPath(); ctx.roundRect(bx, by, b.w, bh, [4,4,0,0]); ctx.fill();
+
       // ferestre albastre-neon
       const cols = Math.floor(b.w / 13), rows = Math.floor(bh / 17);
       for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
         if ((i + r + c) % 3 !== 0) {
           const on = Math.sin(t * 0.5 + i + r * 0.9 + c) > -0.4;
-          ctx.fillStyle = on ? 'rgba(100,200,255,0.5)' : 'rgba(20,40,80,0.4)';
-          ctx.fillRect(bx + 5 + c * 13, by + 6 + r * 17, 7, 9);
+          ctx.fillStyle = on ? 'rgba(100,200,255,0.55)' : 'rgba(20,40,80,0.4)';
+          ctx.beginPath(); ctx.roundRect(bx + 5 + c * 13, by + 6 + r * 17, 7, 9, 1); ctx.fill();
+          if (on) {
+            // reflexie pe geam
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.beginPath(); ctx.roundRect(bx + 5 + c * 13, by + 6 + r * 17, 3, 4, 1); ctx.fill();
+          }
         }
       }
       // Semn neon pe 1 din 3 cladiri mari
       if (b.w > 70 && i % 3 === 1) {
         const neonAlpha = 0.7 + 0.3 * Math.sin(t * 2 + i);
         ctx.save();
-        ctx.shadowColor = '#ff44aa'; ctx.shadowBlur = 12;
+        ctx.shadowColor = '#ff44aa'; ctx.shadowBlur = 14;
         ctx.fillStyle = `rgba(255,80,180,${neonAlpha.toFixed(2)})`;
         ctx.font = `bold ${Math.floor(b.w * 0.18)}px Nunito, sans-serif`;
         ctx.textAlign = 'center';
@@ -2977,14 +3017,43 @@ function render(ctx, canvas) {
     const px = pl.x - cam;
     if (px > W + 20 || px + pl.w < -20) continue;
     // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.22)';
-    ctx.beginPath(); ctx.roundRect(px + 5, pl.y + 5, pl.w, pl.h, 6); ctx.fill();
-    // Corp platformă
+    const D = 9; // adâncime 3D
+    // ── Față de jos (3D bottom face) ──────────────────────
+    ctx.beginPath();
+    ctx.moveTo(px,          pl.y + pl.h);
+    ctx.lineTo(px + D,      pl.y + pl.h + D);
+    ctx.lineTo(px + pl.w + D, pl.y + pl.h + D);
+    ctx.lineTo(px + pl.w,   pl.y + pl.h);
+    ctx.closePath();
     ctx.fillStyle = world.platColor;
-    ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, pl.h, 6); ctx.fill();
-    // Highlight lateral stânga
-    ctx.fillStyle = 'rgba(255,255,255,0.08)';
-    ctx.beginPath(); ctx.roundRect(px, pl.y, 6, pl.h, [6,0,0,6]); ctx.fill();
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.45)';
+    ctx.fill();
+
+    // ── Față dreapta (3D right face) ──────────────────────
+    ctx.beginPath();
+    ctx.moveTo(px + pl.w,   pl.y);
+    ctx.lineTo(px + pl.w + D, pl.y + D);
+    ctx.lineTo(px + pl.w + D, pl.y + pl.h + D);
+    ctx.lineTo(px + pl.w,   pl.y + pl.h);
+    ctx.closePath();
+    ctx.fillStyle = world.platColor;
+    ctx.fill();
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fill();
+
+    // ── Față sus / top (suprafața principală) ─────────────
+    ctx.fillStyle = world.platColor;
+    ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, pl.h, [6,6,0,0]); ctx.fill();
+    // Gradient de lumină pe suprafață
+    const topGrad = ctx.createLinearGradient(px, pl.y, px, pl.y + pl.h);
+    topGrad.addColorStop(0, 'rgba(255,255,255,0.18)');
+    topGrad.addColorStop(1, 'rgba(0,0,0,0.08)');
+    ctx.fillStyle = topGrad;
+    ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, pl.h, [6,6,0,0]); ctx.fill();
+    // Highlight stânga (lumina laterală)
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.beginPath(); ctx.roundRect(px, pl.y, 6, pl.h, [6,0,0,0]); ctx.fill();
     // Top highlight (dungă colorată)
     ctx.fillStyle = world.platTop;
     ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, 5, [6,6,0,0]); ctx.fill();

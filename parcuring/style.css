@@ -65,17 +65,30 @@ body {
   padding: 14px 52px;
   border: none;
   border-radius: 50px;
-  background: linear-gradient(135deg, #ff6b35, #f7c948);
+  background: linear-gradient(135deg, #ff8c42, #f7c948);
   color: #1a1a2e;
   cursor: pointer;
-  box-shadow: 0 6px 20px rgba(247,201,72,0.4);
-  transition: transform 0.15s, box-shadow 0.15s;
+  box-shadow:
+    0 8px 0 #c07000,
+    0 10px 24px rgba(247,201,72,0.45),
+    inset 0 2px 0 rgba(255,255,255,0.4);
+  transition: transform 0.1s, box-shadow 0.1s;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.3);
 }
 .btn-main:hover {
-  transform: translateY(-3px) scale(1.05);
-  box-shadow: 0 10px 30px rgba(247,201,72,0.6);
+  transform: translateY(-3px);
+  box-shadow:
+    0 11px 0 #c07000,
+    0 14px 32px rgba(247,201,72,0.6),
+    inset 0 2px 0 rgba(255,255,255,0.4);
 }
-.btn-main:active { transform: translateY(1px) scale(0.98); }
+.btn-main:active {
+  transform: translateY(5px);
+  box-shadow:
+    0 3px 0 #c07000,
+    0 5px 12px rgba(247,201,72,0.4),
+    inset 0 2px 0 rgba(255,255,255,0.3);
+}
 
 .btn-sec {
   font-family: 'Nunito', sans-serif;
@@ -122,21 +135,23 @@ body {
   gap: 10px;
   padding: 16px 20px 14px;
   border-radius: 16px;
-  background: rgba(255,255,255,0.07);
-  border: 2px solid rgba(255,255,255,0.12);
+  background: linear-gradient(145deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+  border: 2px solid rgba(255,255,255,0.15);
   cursor: pointer;
-  transition: transform 0.2s, background 0.2s, border-color 0.2s;
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 4px 6px 18px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 .char-card:hover {
-  transform: translateY(-6px) scale(1.05);
-  background: rgba(247,201,72,0.15);
+  transform: translateY(-8px) scale(1.06);
+  background: linear-gradient(145deg, rgba(247,201,72,0.2), rgba(247,201,72,0.05));
   border-color: #f7c948;
+  box-shadow: 4px 12px 28px rgba(0,0,0,0.5), 0 0 16px rgba(247,201,72,0.3), inset 0 1px 0 rgba(255,255,255,0.18);
 }
 .char-card.selected {
-  background: rgba(247,201,72,0.25);
+  background: linear-gradient(145deg, rgba(247,201,72,0.3), rgba(247,201,72,0.08));
   border-color: #f7c948;
-  box-shadow: 0 0 20px rgba(247,201,72,0.5);
-  transform: translateY(-6px) scale(1.05);
+  box-shadow: 4px 8px 24px rgba(0,0,0,0.5), 0 0 24px rgba(247,201,72,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform: translateY(-8px) scale(1.06);
 }
 .char-name {
   font-size: 1.1rem;
