@@ -2815,20 +2815,26 @@ function updateHUD() {
 }
 
 // ─── INPUT ──────────────────────────────────────────────────
+let _keysBound = false;
 function bindKeys() {
+  if (_keysBound) return; // ruleaza O SINGURA DATA
+  _keysBound = true;
+
   window.addEventListener('keydown', e => {
     if (e.repeat) return;
-    gs.keys[e.key] = true;
+    if (gs.keys) gs.keys[e.key] = true;
     if (e.key === ' ') {
       e.preventDefault();
-      gs.keys['_jumpPressed'] = true;
+      if (gs.keys) gs.keys['_jumpPressed'] = true;
     }
     if (e.key === 'Enter') {
       e.preventDefault();
       tryHitSign();
     }
   });
-  window.addEventListener('keyup', e => { gs.keys[e.key] = false; });
+  window.addEventListener('keyup', e => { if (gs.keys) gs.keys[e.key] = false; });
+  // Sterge tastele blocate cand fereastra pierde focusul
+  window.addEventListener('blur', () => { if (gs.keys) gs.keys = {}; });
 
   // Touch controls
   function setupTouchBtn(id, pressKey, onPress) {
