@@ -3263,36 +3263,124 @@ function drawWorldBg(ctx, W, H, offset) {
 }
 
 function _bgCity(ctx, W, H, offset) {
-  // Far buildings (lighter)
-  const far = [{x:30,w:80,h:160},{x:130,w:60,h:130},{x:210,w:90,h:190},{x:320,w:70,h:150},
-    {x:410,w:100,h:210},{x:530,w:65,h:140},{x:620,w:85,h:180},{x:730,w:110,h:200},
-    {x:860,w:70,h:160},{x:950,w:95,h:220},{x:1070,w:80,h:175},{x:1180,w:60,h:140}];
+  const t = Date.now() * 0.001;
+  // ── Strat 1: cladiri departe (parallax lent) ──────────────
+  const far = [
+    {x:30,w:80,h:160,c:'#5a7ea0'},{x:130,w:60,h:130,c:'#4a6e90'},{x:210,w:90,h:190,c:'#3d6080'},
+    {x:320,w:70,h:150,c:'#4e7090'},{x:410,w:100,h:210,c:'#3a5878'},{x:530,w:65,h:140,c:'#5080a0'},
+    {x:620,w:85,h:180,c:'#446080'},{x:730,w:110,h:200,c:'#3a5870'},{x:860,w:70,h:160,c:'#4a6888'},
+    {x:950,w:95,h:220,c:'#385678'},{x:1070,w:80,h:175,c:'#4c7090'},{x:1180,w:60,h:140,c:'#3e6080'},
+  ];
   const totalW = 1400;
   for (const b of far) {
     const bx = ((b.x - (offset*0.18)%totalW + totalW)%totalW) - 20;
-    ctx.fillStyle = 'rgba(120,170,220,0.22)'; ctx.fillRect(bx, H-b.h-30, b.w, b.h);
-    ctx.fillStyle = 'rgba(255,240,150,0.13)';
+    const by = H - b.h - 30;
+    // Corp clădire
+    ctx.fillStyle = b.c;
+    ctx.beginPath(); ctx.roundRect(bx, by, b.w, b.h, [3,3,0,0]); ctx.fill();
+    // Gradient lumina
+    const fg = ctx.createLinearGradient(bx, by, bx + b.w, by);
+    fg.addColorStop(0, 'rgba(255,255,255,0.08)'); fg.addColorStop(1, 'rgba(0,0,0,0.12)');
+    ctx.fillStyle = fg;
+    ctx.beginPath(); ctx.roundRect(bx, by, b.w, b.h, [3,3,0,0]); ctx.fill();
+    // Ferestre galbene
     const cols = Math.floor(b.w/13), rows = Math.floor(b.h/16);
-    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++)
-      if ((r+c+b.x)%3!==0) ctx.fillRect(bx+5+c*13, H-b.h-30+5+r*16, 6, 8);
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      if ((r+c+b.x)%3!==0) {
+        const on = Math.sin(t*0.4 + b.x + r*0.8 + c*1.2) > -0.3;
+        ctx.fillStyle = on ? 'rgba(255,235,130,0.7)' : 'rgba(40,60,100,0.5)';
+        ctx.beginPath(); ctx.roundRect(bx+4+c*13, by+5+r*16, 6, 8, 1); ctx.fill();
+      }
+    }
   }
-  // Near buildings
-  drawBgBuildings(ctx, W, H, offset);
-  // Road / sidewalk
-  ctx.fillStyle = 'rgba(60,60,80,0.25)'; ctx.fillRect(0, H-32, W, 32);
-  // Street lights
+
+  // ── Strat 2: cladiri aproape (mai mari, mai vizibile) ──────
+  const near = [
+    {x:50,w:100,h:260,c:'#2a4060'},{x:170,w:75,h:200,c:'#1e3450'},{x:265,w:110,h:300,c:'#243858'},
+    {x:395,w:85,h:230,c:'#1a3050'},{x:500,w:120,h:280,c:'#20384a'},{x:640,w:80,h:210,c:'#243050'},
+    {x:740,w:95,h:270,c:'#1c3248'},{x:855,w:115,h:320,c:'#182840'},{x:990,w:85,h:240,c:'#1e3050'},
+    {x:1095,w:105,h:290,c:'#223050'},{x:1220,w:75,h:220,c:'#1a2e48'},
+  ];
+  const totalW2 = 1400;
+  const neons = ['OPEN','24H','BAR','PIZZA','GYM'];
+  for (let i=0; i<near.length; i++) {
+    const b = near[i];
+    const bx = ((b.x - (offset*0.45)%totalW2 + totalW2)%totalW2) - 20;
+    const by = H - b.h - 30;
+    const sd = 11;
+    // Față dreapta 3D
+    ctx.fillStyle = b.c;
+    ctx.save(); ctx.globalAlpha = 0.55;
+    ctx.beginPath();
+    ctx.moveTo(bx+b.w, by); ctx.lineTo(bx+b.w+sd, by-sd*0.55);
+    ctx.lineTo(bx+b.w+sd, H-30-sd*0.55); ctx.lineTo(bx+b.w, H-30);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fill();
+    ctx.globalAlpha=1; ctx.restore();
+    // Corp clădire
+    ctx.fillStyle = b.c;
+    ctx.beginPath(); ctx.roundRect(bx, by, b.w, b.h, [4,4,0,0]); ctx.fill();
+    // Gradient pe faţadă
+    const ng = ctx.createLinearGradient(bx, by, bx+b.w, by);
+    ng.addColorStop(0,'rgba(255,255,255,0.1)'); ng.addColorStop(0.4,'rgba(255,255,255,0.02)'); ng.addColorStop(1,'rgba(0,0,0,0.2)');
+    ctx.fillStyle = ng;
+    ctx.beginPath(); ctx.roundRect(bx, by, b.w, b.h, [4,4,0,0]); ctx.fill();
+    // Ferestre
+    const cols=Math.floor(b.w/14), rows=Math.floor(b.h/18);
+    for (let r=0;r<rows;r++) for (let c=0;c<cols;c++) {
+      if ((i+r+c)%3!==2) {
+        const on = Math.sin(t*0.5 + i + r*0.9 + c*1.3) > -0.35;
+        ctx.fillStyle = on ? 'rgba(255,230,100,0.85)' : 'rgba(30,50,90,0.6)';
+        ctx.beginPath(); ctx.roundRect(bx+5+c*14, by+6+r*18, 7,10, 1); ctx.fill();
+        if (on) { ctx.fillStyle='rgba(255,255,255,0.3)'; ctx.fillRect(bx+5+c*14, by+6+r*18, 3, 4); }
+      }
+    }
+    // Semn neon rar
+    if (b.w>90 && i%4===1) {
+      ctx.save(); ctx.shadowColor='#44aaff'; ctx.shadowBlur=12;
+      ctx.fillStyle=`rgba(80,190,255,${0.65+0.3*Math.sin(t*1.8+i)})`;
+      ctx.font=`bold ${Math.floor(b.w*0.14)}px Nunito,sans-serif`; ctx.textAlign='center';
+      ctx.fillText(neons[i%neons.length], bx+b.w/2, by+24);
+      ctx.shadowBlur=0; ctx.restore();
+    }
+  }
+
+  // ── Stradă ────────────────────────────────────────────────
+  const roadGrad = ctx.createLinearGradient(0, H-34, 0, H);
+  roadGrad.addColorStop(0,'#2a2a3a'); roadGrad.addColorStop(1,'#16161e');
+  ctx.fillStyle=roadGrad; ctx.fillRect(0, H-34, W, 34);
+  ctx.strokeStyle='rgba(255,255,255,0.3)'; ctx.setLineDash([36,28]); ctx.lineWidth=3;
+  const dashOff=(offset*0.6)%64;
+  ctx.beginPath(); ctx.moveTo(-dashOff, H-16); ctx.lineTo(W+60, H-16); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Stâlpi de iluminat
   for (let i=0; i<8; i++) {
-    const lx = ((i*180 - (offset*0.5)%1440+1440)%1440);
-    ctx.fillStyle = 'rgba(180,180,200,0.5)'; ctx.fillRect(lx, H-90, 4, 60);
-    ctx.fillStyle = 'rgba(255,240,150,0.55)'; ctx.shadowColor='#ffe090'; ctx.shadowBlur=10;
-    ctx.beginPath(); ctx.arc(lx+2, H-90, 6, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
+    const lx=((i*190-(offset*0.5)%1520+1520)%1520);
+    ctx.fillStyle='#8090a8'; ctx.fillRect(lx, H-100, 4, 68);
+    ctx.fillStyle='#707888'; ctx.fillRect(lx-10, H-100, 24, 5);
+    ctx.save(); ctx.shadowColor='#ffe090'; ctx.shadowBlur=18;
+    ctx.fillStyle='#ffe8a0';
+    ctx.beginPath(); ctx.arc(lx+2, H-100, 7, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0; ctx.restore();
   }
-  // Moving car
-  const carX = ((offset*0.7)%(W+120))-60;
-  ctx.fillStyle='rgba(220,60,60,0.55)'; ctx.fillRect(carX, H-46, 52, 20);
-  ctx.fillStyle='rgba(150,220,255,0.45)'; ctx.fillRect(carX+6, H-46, 18, 12); ctx.fillRect(carX+28, H-46, 16, 12);
-  ctx.fillStyle='rgba(50,50,50,0.65)'; ctx.beginPath(); ctx.arc(carX+12,H-26,6,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(carX+38,H-26,6,0,Math.PI*2); ctx.fill();
+
+  // Mașini
+  const carColors=['#cc3030','#3060cc','#30aa50','#cc8800'];
+  for (let ci=0; ci<2; ci++) {
+    const carX=((offset*(0.7+ci*0.4)+ci*(W/2+80))%(W+140))-70;
+    ctx.fillStyle=carColors[ci];
+    ctx.beginPath(); ctx.roundRect(carX, H-48, 54, 20, 4); ctx.fill();
+    ctx.fillStyle='rgba(150,220,255,0.6)';
+    ctx.beginPath(); ctx.roundRect(carX+6, H-60, 16, 13, [3,3,0,0]); ctx.fill();
+    ctx.beginPath(); ctx.roundRect(carX+30, H-60, 14, 13, [3,3,0,0]); ctx.fill();
+    ctx.fillStyle='#111';
+    ctx.beginPath(); ctx.arc(carX+12, H-28, 6, 0, Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.arc(carX+40, H-28, 6, 0, Math.PI*2); ctx.fill();
+    ctx.save(); ctx.shadowColor='#fffaaa'; ctx.shadowBlur=14;
+    ctx.fillStyle='#fffaaa'; ctx.beginPath(); ctx.arc(carX+54, H-42, 4, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur=0; ctx.restore();
+  }
 }
 
 function _bgJapan(ctx, W, H, offset) {
@@ -3459,48 +3547,125 @@ function _bgJungle(ctx, W, H, offset) {
 }
 
 function _bgNY(ctx, W, H, offset) {
-  // Moon
-  ctx.fillStyle='rgba(255,250,220,0.7)'; ctx.shadowColor='#fffde0'; ctx.shadowBlur=30;
-  ctx.beginPath(); ctx.arc(W*0.78, 70, 32, 0, Math.PI*2); ctx.fill(); ctx.shadowBlur=0;
-  // Stars
-  for (let s=0;s<40;s++) {
-    const sx=((s*137+offset*0.03)%W+W)%W, sy=(s*79)%(H*0.5);
-    ctx.fillStyle=`rgba(255,255,220,${0.3+s%4*0.12})`; ctx.beginPath(); ctx.arc(sx,sy,0.8+s%3*0.4,0,Math.PI*2); ctx.fill();
+  const t = Date.now() * 0.001;
+  // ── Lună ──────────────────────────────────────────────────
+  ctx.save(); ctx.shadowColor='#fffde0'; ctx.shadowBlur=35;
+  ctx.fillStyle='rgba(255,250,220,0.85)';
+  ctx.beginPath(); ctx.arc(W*0.78, 70, 32, 0, Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0; ctx.restore();
+  // Stele
+  for (let s=0;s<50;s++) {
+    const sx=((s*137+offset*0.02)%W+W)%W, sy=(s*79)%(H*0.45);
+    const alpha = 0.35 + Math.abs(Math.sin(t*0.8+s)) * 0.4;
+    ctx.fillStyle=`rgba(255,255,220,${alpha.toFixed(2)})`; ctx.beginPath(); ctx.arc(sx,sy,0.8+s%3*0.5,0,Math.PI*2); ctx.fill();
   }
-  // Statue of Liberty silhouette (far)
-  const sL = ((1050-(offset*0.08)%2200+2200)%2200)-30;
-  ctx.fillStyle='rgba(40,80,60,0.35)';
-  ctx.fillRect(sL,H-200,18,120); // base/pedestal
-  ctx.beginPath(); ctx.moveTo(sL-12,H-200); ctx.lineTo(sL+30,H-200); ctx.lineTo(sL+24,H-260); ctx.lineTo(sL+6,H-260); ctx.fill(); // body
-  ctx.beginPath(); ctx.moveTo(sL+6,H-260); ctx.lineTo(sL+1,H-300); ctx.lineTo(sL+18,H-280); ctx.lineTo(sL+24,H-260); ctx.fill(); // arm up
-  // crown spikes
-  for(let sp=0;sp<5;sp++) ctx.fillRect(sL+3+sp*4,H-305-sp%2*8,3,10);
-  // Buildings
-  const bldgs = [{x:0,w:80,h:340},{x:90,w:60,h:280},{x:160,w:100,h:400},{x:270,w:70,h:320},
-    {x:350,w:90,h:380},{x:450,w:110,h:350},{x:570,w:80,h:430},{x:660,w:70,h:300},
-    {x:740,w:100,h:390},{x:850,w:75,h:260},{x:935,w:90,h:420},{x:1035,w:60,h:290},
-    {x:1105,w:110,h:360},{x:1225,w:80,h:310}];
-  const totalW = 1320;
-  for (const b of bldgs) {
-    const bx = ((b.x - offset%totalW + totalW)%totalW) - 20;
-    ctx.fillStyle='#0e0e22'; ctx.fillRect(bx, H-b.h, b.w, b.h);
-    // Antenna on some buildings
-    if(b.h>350){ ctx.fillStyle='rgba(180,80,80,0.7)'; ctx.fillRect(bx+b.w/2-2,H-b.h-30,4,30); ctx.beginPath();ctx.arc(bx+b.w/2,H-b.h-30,4,0,Math.PI*2);ctx.fill(); }
-    ctx.fillStyle='rgba(255,200,80,0.58)';
+
+  // ── Statuia Libertății ─────────────────────────────────────
+  const sL=((1050-(offset*0.08)%2200+2200)%2200)-30;
+  ctx.fillStyle='rgba(50,100,75,0.5)';
+  ctx.fillRect(sL,H-195,20,120);
+  ctx.beginPath(); ctx.moveTo(sL-14,H-195); ctx.lineTo(sL+34,H-195); ctx.lineTo(sL+26,H-265); ctx.lineTo(sL+8,H-265); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(sL+8,H-265); ctx.lineTo(sL+2,H-308); ctx.lineTo(sL+20,H-285); ctx.lineTo(sL+26,H-265); ctx.fill();
+  for(let sp=0;sp<5;sp++) { ctx.fillStyle='rgba(60,120,90,0.5)'; ctx.fillRect(sL+4+sp*4,H-312-sp%2*8,3,12); }
+
+  // ── Cladiri strat 1 — fundal (albastrui vizibili) ──────────
+  const far2=[{x:20,w:70,h:200,c:'#1c2a44'},{x:105,w:55,h:165,c:'#162238'},{x:175,w:80,h:230,c:'#1a2840'},
+    {x:270,w:60,h:188,c:'#14203a'},{x:345,w:90,h:260,c:'#182440'},{x:450,w:70,h:210,c:'#1c2a44'},
+    {x:535,w:85,h:195,c:'#16223c'},{x:635,w:100,h:250,c:'#1a2842'},{x:750,w:65,h:178,c:'#14203a'},
+    {x:830,w:88,h:235,c:'#182440'},{x:932,w:72,h:198,c:'#1c2a44'},{x:1020,w:95,h:268,c:'#1a2640'}];
+  const tw1=1200;
+  for (const b of far2) {
+    const bx=((b.x-(offset*0.25)%tw1+tw1)%tw1)-20;
+    const by=H-b.h-28;
+    ctx.fillStyle=b.c;
+    ctx.beginPath(); ctx.roundRect(bx,by,b.w,b.h,[3,3,0,0]); ctx.fill();
+    const cols=Math.floor(b.w/13), rows=Math.floor(b.h/17);
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+      if((r+c+b.x)%4!==3) {
+        const on=Math.sin(t*0.35+b.x+r*0.7+c)>-0.25;
+        ctx.fillStyle=on?'rgba(255,210,80,0.75)':'rgba(20,35,65,0.6)';
+        ctx.beginPath(); ctx.roundRect(bx+4+c*13,by+5+r*17,6,9,1); ctx.fill();
+      }
+    }
+  }
+
+  // ── Cladiri strat 2 — prim plan (NY caracteristice) ────────
+  const bldgs=[
+    {x:0,  w:88, h:360,c:'#1a2440'},{x:100,w:65, h:295,c:'#0e1830'},
+    {x:175,w:105,h:420,c:'#162038'},{x:292,w:72, h:335,c:'#0c1628'},
+    {x:376,w:95, h:395,c:'#122030'},{x:483,w:115,h:365,c:'#162238'},
+    {x:611,w:82, h:445,c:'#0e1a2e'},{x:705,w:74, h:315,c:'#101c30'},
+    {x:791,w:102,h:405,c:'#14202e'},{x:905,w:78, h:272,c:'#0e1a2c'},
+    {x:995,w:92, h:435,c:'#121e30'},{x:1099,w:62,h:305,c:'#101830'},
+    {x:1173,w:112,h:375,c:'#162038'},
+  ];
+  const totalW=1300;
+  for (let i=0;i<bldgs.length;i++) {
+    const b=bldgs[i];
+    const bx=((b.x-offset%totalW+totalW)%totalW)-20;
+    const by=H-b.h-28;
+    const sd=12;
+    // Față dreapta 3D
+    ctx.save(); ctx.globalAlpha=0.55;
+    ctx.fillStyle=b.c;
+    ctx.beginPath();
+    ctx.moveTo(bx+b.w,by); ctx.lineTo(bx+b.w+sd,by-sd*0.5);
+    ctx.lineTo(bx+b.w+sd,H-28-sd*0.5); ctx.lineTo(bx+b.w,H-28);
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,0.35)'; ctx.fill();
+    ctx.globalAlpha=1; ctx.restore();
+    // Corp
+    ctx.fillStyle=b.c;
+    ctx.beginPath(); ctx.roundRect(bx,by,b.w,b.h,[4,4,0,0]); ctx.fill();
+    // Gradient lumina
+    const bg=ctx.createLinearGradient(bx,by,bx+b.w,by);
+    bg.addColorStop(0,'rgba(255,255,255,0.09)'); bg.addColorStop(0.5,'rgba(255,255,255,0.01)'); bg.addColorStop(1,'rgba(0,0,0,0.15)');
+    ctx.fillStyle=bg; ctx.beginPath(); ctx.roundRect(bx,by,b.w,b.h,[4,4,0,0]); ctx.fill();
+    // Ferestre galbene NY
     const cols=Math.floor(b.w/14), rows=Math.floor(b.h/18);
-    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++)
-      if((r+c+b.x)%3!==2) ctx.fillRect(bx+5+c*14, H-b.h+6+r*18, 7, 9);
+    for(let r=0;r<rows;r++) for(let c=0;c<cols;c++) {
+      if((i+r+c)%3!==2) {
+        const on=Math.sin(t*0.45+i+r*0.85+c*1.2)>-0.3;
+        ctx.fillStyle=on?'rgba(255,210,80,0.9)':'rgba(15,28,55,0.7)';
+        ctx.beginPath(); ctx.roundRect(bx+5+c*14,by+6+r*18,7,10,1); ctx.fill();
+        if(on){ ctx.fillStyle='rgba(255,255,200,0.35)'; ctx.fillRect(bx+5+c*14,by+6+r*18,3,4); }
+      }
+    }
+    // Antenă pe clădiri înalte
+    if(b.h>380) {
+      ctx.fillStyle='#7a8090'; ctx.fillRect(bx+b.w/2-2,by-32,4,34);
+      ctx.save(); ctx.shadowColor='#ff4444'; ctx.shadowBlur=10;
+      ctx.fillStyle=`rgba(255,60,60,${0.6+0.4*Math.abs(Math.sin(t*1.5+i))})`;
+      ctx.beginPath(); ctx.arc(bx+b.w/2,by-32,4,0,Math.PI*2); ctx.fill();
+      ctx.shadowBlur=0; ctx.restore();
+    }
   }
-  // Yellow cab
-  const cab=((offset*0.9)%(W+120))-60;
-  ctx.fillStyle='rgba(255,210,0,0.65)'; ctx.fillRect(cab,H-46,55,20);
-  ctx.fillStyle='rgba(0,0,0,0.5)'; ctx.fillRect(cab+8,H-52,18,8); ctx.fillRect(cab+30,H-52,16,8);
-  ctx.fillStyle='rgba(50,50,50,0.7)'; ctx.beginPath(); ctx.arc(cab+13,H-26,6,0,Math.PI*2); ctx.fill();
-  ctx.beginPath(); ctx.arc(cab+40,H-26,6,0,Math.PI*2); ctx.fill();
-  // Glow from street
-  const glow=ctx.createLinearGradient(0,H*0.85,0,H);
-  glow.addColorStop(0,'rgba(255,120,30,0)'); glow.addColorStop(1,'rgba(255,120,30,0.22)');
-  ctx.fillStyle=glow; ctx.fillRect(0,H*0.85,W,H*0.15);
+
+  // ── Stradă NY ─────────────────────────────────────────────
+  ctx.fillStyle='#111118'; ctx.fillRect(0,H-30,W,30);
+  ctx.strokeStyle='rgba(255,255,255,0.2)'; ctx.setLineDash([36,28]); ctx.lineWidth=2.5;
+  const doff=(offset*0.7)%64;
+  ctx.beginPath(); ctx.moveTo(-doff,H-14); ctx.lineTo(W+60,H-14); ctx.stroke();
+  ctx.setLineDash([]);
+  // Glow portocaliu de stradă
+  const glow=ctx.createLinearGradient(0,H*0.88,0,H);
+  glow.addColorStop(0,'rgba(255,140,30,0)'); glow.addColorStop(1,'rgba(255,140,30,0.28)');
+  ctx.fillStyle=glow; ctx.fillRect(0,H*0.88,W,H*0.12);
+
+  // ── Taxi galben ───────────────────────────────────────────
+  const cab=((offset*0.95)%(W+130))-65;
+  ctx.save(); ctx.shadowColor='rgba(255,200,0,0.4)'; ctx.shadowBlur=8;
+  ctx.fillStyle='#e8c000';
+  ctx.beginPath(); ctx.roundRect(cab,H-48,56,22,4); ctx.fill();
+  ctx.shadowBlur=0; ctx.restore();
+  ctx.fillStyle='rgba(150,220,255,0.55)';
+  ctx.beginPath(); ctx.roundRect(cab+8,H-60,17,13,[3,3,0,0]); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(cab+30,H-60,15,13,[3,3,0,0]); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('TAXI',cab+28,H-39);
+  ctx.fillStyle='#111';
+  ctx.beginPath(); ctx.arc(cab+14,H-26,6,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(cab+42,H-26,6,0,Math.PI*2); ctx.fill();
 }
 
 function _bgBeach(ctx, W, H, offset) {
