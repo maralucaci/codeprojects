@@ -2771,6 +2771,7 @@ function startGame(charId) {
   window.addEventListener('resize', () => resizeCanvas(canvas));
   loadLevel();
   bindKeys();
+  _loopAccum = 0; _loopLastTime = performance.now();
   requestAnimationFrame(gameLoop);
 }
 
@@ -2863,15 +2864,27 @@ function tryHitSign() {
   });
 }
 
-// ─── GAME LOOP ───────────────────────────────────────────────
-function gameLoop() {
+// ─── GAME LOOP (timestep fix — viteza constanta indiferent de FPS) ──
+const FIXED_STEP = 1000 / 60; // 16.67ms = 60fps
+let _loopLastTime = 0;
+let _loopAccum = 0;
+
+function gameLoop(timestamp) {
   if (gs.over || gs.won) return;
   const canvas = document.getElementById('game-canvas');
   const ctx = canvas.getContext('2d');
 
-  update();
-  render(ctx, canvas);
+  const dt = Math.min(timestamp - _loopLastTime, 50); // max 50ms (tab in background)
+  _loopLastTime = timestamp;
+  _loopAccum += dt;
 
+  // ruleaza update() exact cat trebuie pentru a mentine 60fps logic
+  while (_loopAccum >= FIXED_STEP) {
+    update();
+    _loopAccum -= FIXED_STEP;
+  }
+
+  render(ctx, canvas);
   requestAnimationFrame(gameLoop);
 }
 
