@@ -1261,7 +1261,7 @@ const WORLDS = [
   { id: 'japonia',  name: 'Japonia',  icon: '🌸', sky: ['#fce4ec','#f8c8dc','#ffdde8'], platColor: '#8d5a57', platTop: '#c08080' },
   { id: 'jungla',   name: 'Junglă',   icon: '🌴', sky: ['#0d4a1a','#1a6e30','#4a9a2e'], platColor: '#2d5a1e', platTop: '#4a8a2e' },
   { id: 'newyork',  name: 'New York', icon: '🗽', sky: ['#0d0d1a','#1a1a3e','#2e2e60'], platColor: '#2d2d2d', platTop: '#555555' },
-  { id: 'plaja',    name: 'Plajă',    icon: '🏖️', sky: ['#00b4d8','#48cae4','#90e0ef'], platColor: '#c8a46e', platTop: '#e8c48e' },
+  { id: 'plaja',    name: 'Plajă',    icon: '🏖️', sky: ['#00b4d8','#48cae4','#90e0ef'], platColor: '#f0c060', platTop: '#ffe090' },
   { id: 'munte',    name: 'Munte',    icon: '⛰️', sky: ['#b8d4e8','#d8eef8','#e8f8ff'], platColor: '#607d8b', platTop: '#90a4ae' },
   { id: 'spatiu',   name: 'Spațiu',   icon: '🌌', sky: ['#000008','#050520','#0a0a2a'], platColor: '#1a1a4a', platTop: '#3a3a8a' },
   { id: 'iarna',    name: 'Iarnă',    icon: '❄️', sky: ['#d8eef8','#eaf4fc','#f5fbff'], platColor: '#8898aa', platTop: '#c8dce8' },
