@@ -15,84 +15,186 @@ function showScreen(id) {
   el.classList.add('active');
 }
 
-// ─── COVER CANVAS ──────────────────────────────────────────
+// ─── COVER CANVAS (ANIMAT) ─────────────────────────────────
 (function initCover() {
   const canvas = document.getElementById('cover-canvas');
   const ctx = canvas.getContext('2d');
+  let coverOff = 0, rafCover;
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drawCover();
+  // Stele fixe (random o singura data)
+  const STARS = Array.from({length: 80}, () => ({
+    x: Math.random(), y: Math.random() * 0.75,
+    r: 0.5 + Math.random() * 1.5,
+    blink: Math.random() * Math.PI * 2
+  }));
+
+  // Neon signs pe cladiri
+  const NEONS = ['PIZZA','24H','BAR','GYM','HOTEL','MARKET','OPEN','CAFÉ'];
+
+  // Cladiri definitie (reutilizate cu offset)
+  const BLDGS_BG = [];
+  const BLDGS_FG = [];
+  for (let i = 0; i < 18; i++) {
+    BLDGS_BG.push({ ox: i * 110 + (i*37)%55, w: 50+(i*31)%70, h: 0.35+((i*17)%20)*0.01, color: `hsl(${210+i*5},40%,${18+i%5}%)` });
+    BLDGS_FG.push({ ox: i * 90  + (i*53)%40, w: 45+(i*43)%85, h: 0.42+((i*23)%22)*0.01, color: `hsl(${215+i*4},55%,${10+i%4}%)`, neon: NEONS[i%NEONS.length] });
   }
 
-  function drawCover() {
-    const W = canvas.width, H = canvas.height;
+  function resize() {
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
 
-    // Sky gradient
+  function drawCover(ts) {
+    const W = canvas.width, H = canvas.height;
+    coverOff = (coverOff + 0.5) % (W + 200);
+    const t = ts * 0.001;
+
+    // ── Cer noapte → apus ──────────────────────────────────
     const sky = ctx.createLinearGradient(0, 0, 0, H);
-    sky.addColorStop(0, '#87ceeb');
-    sky.addColorStop(0.6, '#c9e8f5');
-    sky.addColorStop(1, '#ffd580');
+    sky.addColorStop(0,   '#07091a');
+    sky.addColorStop(0.5, '#0d1b3e');
+    sky.addColorStop(0.8, '#1a1060');
+    sky.addColorStop(1,   '#ff6030');
     ctx.fillStyle = sky;
     ctx.fillRect(0, 0, W, H);
 
-    // Sun
-    ctx.fillStyle = '#ffe066';
-    ctx.shadowColor = '#ffcc00';
-    ctx.shadowBlur = 40;
-    ctx.beginPath();
-    ctx.arc(W * 0.78, H * 0.18, 55, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.shadowBlur = 0;
+    // ── Luna ───────────────────────────────────────────────
+    ctx.save();
+    ctx.shadowColor = '#c8e0ff'; ctx.shadowBlur = 30;
+    ctx.fillStyle = '#e8f0ff';
+    ctx.beginPath(); ctx.arc(W * 0.15, H * 0.14, 30, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#07091a';
+    ctx.beginPath(); ctx.arc(W * 0.15 + 12, H * 0.14 - 4, 24, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0; ctx.restore();
 
-    // Buildings (background layer — lighter)
-    drawBuildings(ctx, W, H, 0.62, 0.55, '#b0c8e0', 14);
-    // Buildings (foreground layer — darker)
-    drawBuildings(ctx, W, H, 0.72, 0.42, '#1a3a5c', 10);
+    // ── Stele (pâlpâitoare) ────────────────────────────────
+    for (const s of STARS) {
+      const alpha = 0.4 + 0.6 * Math.abs(Math.sin(t * 1.2 + s.blink));
+      ctx.fillStyle = `rgba(255,255,255,${alpha.toFixed(2)})`;
+      ctx.beginPath(); ctx.arc(s.x * W, s.y * H, s.r, 0, Math.PI * 2); ctx.fill();
+    }
 
-    // Road at bottom
-    ctx.fillStyle = '#2d2d2d';
-    ctx.fillRect(0, H * 0.87, W, H * 0.13);
-    // Road lines
-    ctx.strokeStyle = '#fff';
-    ctx.setLineDash([40, 30]);
-    ctx.lineWidth = 4;
-    ctx.beginPath();
-    ctx.moveTo(0, H * 0.93);
-    ctx.lineTo(W, H * 0.93);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  }
-
-  function drawBuildings(ctx, W, H, baseY, minH, color, count) {
-    const seed = color.length * 7;
-    for (let i = 0; i < count; i++) {
-      const t = i / count;
-      const bx = (t * W * 1.1) - W * 0.05 + ((seed * (i + 3)) % 60) - 30;
-      const bw = 40 + ((seed * (i * 3 + 7)) % 80);
-      const bh = minH * H + ((seed * (i * 7 + 11)) % (H * 0.2));
-      const by = baseY * H - bh;
-
-      ctx.fillStyle = color;
-      ctx.fillRect(bx, by, bw, bh);
-
-      // Windows
-      ctx.fillStyle = 'rgba(255,240,150,0.35)';
-      const cols = Math.floor(bw / 14);
-      const rows = Math.floor(bh / 18);
-      for (let r = 0; r < rows; r++) {
-        for (let c = 0; c < cols; c++) {
-          if (((i + r + c) * 3) % 5 !== 0) {
-            ctx.fillRect(bx + 6 + c * 14, by + 8 + r * 18, 7, 9);
-          }
+    // ── Cladiri fundal (parallax lent) ────────────────────
+    const totalW = 18 * 110;
+    for (const b of BLDGS_BG) {
+      const bx = ((b.ox - coverOff * 0.15) % totalW + totalW) % totalW - 60;
+      const bh = b.h * H;
+      const by = H * 0.88 - bh;
+      ctx.fillStyle = b.color;
+      ctx.beginPath(); ctx.roundRect(bx, by, b.w, bh, [4,4,0,0]); ctx.fill();
+      // ferestre galbene
+      const cols = Math.floor(b.w / 14), rows = Math.floor(bh / 18);
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        if ((b.ox + r + c) % 4 !== 0) {
+          const on = Math.sin(t * 0.3 + b.ox + r * 0.7 + c * 1.1) > -0.3;
+          ctx.fillStyle = on ? 'rgba(255,240,140,0.45)' : 'rgba(60,80,120,0.3)';
+          ctx.fillRect(bx + 5 + c * 14, by + 6 + r * 18, 8, 10);
         }
       }
     }
+
+    // ── Cladiri prim-plan (mai rapide) ────────────────────
+    const totalW2 = 18 * 90;
+    for (let i = 0; i < BLDGS_FG.length; i++) {
+      const b = BLDGS_FG[i];
+      const bx = ((b.ox - coverOff * 0.55) % totalW2 + totalW2) % totalW2 - 60;
+      const bh = b.h * H;
+      const by = H * 0.88 - bh;
+      ctx.fillStyle = b.color;
+      ctx.beginPath(); ctx.roundRect(bx, by, b.w, bh, [4,4,0,0]); ctx.fill();
+      // ferestre albastre-neon
+      const cols = Math.floor(b.w / 13), rows = Math.floor(bh / 17);
+      for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+        if ((i + r + c) % 3 !== 0) {
+          const on = Math.sin(t * 0.5 + i + r * 0.9 + c) > -0.4;
+          ctx.fillStyle = on ? 'rgba(100,200,255,0.5)' : 'rgba(20,40,80,0.4)';
+          ctx.fillRect(bx + 5 + c * 13, by + 6 + r * 17, 7, 9);
+        }
+      }
+      // Semn neon pe 1 din 3 cladiri mari
+      if (b.w > 70 && i % 3 === 1) {
+        const neonAlpha = 0.7 + 0.3 * Math.sin(t * 2 + i);
+        ctx.save();
+        ctx.shadowColor = '#ff44aa'; ctx.shadowBlur = 12;
+        ctx.fillStyle = `rgba(255,80,180,${neonAlpha.toFixed(2)})`;
+        ctx.font = `bold ${Math.floor(b.w * 0.18)}px Nunito, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillText(b.neon, bx + b.w / 2, by + 28);
+        ctx.shadowBlur = 0; ctx.restore();
+      }
+    }
+
+    // ── Stradă ────────────────────────────────────────────
+    const roadY = H * 0.88;
+    const roadGrad = ctx.createLinearGradient(0, roadY, 0, H);
+    roadGrad.addColorStop(0, '#1a1a28'); roadGrad.addColorStop(1, '#0a0a14');
+    ctx.fillStyle = roadGrad; ctx.fillRect(0, roadY, W, H - roadY);
+    // reflexie stradă
+    ctx.fillStyle = 'rgba(255,100,30,0.08)';
+    ctx.fillRect(0, roadY, W, 8);
+    // linii punctate
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)'; ctx.setLineDash([40,35]); ctx.lineWidth = 3;
+    const dashOff = (coverOff * 1.5) % 75;
+    ctx.beginPath(); ctx.moveTo(-dashOff, H * 0.94); ctx.lineTo(W + 80, H * 0.94); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ── Maşini care se mişcă ──────────────────────────────
+    const carColors = ['#e84040','#4488ff','#40cc60','#ff8c00','#cc44cc'];
+    for (let ci = 0; ci < 3; ci++) {
+      const carX = ((coverOff * (1.5 + ci * 0.4) + ci * (W / 3 + 80)) % (W + 140)) - 70;
+      const carY = H * 0.92 - 20;
+      ctx.fillStyle = carColors[ci % carColors.length];
+      ctx.beginPath(); ctx.roundRect(carX, carY, 52, 20, 4); ctx.fill();
+      // finestrele masinii
+      ctx.fillStyle = 'rgba(150,220,255,0.6)';
+      ctx.beginPath(); ctx.roundRect(carX + 6, carY - 12, 16, 12, [3,3,0,0]); ctx.fill();
+      ctx.beginPath(); ctx.roundRect(carX + 26, carY - 12, 14, 12, [3,3,0,0]); ctx.fill();
+      // roti
+      ctx.fillStyle = '#111';
+      ctx.beginPath(); ctx.arc(carX + 12, carY + 20, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(carX + 40, carY + 20, 6, 0, Math.PI * 2); ctx.fill();
+      // faruri
+      ctx.save(); ctx.shadowColor = '#fffaaa'; ctx.shadowBlur = 18;
+      ctx.fillStyle = '#fffaaa';
+      ctx.beginPath(); ctx.arc(carX + 52, carY + 6, 4, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0; ctx.restore();
+    }
+
+    // ── Siluetă parkour (personaj care aleargă pe acoperiș) ──
+    const runnerX = ((coverOff * 0.9) % (W + 120)) - 60;
+    const roofY   = H * 0.88 - BLDGS_FG[3].h * H;
+    const bounce  = Math.abs(Math.sin(t * 6)) * 8;
+    ctx.save();
+    ctx.fillStyle = 'rgba(255,200,50,0.85)';
+    ctx.shadowColor = '#f7c948'; ctx.shadowBlur = 14;
+    // corp
+    ctx.beginPath(); ctx.ellipse(runnerX, roofY - 28 - bounce, 6, 10, 0, 0, Math.PI*2); ctx.fill();
+    // cap
+    ctx.beginPath(); ctx.arc(runnerX, roofY - 44 - bounce, 7, 0, Math.PI*2); ctx.fill();
+    // picior stâng
+    const leg = Math.sin(t * 6) * 14;
+    ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,200,50,0.85)';
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(runnerX - 2, roofY - 20 - bounce);
+    ctx.lineTo(runnerX - 2 + leg * 0.5, roofY - 5 - bounce + Math.abs(leg)*0.3); ctx.stroke();
+    // picior drept
+    ctx.beginPath(); ctx.moveTo(runnerX + 2, roofY - 20 - bounce);
+    ctx.lineTo(runnerX + 2 - leg * 0.5, roofY - 5 - bounce + Math.abs(leg)*0.3); ctx.stroke();
+    ctx.shadowBlur = 0; ctx.restore();
   }
+
+  function loop(ts) {
+    drawCover(ts);
+    rafCover = requestAnimationFrame(loop);
+  }
+
+  document.getElementById('cover-start').addEventListener('click', () => {
+    cancelAnimationFrame(rafCover);
+  }, { once: true });
 
   window.addEventListener('resize', resize);
   resize();
+  rafCover = requestAnimationFrame(loop);
 })();
 
 document.getElementById('cover-start').addEventListener('click', () => {
@@ -2873,20 +2975,90 @@ function render(ctx, canvas) {
   // Platforms
   for (const pl of lvl.platforms) {
     const px = pl.x - cam;
+    if (px > W + 20 || px + pl.w < -20) continue;
     // Shadow
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
-    ctx.fillRect(px + 4, pl.y + 4, pl.w, pl.h);
-    // Top surface
+    ctx.fillStyle = 'rgba(0,0,0,0.22)';
+    ctx.beginPath(); ctx.roundRect(px + 5, pl.y + 5, pl.w, pl.h, 6); ctx.fill();
+    // Corp platformă
     ctx.fillStyle = world.platColor;
-    ctx.fillRect(px, pl.y, pl.w, pl.h);
-    // Top highlight
+    ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, pl.h, 6); ctx.fill();
+    // Highlight lateral stânga
+    ctx.fillStyle = 'rgba(255,255,255,0.08)';
+    ctx.beginPath(); ctx.roundRect(px, pl.y, 6, pl.h, [6,0,0,6]); ctx.fill();
+    // Top highlight (dungă colorată)
     ctx.fillStyle = world.platTop;
-    ctx.fillRect(px, pl.y, pl.w, 4);
-    // Grid pattern
-    ctx.strokeStyle = 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 1;
-    for (let gx = px; gx < px + pl.w; gx += 32) {
-      ctx.beginPath(); ctx.moveTo(gx, pl.y); ctx.lineTo(gx, pl.y + pl.h); ctx.stroke();
+    ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, 5, [6,6,0,0]); ctx.fill();
+
+    // ── Decorații specifice lumii ────────────────────────
+    if (world.id === 'jungla' || world.id === 'munte') {
+      // Iarbă
+      ctx.fillStyle = '#3a9e28';
+      ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, 5, [6,6,0,0]); ctx.fill();
+      for (let gx = px + 6; gx < px + pl.w - 4; gx += 9) {
+        const h2 = 4 + (gx % 5);
+        ctx.fillStyle = gx % 18 < 9 ? '#4ab830' : '#2d8a1e';
+        ctx.beginPath(); ctx.moveTo(gx, pl.y); ctx.lineTo(gx + 3, pl.y - h2); ctx.lineTo(gx + 6, pl.y); ctx.fill();
+      }
+    } else if (world.id === 'iarna') {
+      // Zăpadă
+      ctx.fillStyle = '#e8f4ff';
+      ctx.beginPath(); ctx.roundRect(px, pl.y - 3, pl.w, 8, [4,4,0,0]); ctx.fill();
+      // Cristale de gheață mici
+      for (let gx = px + 10; gx < px + pl.w - 6; gx += 22) {
+        ctx.fillStyle = 'rgba(180,230,255,0.8)';
+        ctx.beginPath(); ctx.moveTo(gx, pl.y - 3);
+        ctx.lineTo(gx + 3, pl.y - 8); ctx.lineTo(gx + 6, pl.y - 3); ctx.fill();
+      }
+    } else if (world.id === 'plaja') {
+      // Nisip cu valuri
+      ctx.fillStyle = '#e8c070';
+      ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, 5, [6,6,0,0]); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,160,60,0.5)'; ctx.lineWidth = 1.5;
+      for (let gx = px; gx < px + pl.w; gx += 20) {
+        ctx.beginPath(); ctx.arc(gx + 10, pl.y + 2, 8, Math.PI, 0); ctx.stroke();
+      }
+    } else if (world.id === 'spatiu') {
+      // Glow neon violet
+      ctx.save(); ctx.shadowColor = world.platTop; ctx.shadowBlur = 14;
+      ctx.strokeStyle = world.platTop; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.roundRect(px + 1, pl.y + 1, pl.w - 2, pl.h - 2, 5); ctx.stroke();
+      ctx.shadowBlur = 0; ctx.restore();
+    } else if (world.id === 'castel') {
+      // Pietre de castel
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 1;
+      for (let gx = px; gx < px + pl.w; gx += 24) {
+        ctx.beginPath(); ctx.roundRect(gx + 1, pl.y + 1, 22, pl.h - 2, 2); ctx.stroke();
+      }
+      // Merloane (ziduri castel)
+      ctx.fillStyle = world.platColor;
+      for (let gx = px + 4; gx < px + pl.w - 4; gx += 16) {
+        ctx.beginPath(); ctx.roundRect(gx, pl.y - 7, 10, 8, [2,2,0,0]); ctx.fill();
+      }
+    } else if (world.id === 'subapa') {
+      // Corali și alge
+      ctx.fillStyle = 'rgba(0,200,180,0.25)';
+      ctx.beginPath(); ctx.roundRect(px, pl.y, pl.w, 5, [6,6,0,0]); ctx.fill();
+      for (let gx = px + 8; gx < px + pl.w - 4; gx += 18) {
+        ctx.strokeStyle = gx % 36 < 18 ? 'rgba(255,100,100,0.7)' : 'rgba(100,220,200,0.7)';
+        ctx.lineWidth = 3; ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(gx, pl.y); ctx.quadraticCurveTo(gx + 5, pl.y - 8, gx + 2, pl.y - 14); ctx.stroke();
+      }
+    } else if (world.id === 'curcubeu') {
+      // Dungă curcubeu pe top
+      const colors = ['#ff6b6b','#ff9f43','#f7c948','#2ecc71','#4facfe','#a29bfe'];
+      const sw = pl.w / colors.length;
+      for (let ci = 0; ci < colors.length; ci++) {
+        ctx.fillStyle = colors[ci];
+        const rx = px + ci * sw;
+        const rad = ci === 0 ? [6,0,0,0] : ci === colors.length-1 ? [0,6,0,0] : 0;
+        ctx.beginPath(); ctx.roundRect(rx, pl.y, sw, 5, rad); ctx.fill();
+      }
+    } else {
+      // Default: linii verticale discrete
+      ctx.strokeStyle = 'rgba(0,0,0,0.12)'; ctx.lineWidth = 1;
+      for (let gx = px + 32; gx < px + pl.w; gx += 32) {
+        ctx.beginPath(); ctx.moveTo(gx, pl.y + 5); ctx.lineTo(gx, pl.y + pl.h); ctx.stroke();
+      }
     }
   }
 
@@ -3696,67 +3868,111 @@ function _bgRainbow(ctx, W, H, offset) {
 }
 
 function drawSign(ctx, x, y, hit) {
-  // Pole
-  ctx.fillStyle = '#888';
-  ctx.fillRect(x + 16, y, 8, 50);
+  const cx = x + 20, cy = y + 15;
+  // Stâlp metalic cu gradient
+  const poleGrad = ctx.createLinearGradient(x + 16, 0, x + 26, 0);
+  poleGrad.addColorStop(0, '#aaa'); poleGrad.addColorStop(0.5, '#eee'); poleGrad.addColorStop(1, '#888');
+  ctx.fillStyle = poleGrad;
+  ctx.beginPath(); ctx.roundRect(x + 17, y + (hit ? 14 : 28), 7, hit ? 36 : 24, 2); ctx.fill();
 
   if (hit) {
-    // Broken sign
-    ctx.fillStyle = '#888';
-    ctx.beginPath();
-    ctx.moveTo(x, y); ctx.lineTo(x + 40, y + 5); ctx.lineTo(x + 38, y + 35); ctx.lineTo(x + 2, y + 30);
-    ctx.closePath(); ctx.fill();
-    ctx.fillStyle = '#aaa';
-    ctx.font = 'bold 14px Nunito';
-    ctx.fillText('+10', x + 5, y + 22);
+    // Semn spart — înclinat
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(0.35);
+    ctx.fillStyle = '#667';
+    ctx.beginPath(); ctx.roundRect(-20, -14, 40, 28, 4); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,0.15)';
+    ctx.beginPath(); ctx.roundRect(-20, -14, 40, 5, [4,4,0,0]); ctx.fill();
+    ctx.fillStyle = '#ccd'; ctx.font = 'bold 12px Nunito, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('+10 🪙', 0, 1);
+    ctx.restore();
+    // Scântei
+    for (let i = 0; i < 5; i++) {
+      ctx.fillStyle = '#f7c948';
+      ctx.beginPath(); ctx.arc(cx - 10 + i * 5, cy - 18 - i * 3, 2, 0, Math.PI*2); ctx.fill();
+    }
   } else {
-    // Normal sign — blue board
-    ctx.fillStyle = '#2255aa';
-    ctx.fillRect(x, y, 40, 30);
-    ctx.fillStyle = '#4488ff';
-    ctx.fillRect(x, y, 40, 4);
-    // Star icon
+    // Semn normal — neon luminos
+    ctx.save();
+    ctx.shadowColor = '#4488ff'; ctx.shadowBlur = 16;
+    ctx.fillStyle = '#1a3a8a';
+    ctx.beginPath(); ctx.roundRect(x, y, 40, 28, 6); ctx.fill();
+    ctx.shadowBlur = 0;
+    // Border neon
+    ctx.strokeStyle = '#4af'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.roundRect(x + 1, y + 1, 38, 26, 5); ctx.stroke();
+    // Top shine
+    ctx.fillStyle = 'rgba(100,200,255,0.25)';
+    ctx.beginPath(); ctx.roundRect(x + 2, y + 2, 36, 10, [4,4,0,0]); ctx.fill();
+    // Steaua și valoarea
     ctx.fillStyle = '#f7c948';
-    ctx.font = '16px sans-serif';
-    ctx.fillText('★', x + 12, y + 22);
+    ctx.font = '14px sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillText('★', x + 6, y + 7);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Nunito, sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('+10', x + 26, y + 15);
+    ctx.shadowBlur = 0; ctx.restore();
   }
 }
 
 function drawExit(ctx, x, y) {
   if (x < -150 || x > 9999) return;
   const W = 80, roofH = 20;
+  const wave = Math.sin(Date.now() * 0.004) * 10;
 
-  // Green finish platform
+  // Glow verde sub platforma finish
+  ctx.save();
+  ctx.shadowColor = '#2ecc71'; ctx.shadowBlur = 20;
   ctx.fillStyle = '#27ae60';
-  ctx.fillRect(x, y, W, roofH);
-  ctx.fillStyle = '#2ecc71';
-  ctx.fillRect(x, y, W, 4);
-  ctx.fillStyle = 'rgba(46,204,113,0.18)';
-  ctx.fillRect(x - 5, y - 5, W + 10, roofH + 10);
+  ctx.beginPath(); ctx.roundRect(x, y, W, roofH, [4,4,0,0]); ctx.fill();
+  ctx.shadowBlur = 0; ctx.restore();
 
-  // Checkered finish line on platform
+  // Dungă verde sus
+  ctx.fillStyle = '#2ecc71';
+  ctx.beginPath(); ctx.roundRect(x, y, W, 5, [4,4,0,0]); ctx.fill();
+
+  // Halo verde în jurul platformei
+  ctx.fillStyle = 'rgba(46,204,113,0.15)';
+  ctx.beginPath(); ctx.roundRect(x - 6, y - 6, W + 12, roofH + 12, 8); ctx.fill();
+
+  // Pătrate alb-negru (finish line)
   const sq = 10;
   for (let i = 0; i < 8; i++) {
-    if (i % 2 === 0) { ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.fillRect(x + i * sq, y, sq, roofH / 2); }
+    ctx.fillStyle = i % 2 === 0 ? 'rgba(255,255,255,0.65)' : 'rgba(0,0,0,0.35)';
+    ctx.fillRect(x + i * sq, y + 5, sq, roofH / 2);
   }
 
-  // Flag pole
-  ctx.fillStyle = '#bbb';
-  ctx.fillRect(x + W / 2 - 2, y - 70, 4, 70);
+  // Stâlp steag
+  const poleGrad = ctx.createLinearGradient(x + W/2 - 2, 0, x + W/2 + 2, 0);
+  poleGrad.addColorStop(0, '#999'); poleGrad.addColorStop(0.5, '#eee'); poleGrad.addColorStop(1, '#777');
+  ctx.fillStyle = poleGrad;
+  ctx.beginPath(); ctx.roundRect(x + W/2 - 2, y - 72, 5, 72, 2); ctx.fill();
 
-  // Waving flag
+  // Steag animat
+  ctx.save();
+  ctx.shadowColor = '#e74c3c'; ctx.shadowBlur = 10;
   ctx.fillStyle = '#e74c3c';
   ctx.beginPath();
-  ctx.moveTo(x + W / 2 + 2, y - 70);
-  ctx.quadraticCurveTo(x + W / 2 + 22, y - 62, x + W / 2 + 2, y - 54);
-  ctx.closePath();
-  ctx.fill();
+  ctx.moveTo(x + W/2 + 3, y - 70);
+  ctx.quadraticCurveTo(x + W/2 + 20 + wave * 0.5, y - 62, x + W/2 + 3, y - 54);
+  ctx.closePath(); ctx.fill();
+  // Detaliu steag - dungă albă
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(x + W/2 + 3, y - 70);
+  ctx.quadraticCurveTo(x + W/2 + 20 + wave * 0.5, y - 62, x + W/2 + 18 + wave * 0.5, y - 61);
+  ctx.lineTo(x + W/2 + 3, y - 66);
+  ctx.closePath(); ctx.fill();
+  ctx.shadowBlur = 0; ctx.restore();
 
-  // "FINISH" text above flag
+  // Text FINISH cu glow
+  ctx.save();
+  ctx.shadowColor = '#f7c948'; ctx.shadowBlur = 12;
   ctx.fillStyle = '#f7c948';
-  ctx.font = 'bold 13px Nunito';
+  ctx.font = 'bold 14px Nunito, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('FINISH', x + W / 2, y - 78);
+  ctx.fillText('🏁 FINISH', x + W/2, y - 78);
+  ctx.shadowBlur = 0; ctx.restore();
   ctx.textAlign = 'left';
 }
 
