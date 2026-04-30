@@ -1297,7 +1297,7 @@ const SHOP_CATS = [
 
 // ─── WORLDS ─────────────────────────────────────────────────
 const WORLDS = [
-  { id: 'oras',     name: 'Oraș',     icon: '🏙️', sky: ['#87ceeb','#c9e8f5','#ffd580'], platColor: '#3a5a7c', platTop: '#4a7aaa' },
+  { id: 'oras',     name: 'Oraș',     icon: '🏙️', sky: ['#1a1a3e','#0d0d2a','#1a0a30'], platColor: '#3a5a7c', platTop: '#4a7aaa' },
   { id: 'japonia',  name: 'Japonia',  icon: '🌸', sky: ['#fce4ec','#f8c8dc','#ffdde8'], platColor: '#8d5a57', platTop: '#c08080' },
   { id: 'jungla',   name: 'Junglă',   icon: '🌴', sky: ['#0d4a1a','#1a6e30','#4a9a2e'], platColor: '#2d5a1e', platTop: '#4a8a2e' },
   { id: 'newyork',  name: 'New York', icon: '🗽', sky: ['#0d0d1a','#1a1a3e','#2e2e60'], platColor: '#2d2d2d', platTop: '#555555' },
@@ -1311,6 +1311,14 @@ const WORLDS = [
   { id: 'curcubeu', name: 'Curcubeu', icon: '🌈', sky: ['#ff9ff3','#a29bfe','#74b9ff'], platColor: '#e056c0', platTop: '#fd79a8' },
 ];
 let selectedWorld = WORLDS[0];
+
+// ─── PRELOAD BACKGROUND IMAGES ──────────────────────────────
+const BG_IMGS = {};
+for (const w of WORLDS) {
+  const img = new Image();
+  img.src = `bg/world-${w.id}.png`;
+  BG_IMGS[w.id] = img;
+}
 
 function loadShopState() {
   try {
@@ -3265,19 +3273,35 @@ function drawBgBuildings(ctx, W, H, offset) {
 // ─── WORLD BACKGROUNDS ──────────────────────────────────────
 function drawWorldBg(ctx, W, H, offset) {
   const world = selectedWorld || WORLDS[0];
-  switch (world.id) {
-    case 'oras':     _bgCity(ctx, W, H, offset);       break;
-    case 'japonia':  _bgJapan(ctx, W, H, offset);      break;
-    case 'jungla':   _bgJungle(ctx, W, H, offset);     break;
-    case 'newyork':  _bgNY(ctx, W, H, offset);         break;
-    case 'plaja':    _bgBeach(ctx, W, H, offset);      break;
-    case 'munte':    _bgMountain(ctx, W, H, offset);   break;
-    case 'spatiu':   _bgSpace(ctx, W, H, offset);      break;
-    case 'iarna':    _bgWinter(ctx, W, H, offset);     break;
-    case 'apus':     _bgSunset(ctx, W, H, offset);     break;
-    case 'subapa':   _bgUnderwater(ctx, W, H, offset); break;
-    case 'castel':   _bgCastle(ctx, W, H, offset);     break;
-    case 'curcubeu': _bgRainbow(ctx, W, H, offset);    break;
+  const img = BG_IMGS[world.id];
+
+  if (img && img.complete && img.naturalWidth > 0) {
+    // ── Imagine anime cu parallax ──────────────────────────
+    // Scalăm imaginea să acopere înălțimea canvas-ului
+    const scale = H / img.naturalHeight;
+    const imgW  = img.naturalWidth * scale;
+    // Parallax: imaginea se mișcă mai lent decât jucătorul
+    const px = -((offset * 0.3) % imgW);
+    // Desenăm de 3 ori ca să acopere orice lățime
+    for (let i = -1; i <= 2; i++) {
+      ctx.drawImage(img, px + i * imgW, 0, imgW, H);
+    }
+  } else {
+    // Fallback procedural dacă imaginea nu s-a încărcat
+    switch (world.id) {
+      case 'oras':     _bgCity(ctx, W, H, offset);       break;
+      case 'japonia':  _bgJapan(ctx, W, H, offset);      break;
+      case 'jungla':   _bgJungle(ctx, W, H, offset);     break;
+      case 'newyork':  _bgNY(ctx, W, H, offset);         break;
+      case 'plaja':    _bgBeach(ctx, W, H, offset);      break;
+      case 'munte':    _bgMountain(ctx, W, H, offset);   break;
+      case 'spatiu':   _bgSpace(ctx, W, H, offset);      break;
+      case 'iarna':    _bgWinter(ctx, W, H, offset);     break;
+      case 'apus':     _bgSunset(ctx, W, H, offset);     break;
+      case 'subapa':   _bgUnderwater(ctx, W, H, offset); break;
+      case 'castel':   _bgCastle(ctx, W, H, offset);     break;
+      case 'curcubeu': _bgRainbow(ctx, W, H, offset);    break;
+    }
   }
 }
 
