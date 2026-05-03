@@ -3277,6 +3277,8 @@ function drawWorldBg(ctx, W, H, offset) {
 
   if (img && img.complete && img.naturalWidth > 0) {
     // ── Imagine anime cu parallax ──────────────────────────
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
     // Scalăm imaginea să acopere înălțimea canvas-ului
     const scale = H / img.naturalHeight;
     const imgW  = img.naturalWidth * scale;
