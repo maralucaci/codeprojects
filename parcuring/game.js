@@ -3279,6 +3279,10 @@ function drawWorldBg(ctx, W, H, offset) {
     // ── Imagine anime cu parallax ──────────────────────────
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
+    // Blur ușor ca să ascundă pixelii când imaginea e mică
+    const scaleRatio = H / img.naturalHeight;
+    const blurPx = scaleRatio > 3 ? 2 : scaleRatio > 2 ? 1.5 : scaleRatio > 1.5 ? 1 : 0;
+    if (blurPx > 0) ctx.filter = `blur(${blurPx}px)`;
     // Scalăm imaginea să acopere înălțimea canvas-ului
     const scale = H / img.naturalHeight;
     const imgW  = img.naturalWidth * scale;
@@ -3288,6 +3292,7 @@ function drawWorldBg(ctx, W, H, offset) {
     for (let i = -1; i <= 2; i++) {
       ctx.drawImage(img, px + i * imgW, 0, imgW, H);
     }
+    ctx.filter = 'none';
   } else {
     // Fallback procedural dacă imaginea nu s-a încărcat
     switch (world.id) {
