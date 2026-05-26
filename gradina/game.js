@@ -96,15 +96,22 @@ let particles = [];
 let notifications = [];
 
 let gs = {
-  screen: 'title',  // 'title' | 'play' | 'shop' | 'dayend'
+  screen: 'title',  // 'title' | 'select' | 'play' | 'shop' | 'dayend'
   day: 1,
   coins: 500,
-  tool: 0,          // 0=sapă, 1=stropitoare, 2=semințe
-  seedIdx: 0,       // index în CROP_KEYS
+  tool: 0,
+  seedIdx: 0,
   inv: { nap:0, morcov:0, rosie:0, dovleac:0 },
   shipping: [],
   dayCoins: 0,
+  // Alegeri personaj
+  charType: 'girl',  // 'girl' | 'boy'
+  animal:   'cat',   // 'cat' | 'dog'
+  location: 'camp',  // 'mare' | 'munte' | 'camp'
 };
+
+// ── Selecție personaj ─────────────────────────────────────
+let selStep = 0; // 0=personaj, 1=animal, 2=locatie
 
 // ── Jucător ──────────────────────────────────────────────
 let pl = {
@@ -128,29 +135,37 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup',  e => { keys[e.code] = false; });
 window.addEventListener('blur',   () => { for(const k in keys) keys[k]=false; });
 
-// Click / touch pe butonul JOACA din titlu
-canvas.addEventListener('click', e => {
-  if(gs.screen!=='title') return;
-  const rect=canvas.getBoundingClientRect();
-  const scaleX=VW/rect.width, scaleY=VH/rect.height;
-  const cx=(e.clientX-rect.left)*scaleX;
-  const cy=(e.clientY-rect.top)*scaleY;
-  if(cx>=BTN_X&&cx<=BTN_X+BTN_W&&cy>=BTN_Y-10&&cy<=BTN_Y+BTN_H+10) {
-    gs.screen='play'; initMap(); initState();
+// Click / touch handlers
+function handleClick(cx, cy) {
+  if(gs.screen==='title') {
+    if(cx>=BTN_X&&cx<=BTN_X+BTN_W&&cy>=BTN_Y-10&&cy<=BTN_Y+BTN_H+10) {
+      gs.screen='select'; selStep=0;
+    }
+    return;
   }
+  if(gs.screen==='select') {
+    if(cy<24) return;
+    if(selStep===0) {
+      gs.charType = cx < VW/2 ? 'girl' : 'boy';
+      selStep=1;
+    } else if(selStep===1) {
+      gs.animal = cx < VW/2 ? 'cat' : 'dog';
+      selStep=2;
+    } else {
+      gs.location = cx<158 ? 'mare' : cx<248 ? 'munte' : 'camp';
+      gs.screen='play'; initMap(); initState();
+    }
+  }
+}
+canvas.addEventListener('click', e => {
+  const r=canvas.getBoundingClientRect();
+  handleClick((e.clientX-r.left)*VW/r.width, (e.clientY-r.top)*VH/r.height);
 });
 canvas.addEventListener('touchstart', e => {
-  if(gs.screen!=='title') return;
   e.preventDefault();
-  const rect=canvas.getBoundingClientRect();
-  const t2=e.touches[0];
-  const scaleX=VW/rect.width, scaleY=VH/rect.height;
-  const cx=(t2.clientX-rect.left)*scaleX;
-  const cy=(t2.clientY-rect.top)*scaleY;
-  if(cx>=BTN_X&&cx<=BTN_X+BTN_W&&cy>=BTN_Y-10&&cy<=BTN_Y+BTN_H+10) {
-    gs.screen='play'; initMap(); initState();
-  }
-}, {passive:false});
+  const r=canvas.getBoundingClientRect(), t2=e.touches[0];
+  handleClick((t2.clientX-r.left)*VW/r.width, (t2.clientY-r.top)*VH/r.height);
+},{passive:false});
 
 function jp(code) { const v = justPressed[code]; justPressed[code]=false; return v; }
 
@@ -328,7 +343,12 @@ function drawCrop(c) {
 function drawPlayer() {
   const x = pl.x, y = pl.y;
   const f = Math.floor(pl.walkF)%2;
-  const skin='#f4c090', hair='#7a3010', shirt='#e84060', pants='#3050b0', boot='#6b3a1f';
+  const skin='#f4c090';
+  const isGirl = gs.charType==='girl';
+  const hair = isGirl?'#8b4010':'#4a2810';
+  const shirt = isGirl?'#d050d0':'#3060e0';
+  const pants = isGirl?'#d050d0':'#2040a0';
+  const boot='#6b3a1f';
 
   // Umbră
   fr(x+1,y+18,10,2,'rgba(0,0,0,0.25)');
@@ -634,6 +654,190 @@ function updateDayEnd() {
   if(jp('KeyZ')||jp('Space')||jp('Enter')) dayEndOpen=false;
 }
 
+// ── Ecran selecție personaj ──────────────────────────────
+function drawSelectBg() {
+  for(let y=0;y<90;y++) fr(0,y,VW,1,`hsl(200,65%,${50+y*0.15}%)`);
+  fr(0,90,VW,VH-90,'#4a8c3f');
+  for(let x=0;x<VW;x+=4) fr(x,90,2,3,'#5ca048');
+}
+
+function drawCharCard(cx,cy,type) {
+  const sel=gs.charType===type;
+  fr(cx-32,cy-8,64,100,sel?'rgba(245,197,24,0.25)':'rgba(0,0,0,0.5)');
+  if(sel){ctx.strokeStyle='#f5c518';ctx.lineWidth=2;ctx.strokeRect(cx-32,cy-8,64,100);}
+  if(type==='girl'){
+    // Păr lung
+    fr(cx-10,cy,20,5,'#8b4010');
+    fr(cx-11,cy+4,3,22,'#8b4010'); fr(cx+8,cy+4,3,22,'#8b4010');
+    // Față
+    fr(cx-8,cy+3,16,14,'#f4c090');
+    fr(cx-5,cy+8,3,3,'#5060e0'); fr(cx+2,cy+8,3,3,'#5060e0'); // ochi albaștri
+    fr(cx-1,cy+13,3,1,'#e06070'); // gura
+    fr(cx-5,cy+11,2,2,'#ffb0b0'); fr(cx+3,cy+11,2,2,'#ffb0b0'); // obraji
+    // Rochie
+    fr(cx-9,cy+17,18,12,'#d050d0');
+    fr(cx-11,cy+17,3,9,'#f4c090'); fr(cx+8,cy+17,3,9,'#f4c090'); // brațe
+    fr(cx-12,cy+29,24,18,'#d050d0'); // fustă lată
+    fr(cx-10,cy+32,4,4,'#b030b0'); fr(cx+6,cy+32,4,4,'#b030b0'); // detaliu fustă
+    // Picioare
+    fr(cx-6,cy+47,4,10,'#f4c090'); fr(cx+2,cy+47,4,10,'#f4c090');
+    fr(cx-7,cy+55,6,4,'#8b4010'); fr(cx+1,cy+55,6,4,'#8b4010'); // pantofi
+  } else {
+    // Păr scurt
+    fr(cx-9,cy,18,4,'#4a2810');
+    fr(cx-3,cy-2,7,3,'#4a2810');
+    // Față
+    fr(cx-8,cy+3,16,14,'#f4c090');
+    fr(cx-5,cy+8,3,3,'#3a2010'); fr(cx+2,cy+8,3,3,'#3a2010'); // ochi maro
+    fr(cx-1,cy+13,3,1,'#a06030');
+    // Tricou
+    fr(cx-9,cy+17,18,12,'#3060e0');
+    fr(cx-11,cy+17,3,9,'#f4c090'); fr(cx+8,cy+17,3,9,'#f4c090');
+    // Pantaloni
+    fr(cx-9,cy+29,18,18,'#2040a0');
+    fr(cx-8,cy+35,3,4,'#103080'); fr(cx+5,cy+35,3,4,'#1030a0');
+    // Picioare + pantofi
+    fr(cx-6,cy+47,4,10,'#2040a0'); fr(cx+2,cy+47,4,10,'#2040a0');
+    fr(cx-7,cy+55,6,4,'#2a1800'); fr(cx+1,cy+55,6,4,'#2a1800');
+  }
+  const lbl=type==='girl'?'Fată':'Băiat';
+  ctx.font='bold 10px monospace'; ctx.textAlign='center';
+  ctx.fillStyle=sel?'#f5c518':'#fff'; ctx.fillText(lbl,cx,cy+74);
+  if(sel){ctx.font='7px monospace';ctx.fillStyle='#f5c518';ctx.fillText('✓ ales',cx,cy+84);}
+}
+
+function drawAnimalCard(cx,cy,type) {
+  const sel=gs.animal===type;
+  fr(cx-32,cy-8,64,85,sel?'rgba(245,197,24,0.25)':'rgba(0,0,0,0.5)');
+  if(sel){ctx.strokeStyle='#f5c518';ctx.lineWidth=2;ctx.strokeRect(cx-32,cy-8,64,85);}
+  if(type==='cat'){
+    const c='#e09050';
+    // Corp
+    fr(cx-10,cy+14,20,12,c);
+    // Cap
+    fr(cx-8,cy+2,16,13,c);
+    // Urechi ascuțite
+    fr(cx-9,cy-4,4,7,'#f0a070'); fr(cx+5,cy-4,4,7,'#f0a070');
+    fr(cx-8,cy-3,3,5,'#ff9090'); fr(cx+6,cy-3,3,5,'#ff9090');
+    // Ochi verzi
+    fr(cx-5,cy+5,4,3,'#30c030'); fr(cx+1,cy+5,4,3,'#30c030');
+    fr(cx-4,cy+6,2,1,'#000'); fr(cx+2,cy+6,2,1,'#000');
+    // Nas + gură
+    fr(cx-1,cy+10,3,2,'#ff9090');
+    fr(cx-3,cy+11,3,1,'#d4a060'); fr(cx+1,cy+11,3,1,'#d4a060');
+    // Dungi
+    fr(cx-8,cy+15,2,8,'#c06020'); fr(cx+6,cy+15,2,8,'#c06020');
+    fr(cx-2,cy+16,5,2,'#c06020');
+    // Coadă curbată
+    fr(cx+9,cy+18,3,3,c); fr(cx+11,cy+14,2,5,c); fr(cx+12,cy+10,2,5,c);
+    // Lăbuțe
+    fr(cx-8,cy+24,6,5,c); fr(cx+2,cy+24,6,5,c);
+  } else {
+    const c='#c89050';
+    // Corp
+    fr(cx-12,cy+14,22,12,c);
+    // Cap
+    fr(cx-8,cy+2,16,12,c);
+    // Urechi floppy
+    fr(cx-10,cy+4,4,12,'#b07030'); fr(cx+6,cy+4,4,12,'#b07030');
+    // Ochi
+    fr(cx-5,cy+6,4,3,'#6a3010'); fr(cx+1,cy+6,4,3,'#6a3010');
+    fr(cx-4,cy+7,2,1,'#000'); fr(cx+2,cy+7,2,1,'#000');
+    // Nas negru
+    fr(cx-2,cy+10,5,3,'#2a1800'); fr(cx-1,cy+11,3,2,'#4a2808');
+    // Guler roșu + medalie
+    fr(cx-8,cy+12,16,3,'#e83020'); fr(cx-1,cy+12,3,3,'#f5c518');
+    // Coadă
+    fr(cx+9,cy+16,3,3,c); fr(cx+11,cy+13,2,4,c); fr(cx+12,cy+9,2,5,c);
+    // Lăbuțe
+    fr(cx-8,cy+24,6,5,c); fr(cx+2,cy+24,6,5,c);
+  }
+  const lbl=type==='cat'?'Pisica':'Caine';
+  ctx.font='bold 10px monospace'; ctx.textAlign='center';
+  ctx.fillStyle=sel?'#f5c518':'#fff'; ctx.fillText(lbl,cx,cy+62);
+  if(sel){ctx.font='7px monospace';ctx.fillStyle='#f5c518';ctx.fillText('✓ alesă',cx,cy+72);}
+}
+
+function drawLocCard(lx,ly,type,label) {
+  const sel=gs.location===type;
+  const W=80,H=70;
+  fr(lx,ly,W,H,'#000');
+  if(type==='mare'){
+    fr(lx,ly,W,35,'#87ceeb');
+    fr(lx+55,ly+5,14,14,'#f5c518');
+    fr(lx,ly+35,W,10,'#4070d8');
+    fr(lx,ly+38,W,2,'#5090f0'); fr(lx,ly+42,W,2,'#5090f0');
+    fr(lx,ly+45,W,25,'#d4c088');
+    fr(lx+12,ly+20,4,25,'#8b5a2a');
+    fr(lx+4,ly+12,24,8,'#2a8020'); fr(lx+7,ly+8,18,7,'#40a030');
+    fr(lx+5,ly+37,7,1,'#a0c0ff'); fr(lx+25,ly+39,7,1,'#a0c0ff'); fr(lx+50,ly+37,7,1,'#a0c0ff');
+  } else if(type==='munte'){
+    fr(lx,ly,W,40,'#b0d0f0');
+    fr(lx+20,ly+5,40,10,'#fff'); fr(lx+15,ly+10,50,10,'#eee');
+    fr(lx+10,ly+18,60,10,'#ddd'); fr(lx+5,ly+26,70,14,'#5a7840');
+    fr(lx,ly+38,W,32,'#4a8030');
+    // brazi
+    for(let i=0;i<3;i++){
+      fr(lx+5+i*28,ly+50,4,18,'#8b5a2a');
+      fr(lx+2+i*28,ly+42,10,10,'#1a5010');
+      fr(lx+3+i*28,ly+37,8,8,'#265818');
+    }
+  } else {
+    fr(lx,ly,W,38,'#87ceeb');
+    fr(lx+4,ly+7,16,7,'#fff'); fr(lx+7,ly+4,10,6,'#fff');
+    fr(lx+44,ly+10,16,6,'#fff'); fr(lx+47,ly+7,10,5,'#fff');
+    fr(lx,ly+38,W,32,'#5c8a3f');
+    fr(lx+4,ly+40,22,18,'#d4a820');
+    for(let i=0;i<5;i++) fr(lx+5+i*4,ly+33,2,8,'#d4a820');
+    fr(lx+56,ly+34,3,22,'#5a8030');
+    fr(lx+50,ly+28,15,8,'#f5c518'); fr(lx+53,ly+24,9,6,'#f5c518');
+    fr(lx+56,ly+30,3,3,'#6a3010');
+    fr(lx+34,ly+46,3,8,'#5a8030'); fr(lx+31,ly+42,9,5,'#e84080');
+    fr(lx+65,ly+44,3,8,'#5a8030'); fr(lx+62,ly+40,9,5,'#e84080');
+  }
+  if(sel){ctx.strokeStyle='#f5c518';ctx.lineWidth=2;ctx.strokeRect(lx,ly,W,H);}
+  ctx.font='bold 9px monospace'; ctx.textAlign='center';
+  ctx.fillStyle=sel?'#f5c518':'#fff'; ctx.fillText(label,lx+W/2,ly+H+13);
+  if(sel){ctx.font='7px monospace';ctx.fillStyle='#f5c518';ctx.fillText('✓',lx+W/2,ly+H+23);}
+}
+
+function drawSelect() {
+  drawSelectBg();
+  // Header
+  fr(0,0,VW,22,'rgba(0,0,0,0.8)');
+  const titles=['Cine esti tu?','Ce animal iti place?','Unde vrei sa stai?'];
+  ctx.font='bold 13px monospace'; ctx.textAlign='center';
+  ctx.fillStyle='#f5c518'; ctx.fillText(titles[selStep],VW/2,15);
+  // Pas
+  [0,1,2].forEach(i=>fr(VW/2-22+i*22,VH-8,16,5,i<=selStep?'#f5c518':'#555'));
+
+  if(selStep===0){
+    drawCharCard(110,60,'girl');
+    drawCharCard(290,60,'boy');
+    ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillStyle='#c0f080'; ctx.fillText('Click pe personajul tau!',VW/2,VH-18);
+  } else if(selStep===1){
+    drawAnimalCard(130,70,'cat');
+    drawAnimalCard(270,70,'dog');
+    ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillStyle='#c0f080'; ctx.fillText('Click pe animalul tau favorit!',VW/2,VH-18);
+  } else {
+    drawLocCard(20,55,'mare','La Mare');
+    drawLocCard(120,55,'munte','La Munte');
+    drawLocCard(220,55,'camp','Pe Camp');
+    // Preview ales
+    const lblC=gs.charType==='girl'?'Fata':'Baiat';
+    const lblA=gs.animal==='cat'?'Pisica':'Caine';
+    fr(310,50,70,80,'rgba(0,0,0,0.6)');
+    ctx.font='7px monospace'; ctx.textAlign='left';
+    ctx.fillStyle='#aaa'; ctx.fillText('Ai ales:',315,64);
+    ctx.fillStyle='#f5c518'; ctx.fillText(lblC,315,76);
+    ctx.fillStyle='#80ff80'; ctx.fillText(lblA,315,88);
+    ctx.font='9px monospace'; ctx.textAlign='center';
+    ctx.fillStyle='#c0f080'; ctx.fillText('Click pe locatia ta!',VW/2,VH-18);
+  }
+}
+
 // ── Ecran titlu ──────────────────────────────────────────
 let titleFrame=0;
 // Coordonate buton PLAY (pentru click)
@@ -795,12 +999,42 @@ function update() {
   if(jp('Tab')) advanceDay();
 
   updateParticles();
+  updateAnimal();
   justPressed={};
+}
+
+// ── Animal companion ──────────────────────────────────────
+let animalPos={x:80,y:80,walkF:0};
+
+function updateAnimal() {
+  const tx2=pl.x-14, ty2=pl.y+6;
+  animalPos.x+=(tx2-animalPos.x)*0.09;
+  animalPos.y+=(ty2-animalPos.y)*0.09;
+  if(Math.abs(tx2-animalPos.x)>1) animalPos.walkF+=0.1;
+}
+
+function drawAnimal() {
+  const x=Math.round(animalPos.x), y=Math.round(animalPos.y);
+  if(gs.animal==='cat'){
+    const c='#e09050';
+    fr(x+2,y+3,6,5,c); fr(x+5,y,4,4,c);
+    fr(x+4,y-1,2,2,'#f0a070'); fr(x+8,y-1,2,2,'#f0a070');
+    fr(x+6,y+1,1,1,'#30b030'); fr(x+8,y+1,1,1,'#30b030'); // ochi
+    fr(x+3,y+4,1,4,'#c06020'); fr(x+6,y+4,1,3,'#c06020');
+    fr(x+8,y+5,3,1,c); fr(x+10,y+3,2,3,c);
+  } else {
+    const c='#c89050';
+    fr(x+1,y+3,8,5,c); fr(x+4,y,5,4,c);
+    fr(x+2,y+1,2,3,'#b07030'); fr(x+7,y+1,2,3,'#b07030'); // urechi
+    fr(x+5,y+1,1,1,'#5a2808'); fr(x+7,y+1,1,1,'#5a2808'); // ochi
+    fr(x+1,y+3,8,2,'#e83020'); fr(x+4,y+3,2,2,'#f5c518'); // guler
+    const wf=Math.floor(animalPos.walkF)%2;
+    fr(x+8,y+4,wf?4:2,1,c); // coadă
+  }
 }
 
 // ── Render ───────────────────────────────────────────────
 function render() {
-  // Tiles
   for(let ty=0;ty<MAP_H;ty++)
     for(let tx=0;tx<MAP_W;tx++)
       drawTile(tileMap[ty][tx], tx*TS, ty*TS);
@@ -809,8 +1043,7 @@ function render() {
   drawShop();
   drawBox();
 
-  // Tile față (highlight)
-  if(gs.screen==='play'&&!shopOpen&&!dayEndOpen) {
+  if(!shopOpen&&!dayEndOpen) {
     const {tx:ftx,ty:fty}=facingTile();
     if(ftx>=0&&ftx<MAP_W&&fty>=0&&fty<MAP_H) {
       ctx.strokeStyle='rgba(255,255,255,0.5)';
@@ -820,6 +1053,7 @@ function render() {
   }
 
   crops.forEach(drawCrop);
+  drawAnimal();
   drawPlayer();
   drawParticles();
   drawHUD();
@@ -828,21 +1062,20 @@ function render() {
   drawDayEnd();
 }
 
-function renderTitle() {
-  drawTitle();
-}
-
 // ── Init ─────────────────────────────────────────────────
 function initState() {
   crops=[];
   particles=[];
   notifications=[];
   pl.x=68; pl.y=64; pl.dir=2; pl.walkF=0;
+  animalPos={x:54,y:70,walkF:0};
   gs.day=1; gs.coins=500;
   gs.inv={nap:5,morcov:3,rosie:0,dovleac:0};
   gs.shipping=[];
   shopOpen=false; dayEndOpen=false;
-  notify('Bun venit! Ai 5 nap + 3 morcov de start.🌱','#80ff80');
+  const numeLoc={mare:'la Mare 🌊',munte:'la Munte 🏔️',camp:'pe Câmp 🌻'};
+  const numeAnim={cat:'pisica 🐱',dog:'câinele 🐶'};
+  notify(`Bun venit! Ești ${numeLoc[gs.location]} cu ${numeAnim[gs.animal]}!`,'#80ff80');
 }
 
 // ── Game loop ────────────────────────────────────────────
@@ -850,11 +1083,13 @@ function loop() {
   requestAnimationFrame(loop);
   ctx.imageSmoothingEnabled=false;
   if(gs.screen==='title') {
-    renderTitle();
-    // Ascultă input titlu
+    drawTitle();
     if(justPressed['KeyZ']||justPressed['Space']||justPressed['Enter']) {
-      gs.screen='play'; initMap(); initState();
+      gs.screen='select'; selStep=0;
     }
+    justPressed={};
+  } else if(gs.screen==='select') {
+    drawSelect();
     justPressed={};
   } else {
     update();
