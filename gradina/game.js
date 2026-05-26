@@ -128,6 +128,30 @@ window.addEventListener('keydown', e => {
 window.addEventListener('keyup',  e => { keys[e.code] = false; });
 window.addEventListener('blur',   () => { for(const k in keys) keys[k]=false; });
 
+// Click / touch pe butonul JOACA din titlu
+canvas.addEventListener('click', e => {
+  if(gs.screen!=='title') return;
+  const rect=canvas.getBoundingClientRect();
+  const scaleX=VW/rect.width, scaleY=VH/rect.height;
+  const cx=(e.clientX-rect.left)*scaleX;
+  const cy=(e.clientY-rect.top)*scaleY;
+  if(cx>=BTN_X&&cx<=BTN_X+BTN_W&&cy>=BTN_Y-10&&cy<=BTN_Y+BTN_H+10) {
+    gs.screen='play'; initMap(); initState();
+  }
+});
+canvas.addEventListener('touchstart', e => {
+  if(gs.screen!=='title') return;
+  e.preventDefault();
+  const rect=canvas.getBoundingClientRect();
+  const t2=e.touches[0];
+  const scaleX=VW/rect.width, scaleY=VH/rect.height;
+  const cx=(t2.clientX-rect.left)*scaleX;
+  const cy=(t2.clientY-rect.top)*scaleY;
+  if(cx>=BTN_X&&cx<=BTN_X+BTN_W&&cy>=BTN_Y-10&&cy<=BTN_Y+BTN_H+10) {
+    gs.screen='play'; initMap(); initState();
+  }
+}, {passive:false});
+
 function jp(code) { const v = justPressed[code]; justPressed[code]=false; return v; }
 
 // ── Helpers de desen ─────────────────────────────────────
@@ -400,22 +424,23 @@ function drawNotifications() {
 
 // ── HUD ──────────────────────────────────────────────────
 function drawHUD() {
-  fr(0,0,VW,14,'rgba(0,0,0,0.75)');
+  fr(0,0,VW,17,'rgba(0,0,0,0.82)');
+  fr(0,17,VW,1,'#3a5a20');
   // Zi
-  tx(`Ziua ${gs.day}`, 3, 10, '#f5c518', 7);
+  tx(`Ziua ${gs.day}`, 4, 12, '#f5c518', 9);
   // Monede
-  tx(`🪙 ${gs.coins}`, 80, 10, '#f0f040', 7);
+  tx(`Monede: ${gs.coins}`, 72, 12, '#f0f040', 9);
   // Unealtă
-  const toolNames = ['⛏ Sapă','💧 Can','🌱 Semințe'];
-  tx(toolNames[gs.tool], 160, 10, '#80ff80', 7);
+  const toolNames = ['Sapa','Stropitoare','Seminte'];
+  tx(`[${toolNames[gs.tool]}]`, 185, 12, '#80ff80', 9);
   // Semință activă (dacă tool=2)
   if(gs.tool===2) {
     const k = CROP_KEYS[gs.seedIdx];
     const d = CROPS[k];
-    tx(`${d.name}: ${gs.inv[k]}`, 250, 10, '#ffcc40', 7);
+    tx(`${d.name}(${gs.inv[k]})`, 268, 12, '#ffcc40', 9);
   }
-  // Instrucțiuni scurte
-  tx('[Z]Acțiune [Tab]Dormi [Q/E]Unealtă [1-4]Semință', VW-2, 10, '#aaa', 5, 'right');
+  // Hint taste
+  tx('Z=act  Tab=dormi  Q/E=unealta', VW-2, 12, '#999', 7, 'right');
 }
 
 // ── Coliziune ────────────────────────────────────────────
@@ -611,30 +636,113 @@ function updateDayEnd() {
 
 // ── Ecran titlu ──────────────────────────────────────────
 let titleFrame=0;
+// Coordonate buton PLAY (pentru click)
+const BTN_X=VW/2-50, BTN_Y=148, BTN_W=100, BTN_H=26;
+
 function drawTitle() {
   titleFrame++;
-  // Sky gradient simulat
-  fr(0,0,VW,VH,'#1a2e0a');
-  // Soare
-  fr(VW-50,15,20,20,'#f5c518');
-  fr(VW-48,13,16,24,'#f5c518');
-  fr(VW-52,17,24,16,'#f5c518');
-  // Titlu
-  fr(0,VH/2-30,VW,50,'rgba(0,0,0,0.7)');
-  ctx.font='bold 24px monospace';
+  const t=titleFrame;
+
+  // ── Cer ──────────────────────────────────────────────────
+  for(let y=0;y<110;y++) { fr(0,y,VW,1,`hsl(200,70%,${55+y*0.2}%)`); }
+
+  // ── Soare ─────────────────────────────────────────────────
+  const sx=60,sy=38;
+  // raze
+  for(let a=0;a<8;a++) {
+    const ang=a*Math.PI/4+t*0.01;
+    const rx=Math.cos(ang)*22+sx, ry=Math.sin(ang)*22+sy;
+    fr(rx-1,ry-1,3,3,'#ffe080');
+  }
+  // disc
+  for(let dy=-14;dy<=14;dy++) {
+    const w=Math.round(Math.sqrt(14*14-dy*dy)*2);
+    fr(sx-w/2,sy+dy,w,1,'#f5c518');
+  }
+
+  // ── Nori ──────────────────────────────────────────────────
+  [[120-(t*0.25%200),30],[280-(t*0.15%300),48],[380-(t*0.2%350),22]].forEach(([cx,cy])=>{
+    const x2=((cx%VW+VW)%VW);
+    fr(x2,cy+4,36,10,'rgba(255,255,255,0.9)');
+    fr(x2+6,cy,24,10,'rgba(255,255,255,0.9)');
+    fr(x2+12,cy-4,14,8,'rgba(255,255,255,0.9)');
+  });
+
+  // ── Dealuri îndepărtate ───────────────────────────────────
+  for(let x=0;x<VW;x++) {
+    const h=18+Math.sin(x/60)*8+Math.sin(x/30)*4;
+    fr(x,110-h,1,h,'#3a7828');
+  }
+  // ── Câmp mijlociu ─────────────────────────────────────────
+  fr(0,100,VW,70,'#4a8c3f');
+  for(let x=0;x<VW;x++) {
+    const h=Math.sin(x/25)*4+Math.sin(x/12)*2;
+    fr(x,104+h,1,3,'#5ca048');
+  }
+
+  // ── Casă ──────────────────────────────────────────────────
+  fr(295,105,55,42,'#c8956a');                    // ziduri
+  fr(292,103,62,4,'#b04040');                      // baza acoperiș
+  for(let i=0;i<10;i++) fr(295+i*2,93+i,55-i*4,12,'#c04040'); // acoperiș
+  fr(315,125,12,22,'#7a4a20');                     // ușă
+  fr(298,112,10,9,'#a0d8f0');                      // geam st
+  fr(334,112,10,9,'#a0d8f0');                      // geam dr
+  fr(302,112,2,9,'#c8956a'); fr(298,116,10,2,'#c8956a'); // cruce geam
+  fr(338,112,2,9,'#c8956a'); fr(334,116,10,2,'#c8956a');
+
+  // ── Copaci ────────────────────────────────────────────────
+  [[268,120,10,26],[360,118,12,24],[380,115,10,22]].forEach(([tx2,ty2,rw,rh])=>{
+    fr(tx2+rw/2-2,ty2+rh,4,20,'#7a5535');
+    fr(tx2,ty2,rw,rh,'#2a6618'); fr(tx2+2,ty2-5,rw-4,8,'#3a8828');
+  });
+
+  // ── Gard ──────────────────────────────────────────────────
+  for(let i=0;i<VW;i+=18) {
+    fr(i,135,3,14,'#9b6b3a'); fr(i+3,137,12,2,'#b07848'); fr(i+3,143,12,2,'#b07848');
+  }
+
+  // ── Iarbă față ───────────────────────────────────────────
+  fr(0,145,VW,VH-145,'#5c8a3f');
+  for(let x=0;x<VW;x+=3) fr(x,145,1,2+Math.sin(x*2)*1,'#70a050');
+
+  // ── Flori ─────────────────────────────────────────────────
+  [[30,148,'#ff6090'],[65,150,'#f5c518'],[110,147,'#ff6090'],
+   [160,149,'#f5c518'],[210,148,'#ff80c0'],[255,150,'#f5c518'],
+   [310,148,'#ff6090'],[355,147,'#f5c518'],[390,149,'#ff80c0']].forEach(([fx,fy,c])=>{
+    fr(fx,fy+3,1,5,'#5a8030'); fr(fx-2,fy,5,4,c); fr(fx-1,fy+1,3,2,'#fff');
+  });
+
+  // ── Titlu (fundal) ────────────────────────────────────────
+  fr(VW/2-110,60,220,38,'rgba(0,0,0,0.65)');
+  fr(VW/2-110,60,220,2,'#f5c518');
+  fr(VW/2-110,96,220,2,'#f5c518');
+
+  // Text titlu
+  ctx.font='bold 22px monospace';
   ctx.textAlign='center';
+  ctx.fillStyle='#ffee44';
+  ctx.fillText('🌻 GRADINA 🌻', VW/2, 86);
+
+  // Subtitlu
+  fr(VW/2-120,100,240,16,'rgba(0,0,0,0.6)');
+  ctx.font='bold 9px monospace';
+  ctx.fillStyle='#b0ff80';
+  ctx.fillText('Sapa  Planta  Uda  Recolteaza!', VW/2, 112);
+
+  // ── Buton JOACA ───────────────────────────────────────────
+  const pulse=Math.sin(t*0.09)*2;
+  const by=BTN_Y-pulse;
+  fr(BTN_X-2,by-2,BTN_W+4,BTN_H+4,'#f5c518');   // bordură galbenă
+  fr(BTN_X,by,BTN_W,BTN_H,'#1a4010');             // fundal buton
+  ctx.font='bold 13px monospace';
   ctx.fillStyle='#f5c518';
-  ctx.fillText('🌻 GRĂDINA 🌻', VW/2, VH/2-8);
-  tx('Fermă, sapă, udă, recoltează!', VW/2, VH/2+8, '#80ff80', 8, 'center');
+  ctx.fillText('▶  JOACA', VW/2, by+18);
 
-  // Buton PLAY
-  const pulse=Math.sin(titleFrame*0.08)*3;
-  fr(VW/2-40,VH/2+25-pulse,80,20,'#f5c518');
-  fr(VW/2-39,VH/2+26-pulse,78,18,'#2a6018');
-  tx('▶  JOACĂ', VW/2, VH/2+38-pulse, '#f5c518', 8, 'center');
-
-  // Controale
-  tx('WASD/Săgeți: mișcare  Z: acțiune  Tab: doarme  Q/E: unealtă', VW/2, VH-8, '#888', 5, 'center');
+  // Hint taste
+  fr(0,VH-16,VW,16,'rgba(0,0,0,0.7)');
+  ctx.font='8px monospace';
+  ctx.fillStyle='#90d070';
+  ctx.fillText('SPACE / Z / Enter  sau  click pe buton', VW/2, VH-4);
 }
 
 // ── Update principal ─────────────────────────────────────
@@ -670,7 +778,7 @@ function update() {
 
   // Limite hartă
   pl.x=Math.max(0, Math.min(VW-12, pl.x));
-  pl.y=Math.max(14, Math.min(VH-22, pl.y));
+  pl.y=Math.max(18, Math.min(VH-22, pl.y));
 
   // Acțiune
   if(jp('KeyZ')||jp('Space')) interact();
